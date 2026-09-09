@@ -1,0 +1,1952 @@
+models:
+  # ======================
+  # USER
+  # ======================
+  #  User:
+  #    name: string
+  #    email: string
+  #    email_verified_at: datetime nullable
+  #    password: string
+  #    remember_token: string nullable
+  #    two_factor_secret: text nullable
+  #    two_factor_recovery_codes: text nullable
+  #    two_factor_confirmed_at: datetime nullable
+  #    relationships:
+  #      hasOne: Employee
+
+  # ======================
+  # UNIT
+  # ======================
+  Organization:
+    name: string
+    code: string unique nullable
+    parent_id: id nullable foreign:organizations.id
+    type: enum:university,faculty,department,lab,unit
+    description: text nullable
+
+    relationships:
+      belongsTo: Organization
+      hasMany: Organization:parent_id, Employee
+
+  # ======================
+  # JABATAN STRUKTURAL
+  # ======================
+
+  StructuralPosition:
+    name: string
+    parent_id: id nullable foreign:structural_positions.id
+    grade: string
+    qualification: text nullable
+    description: text nullable
+
+    relationships:
+      belongsTo: StructuralPosition
+      hasMany: StructuralPosition, StructuralPositionHistory
+
+
+  JobResponsibility:
+    structural_position_id: id foreign:structural_positions.id
+    title: string
+    description: text
+    type: enum:main,function
+    order: integer nullable
+
+    relationships:
+      belongsTo: StructuralPosition
+
+  StructuralPositionHistory:
+    employee_id: id foreign:employees.id
+    structural_position_id: id foreign:structural_positions.id
+    start_date: date
+    end_date: date nullable
+    decree_number: string nullable
+    decree_date: date nullable
+    document: string nullable
+
+    relationships:
+      belongsTo: Employee, StructuralPosition
+
+  # ======================
+  # PEGAWAI
+  # ======================
+  Employee:
+    user_id: id unique foreign:users.id
+    employee_number: string unique
+    national_id_number: string nullable
+    tax_id_number: string nullable
+    name: string
+    birth_place: string
+    birth_date: date
+    gender: enum:male,female
+    religion: string nullable
+    marital_status: enum:single,married,divorced
+    address: text
+    phone_number: string nullable
+    organization_id: id foreign:organizations.id
+    hire_date: date
+    employment_status_id: id foreign:employment_statuses.id
+    status: enum:active,inactive
+
+    relationships:
+      belongsTo: User, Organization, EmploymentStatus
+      hasOne: Lecturer, Staff
+      hasMany: EducationHistory
+
+  EmployeeGrade:
+    name: string
+
+  Lecturer:
+    employee_id: id unique foreign:employees.id
+    academic_rank: string
+    functional_position: string nullable
+    expertise: string nullable
+
+    relationships:
+      belongsTo: Employee
+
+  Staff:
+    employee_id: id unique foreign:employees.id
+    position: string
+    department: string
+
+    relationships:
+      belongsTo: Employee
+      hasMany: StaffNomenclatureHistory
+
+  EmploymentStatus:
+    name: string
+    description: string nullable
+
+    relationships:
+      hasMany: Employee
+
+  EducationHistory:
+    employee_id: id foreign:employees.id
+    degree: string
+    institution: string
+    major: string nullable
+    start_year: year
+    end_year: year nullable
+    gpa: decimal:3,2 nullable
+
+    relationships:
+      belongsTo: Employee
+
+  FunctionalPosition:
+    name: string
+    description: string nullable
+    level: integer nullable
+
+    relationships:
+      hasMany: LecturerFunctionalPosition
+
+  LecturerFunctionalPosition:
+    lecturer_id: id foreign:lecturers.id
+    functional_position_id: id foreign:functional_positions.id
+    start_date: date
+    end_date: date nullable
+    decree_number: string nullable
+    decree_date: date nullable
+    sk_file: string nullable
+
+    relationships:
+      belongsTo: Lecturer, FunctionalPosition
+
+  # ======================
+  # RESEARCH (PENELITIAN)
+  # ======================
+
+  Research:
+    title: string
+    description: text nullable
+    start_date: date
+    end_date: date nullable
+    funding_source: string nullable
+    budget: decimal:12,2 nullable
+    status: enum:proposed,ongoing,completed
+
+    relationships:
+      hasMany: ResearchMember, Publication
+
+  ResearchMember:
+    research_id: id foreign:research.id
+    lecturer_id: id foreign:lecturers.id
+    role: string nullable
+
+    relationships:
+      belongsTo: Research, Lecturer
+
+
+  # ======================
+  # COMMUNITY SERVICE (PENGABDIAN)
+  # ======================
+
+  CommunityService:
+    title: string
+    description: text nullable
+    location: string
+    start_date: date
+    end_date: date nullable
+    funding_source: string nullable
+    status: enum:proposed,ongoing,completed
+
+    relationships:
+      hasMany: CommunityServiceMember
+
+  CommunityServiceMember:
+    community_service_id: id foreign:community_services.id
+    lecturer_id: id foreign:lecturers.id
+    role: string nullable
+
+    relationships:
+      belongsTo: CommunityService, Lecturer
+
+  # ======================
+  # PUBLICATION
+  # ======================
+  Publication:
+    title: string
+    publication_date: date
+    doi: string nullable
+    url: string nullable
+    abstract: text nullable
+    research_id: id nullable foreign:research.id
+
+    relationships:
+      hasMany: PublicationAuthor
+      hasOne: JournalPublication, ConferenceProceeding
+      belongsTo: Research
+
+  PublicationAuthor:
+    publication_id: id foreign:publications.id
+    lecturer_id: id foreign:lecturers.id
+    author_order: integer
+    is_corresponding: boolean default:false
+
+    relationships:
+      belongsTo: Publication, Lecturer
+
+  JournalPublication:
+    publication_id: id unique foreign:publications.id
+    journal_name: string
+    issn: string nullable
+    publisher: string nullable
+    volume: string nullable
+    issue: string nullable
+    pages: string nullable
+    indexing: string nullable
+    quartile: string nullable
+
+    relationships:
+      belongsTo: Publication
+
+  ConferenceProceeding:
+    publication_id: id unique foreign:publications.id
+    conference_name: string
+    conference_location: string nullable
+    conference_date: date nullable
+    publisher: string nullable
+    isbn: string nullable
+    pages: string nullable
+    indexing: string nullable
+
+    relationships:
+      belongsTo: Publication
+
+  # ======================
+  # MODUL KEHADIRAN
+  # ======================
+  Attendance:
+    employee_id: id foreign:employees.id
+    date: date
+    check_in: datetime nullable
+    check_out: datetime nullable
+    status: enum:present,absent,leave,overtime,holiday
+    notes: string nullable
+
+    relationships:
+      belongsTo: Employee
+
+  Holiday:
+    date: date
+    name: string
+
+  # ======================
+  # CUTI (LEAVE)
+  # ======================
+  LeaveType:
+    name: string
+    description: string nullable
+    default_quota: integer
+    requires_attachment: boolean default:false
+
+    relationships:
+      hasMany: LeaveRequest, LeaveBalance
+
+  LeaveBalance:
+    employee_id: id foreign:employees.id
+    leave_type_id: id foreign:leave_types.id
+    year: year
+    quota: integer
+    used: integer default:0
+    remaining: integer
+
+    relationships:
+      belongsTo: Employee, LeaveType
+
+  LeaveRequest:
+    employee_id: id foreign:employees.id
+    leave_type_id: id foreign:leave_types.id
+    approver_id: id nullable foreign:employees.id
+
+    start_date: date
+    end_date: date
+    total_days: integer
+    reason: text nullable
+    attachment: string nullable
+    address_leave: string nullable
+    contact_leave: string nullable
+    status: enum:pending,approved,rejected,cancelled
+    submitted_at: timestamp
+    approved_at: timestamp nullable
+
+    relationships:
+      belongsTo: Employee, LeaveType, Employee:approver_id
+      hasMany: LeaveApproval
+
+  LeaveApproval:
+    leave_request_id: id foreign:leave_requests.id
+    approver_id: id foreign:employees.id
+    level: integer
+    status: enum:pending,approved,rejected
+    notes: text nullable
+    action_date: timestamp nullable
+
+    relationships:
+      belongsTo: LeaveRequest, Employee
+
+  # ======================
+  # LEMBUR (OVERTIME)
+  # ======================
+  OvertimeRequest:
+    request_number: string unique
+    title: string
+    description: text nullable
+    request_date: date
+    planned_start_time: datetime
+    planned_end_time: datetime
+    submitted_by: id foreign:employees.id
+    approved_by: id nullable foreign:employees.id
+    status: enum:draft,pending,approved,rejected,completed,cancelled
+    submitted_at: timestamp nullable
+    approved_at: timestamp nullable
+
+    relationships:
+      belongsTo: Employee:submitted_by, Employee:approved_by
+      hasMany: OvertimeRequestMember, OvertimeApprovalLog
+
+  OvertimeRequestMember:
+    overtime_request_id: id foreign:overtime_requests.id
+    employee_id: id foreign:employees.id
+    role: string nullable
+    job_desc: string nullable
+    planned_hours: decimal:5,2
+    actual_start_time: datetime
+    actual_end_time: datetime
+    actual_hours: decimal:5,2
+
+    relationships:
+      belongsTo: OvertimeRequest, Employee
+
+  OvertimeApprovalLog:
+    overtime_request_id: id foreign:overtime_requests.id
+    approver_id: id foreign:employees.id
+    status: enum:approved,rejected
+    notes: text nullable
+    action_date: timestamp
+
+    relationships:
+      belongsTo: OvertimeRequest, Employee
+
+  # ======================
+  # NOMENKLATUR PEKERJAAN
+  # ======================
+
+  Nomenclature:
+    name: string
+    qualification: text
+    duties: text
+    grade: string
+
+    relationships:
+      hasMany: NomenclatureClassification
+
+  NomenclatureClassification:
+    nomenclature_id: id foreign:nomenclatures.id
+    name: string
+    description: text nullable
+
+    relationships:
+      belongsTo: Nomenclature
+      hasMany: StaffNomenclatureHistory
+
+  StaffNomenclatureHistory:
+    staff_id: id foreign:staff.id
+    nomenclature_class_id: id foreign:nomenclature_classifications.id
+
+    start_date: date
+    end_date: date nullable
+
+    relationships:
+      belongsTo: Staff, NomenclatureClassification
+
+  # ======================
+  # PERJALANAN DINAS
+  # ======================
+  OfficialTravel:
+    request_number: string unique
+
+    purpose: string
+    destination: string
+    start_date: date
+    end_date: date
+
+    invitation_file: string nullable
+
+    status: enum:draft,pending,approved,rejected,completed
+
+    submitted_by: id foreign:employees.id
+    submitted_at: timestamp
+
+    approved_by: id nullable foreign:employees.id
+    approved_at: timestamp nullable
+
+    travel_outcome: text nullable
+    outcome_followup: text nullable
+
+    relationships:
+      belongsTo: Employee:submitted_by, Employee:approved_by
+      hasMany: OfficialTravelMember, OfficialTravelItinerary, OfficialTravelApproval, OfficialTravelReport, TravelExpense, OfficialTravelDocument
+
+  OfficialTravelMember:
+    official_travel_id: id foreign:official_travels.id
+    employee_id: id foreign:employees.id
+
+    report_date: date
+    summary: text
+    attachment: string nullable
+
+    role: string nullable
+
+    relationships:
+      belongsTo: OfficialTravel, Employee
+
+  OfficialTravelItinerary:
+    official_travel_id: id foreign:official_travels.id
+
+    date: date
+    location: string
+    activity: string
+    description: text nullable
+
+    relationships:
+      belongsTo: OfficialTravel
+
+  OfficialTravelApproval:
+    official_travel_id: id foreign:official_travels.id
+    approver_id: id foreign:employees.id
+
+    status: enum:approved,rejected
+    notes: text nullable
+    action_date: timestamp
+
+    relationships:
+      belongsTo: OfficialTravel, Employee
+
+  TravelCostComponent:
+    name: string
+    code: string unique
+    description: text nullable
+
+    relationships:
+      hasMany: TravelExpense, TravelCostStandard
+
+  TravelCostStandard:
+    city_id: id foreign:cities.id
+    structural_position_id: id nullable foreign:structural_positions.id
+    employee_grade_id: id nullable foreign:employee_grades.id
+    travel_cost_component_id: id foreign:travel_cost_components.id
+
+    amount: decimal:12,2
+
+    relationships:
+      belongsTo: City, StructuralPosition, EmployeeGrade, TravelCostComponent
+
+  TravelExpense:
+    official_travel_id: id foreign:official_travels.id
+    employee_id: id foreign:employees.id
+
+    travel_cost_component_id: id foreign:travel_cost_components.id
+    amount: decimal:12,2
+    description: text nullable
+    receipt_file: string nullable
+
+    submitted_at: timestamp
+    verified_at: timestamp nullable
+
+    status: enum:submitted,approved,rejected
+
+    relationships:
+      belongsTo: OfficialTravel, Employee, TravelCostComponent
+
+  OfficialTravelDocument:
+    official_travel_id: id foreign:official_travels.id
+
+    title: string
+    file_path: string
+    file_type: string nullable
+    uploaded_at: timestamp
+
+    relationships:
+      belongsTo: OfficialTravel
+
+  # ======================
+  # PENGELOLAAN ASET
+  # ======================
+  Asset:
+    name: string
+    code: string unique
+    type: enum:equipment,room
+
+    acquisition_type: enum:procurement,grant
+    acquisition_date: date
+    acquisition_cost: decimal:14,2 nullable
+    asset_grant_id: id nullable foreign:asset_grants.id
+
+    condition: enum:good,minor_damage,major_damage
+    status: enum:available,in_use,maintenance,retired
+
+    relationships:
+      hasOne: AssetEquipment
+      hasMany: AssetAssignment, AssetMaintenanceRequest, AssetLoan
+
+  # ======================
+  # EQUIPMENT (FOCUS)
+  # ======================
+
+  AssetEquipment:
+    asset_id: id unique foreign:assets.id
+
+    brand: string nullable
+    model: string nullable
+    serial_number: string nullable
+
+    specification: text nullable
+    purchase_link: string nullable
+    photo: string nullable
+
+    depreciation_value: decimal:14,2 nullable
+    useful_life: integer nullable
+
+    relationships:
+      belongsTo: Asset
+
+  # ======================
+  # ASSET REQUEST (USULAN)
+  # ======================
+
+  AssetEquipmentRequest:
+    request_number: string unique
+    employee_id: id foreign:employees.id
+
+    name: string
+    specification: text nullable
+    purchase_link: string nullable
+    photo: string nullable
+
+    quantity: integer
+
+    status: enum:pending,approved,rejected
+
+    submitted_at: timestamp
+
+    approved_by: id nullable foreign:employees.id
+    approved_at: timestamp nullable
+
+    relationships:
+      belongsTo: Employee, Employee
+
+  # ======================
+  # PROCUREMENT
+  # ======================
+
+  AssetEquipmentProcurement:
+    request_number: string unique
+    title: string
+
+    status: enum:draft,submitted,approved,rejected,completed
+    created_by: id foreign:employees.id
+
+    relationships:
+      belongsTo: Employee
+      hasMany: AssetEquipmentProcItem
+
+  AssetEquipmentProcItem:
+    asset_equipment_proc_id: id foreign:asset_equipment_procurements.id
+
+    name: string
+    specification: text nullable
+    quantity: integer
+    estimated_price: decimal:14,2 nullable
+
+    relationships:
+      belongsTo: AssetEquipmentProcurement
+
+  # ======================
+  # GRANT (HIBAH)
+  # ======================
+
+  AssetGrant:
+    name: string
+    source: string
+    grant_date: date
+    description: text nullable
+
+    relationships:
+      hasMany: Asset
+
+  # ======================
+  # MAINTENANCE
+  # ======================
+
+  AssetMaintenanceRequest:
+    asset_id: id foreign:assets.id
+    reported_by: id foreign:employees.id
+
+    issue_description: text
+    status: enum:reported,in_progress,resolved
+
+    reported_at: timestamp
+    resolved_at: timestamp nullable
+
+    relationships:
+      belongsTo: Asset, Employee
+
+  # ======================
+  # LOAN
+  # ======================
+
+  AssetLoan:
+    asset_id: id foreign:assets.id
+    employee_id: id foreign:employees.id
+
+    start_date: date
+    end_date: date nullable
+
+    status: enum:requested,approved,rejected,returned
+
+    approved_by: id nullable foreign:employees.id
+
+    relationships:
+      belongsTo: Asset, Employee, Employee:approved_by
+  # ======================
+  # TRACKING
+  # ======================
+
+  AssetTracking:
+    asset_id: id foreign:assets.id
+
+    location: string nullable
+    latitude: decimal:10,6 nullable
+    longitude: decimal:10,6 nullable
+
+    tracked_at: timestamp
+    notes: text nullable
+
+    relationships:
+      belongsTo: Asset
+
+  AssetTrackingLog:
+    asset_id: id foreign:assets.id
+    from_location: string nullable
+    to_location: string nullable
+
+    moved_at: timestamp
+    moved_by: id nullable foreign:employees.id
+
+    relationships:
+      belongsTo: Asset, Employee
+
+  # ======================
+  # AUDIT (STOCK OPNAME)
+  # ======================
+
+  AssetAudit:
+    audit_number: string unique
+    audit_date: date
+    conducted_by: id foreign:employees.id
+
+    description: text nullable
+
+    relationships:
+      belongsTo: Employee
+      hasMany: AssetAuditDetail
+
+  AssetAuditDetail:
+    asset_audit_id: id foreign:asset_audits.id
+    asset_id: id foreign:assets.id
+
+    condition: enum:good,minor_damage,major_damage,missing
+    notes: text nullable
+
+    relationships:
+      belongsTo: AssetAudit, Asset
+
+  # ======================
+  # INSURANCE
+  # ======================
+
+  AssetInsurance:
+    asset_id: id foreign:assets.id
+
+    policy_number: string
+    provider: string
+
+    coverage_amount: decimal:14,2
+    premium: decimal:14,2 nullable
+
+    start_date: date
+    end_date: date
+
+    status: enum:active,expired,claimed
+
+    relationships:
+      belongsTo: Asset
+
+  AssetInsuranceClaim:
+    asset_insurance_id: id foreign:asset_insurances.id
+
+    claim_date: date
+    claim_amount: decimal:14,2
+    description: text nullable
+
+    status: enum:submitted,approved,rejected,paid
+
+    relationships:
+      belongsTo: AssetInsurance
+
+    # ======================
+    # BUILDING
+    # ======================
+
+  Building:
+    name: string
+    code: string unique
+    description: text nullable
+
+    relationships:
+      hasMany: AssetRoom
+
+    # ======================
+    # ROOM (SUBTYPE)
+    # ======================
+
+  AssetRoom:
+    asset_id: id unique foreign:assets.id
+    building_id: id foreign:buildings.id
+
+    name: string
+    code: string unique
+    floor: string nullable
+
+    capacity: integer
+    is_public: boolean default:false
+
+    responsible_employee_id: id foreign:employees.id
+
+    relationships:
+      belongsTo: Asset, Building, Employee
+      hasMany: RoomLoan, RoomMaintenanceRequest, AssetAssignment
+
+    # ======================
+    # ROOM MAINTENANCE
+    # ======================
+
+  RoomMaintenanceRequest:
+    asset_room_id: id foreign:asset_rooms.id
+    reported_by: id foreign:employees.id
+
+    issue_description: text
+    status: enum:reported,in_progress,resolved
+
+    reported_at: timestamp
+    resolved_at: timestamp nullable
+
+    relationships:
+      belongsTo: AssetRoom, Employee
+
+    # ======================
+    # ROOM LOAN (BOOKING)
+    # ======================
+
+  RoomLoan:
+    asset_room_id: id foreign:asset_rooms.id
+    employee_id: id foreign:employees.id
+
+    start_time: datetime
+    end_time: datetime
+
+    purpose: string nullable
+
+    status: enum:requested,approved,rejected,completed
+
+    approved_by: id nullable foreign:employees.id
+
+    relationships:
+      belongsTo: AssetRoom, Employee, Employee:approved_by
+
+    # ======================
+    # UPDATE EXISTING (INTEGRATION)
+    # ======================
+
+  AssetAssignment:
+    asset_id: id foreign:assets.id
+    employee_id: id nullable foreign:employees.id
+    asset_room_id: id nullable foreign:asset_rooms.id
+
+    assigned_at: timestamp
+    returned_at: timestamp nullable
+
+    relationships:
+      belongsTo: Asset, Employee, AssetRoom
+  # ======================
+  # BARANG PERSEDIAAN
+  # ======================
+
+  Item:
+    name: string
+    code: string unique
+    unit: string
+    minimal_quantity: integer default:0
+    description: text nullable
+
+    relationships:
+      hasMany: InventoryProcurementItem, InventoryPurchaseItem, InventoryRequestDetail, InventoryTransaction
+
+  Inventory:
+    item_id: id unique foreign:items.id
+    quantity: integer default:0
+
+    relationships:
+      belongsTo: Item
+
+  InventoryTransaction:
+    item_id: id foreign:items.id
+    type: enum:in,out,adjustment
+    quantity: integer
+    transaction_date: date
+    reference: string nullable
+    notes: text nullable
+
+    relationships:
+      belongsTo: Item
+
+  # ======================
+  # PROCUREMENT
+  # ======================
+
+  InventoryProcurement:
+    request_number: string unique
+    title: string
+
+    status: enum:draft,submitted,approved,rejected
+    created_by: id foreign:employees.id
+
+    approved_at: timestamp nullable
+
+    relationships:
+      belongsTo: Employee
+      hasMany: InventoryProcurementItem
+
+  InventoryProcurementItem:
+    inventory_procurement_id: id foreign:inventory_procurements.id
+    item_id: id nullable foreign:items.id
+    item_name: string nullable
+    quantity: integer
+
+    relationships:
+      belongsTo: InventoryProcurement, Item
+
+  # ======================
+  # PURCHASE (STOCK IN)
+  # ======================
+
+  InventoryPurchase:
+    purchase_number: string unique
+    inventory_procurement_id: id nullable foreign:inventory_procurements.id
+
+    purchase_date: date
+    supplier: string nullable
+
+    status: enum:draft,completed
+
+    relationships:
+      belongsTo: InventoryProcurement
+      hasMany: InventoryPurchaseItem
+
+  InventoryPurchaseItem:
+    inventory_purchase_id: id foreign:inventory_purchases.id
+    item_id: id foreign:items.id
+
+    quantity: integer
+    price: decimal:12,2 nullable
+
+    relationships:
+      belongsTo: InventoryPurchase, Item
+
+  # ======================
+  # REQUEST (HYBRID)
+  # ======================
+
+  InventoryRequest:
+    request_number: string unique
+    employee_id: id foreign:employees.id
+
+    request_date: date
+    status: enum:pending,approved,rejected,fulfilled
+
+    approved_by: id nullable foreign:employees.id
+    approved_at: timestamp nullable
+
+    relationships:
+      belongsTo: Employee, Employee:approved_by
+      hasMany: InventoryRequestDetail, InventoryRequestApproval
+
+  InventoryRequestDetail:
+    inventory_request_id: id foreign:inventory_requests.id
+
+    item_id: id nullable foreign:items.id
+    item_name: string nullable
+    specification: text nullable
+
+    quantity: integer
+
+    relationships:
+      belongsTo: InventoryRequest, Item
+
+  InventoryRequestApproval:
+    inventory_request_id: id foreign:inventory_requests.id
+    approver_id: id foreign:employees.id
+
+    status: enum:approved,rejected
+    notes: text nullable
+    action_date: timestamp
+
+    relationships:
+      belongsTo: InventoryRequest, Employee
+
+  # ======================
+  # PROJECT MANAGEMENT
+  # ======================
+
+  Committee:
+    name: string
+    description: text nullable
+
+    objective: text
+    expected_outcome: text nullable
+
+    start_date: date
+    end_date: date nullable
+
+    created_by: id foreign:employees.id
+
+    status: enum:draft,active,completed,cancelled
+
+    relationships:
+      belongsTo: Employee
+      hasMany: CommitteeMember, CommitteeExternalMember, CommitteeProgress, CommitteeTask, CommitteeBudget, Meeting
+
+
+  # ======================
+  # INTERNAL MEMBER
+  # ======================
+
+  CommitteeMember:
+    committee_id: id foreign:committees.id
+    employee_id: id foreign:employees.id
+
+    role: string
+    is_leader: boolean default:false
+
+    relationships:
+      belongsTo: Committee, Employee
+      hasMany: CommitteeProgress
+
+  # ======================
+  # EXTERNAL MEMBER
+  # ======================
+
+  CommitteeExternalMember:
+    committee_id: id foreign:committees.id
+
+    name: string
+    institution: string nullable
+    role: string
+
+    relationships:
+      belongsTo: Committee
+
+  # ======================
+  # TASK MANAGEMENT
+  # ======================
+
+  CommitteeTask:
+    committee_id: id foreign:committees.id
+    assigned_to: id nullable foreign:committee_members.id
+
+    title: string
+    description: text nullable
+
+    start_date: date nullable
+    due_date: date nullable
+
+    priority: enum:low,medium,high
+    status: enum:todo,in_progress,done,blocked
+
+    relationships:
+      belongsTo: Committee, CommitteeMember
+      hasMany: CommitteeTaskProgress
+
+  CommitteeTaskProgress:
+    committee_task_id: id foreign:committee_tasks.id
+
+    description: text nullable
+    progress_date: date
+
+    status: enum:in_progress,done
+
+    attachment: string nullable
+
+    relationships:
+      belongsTo: CommitteeTask
+
+  # ======================
+  # BUDGET / ANGGARAN
+  # ======================
+
+  CommitteeBudget:
+    committee_id: id foreign:committees.id
+
+    name: string
+    description: text nullable
+
+    total_amount: decimal:14,2
+    used_amount: decimal:14,2 default:0
+
+    relationships:
+      belongsTo: Committee
+      hasMany: CommitteeBudgetItem
+
+  CommitteeBudgetItem:
+    committee_budget_id: id foreign:committee_budgets.id
+
+    name: string
+    quantity: integer
+    unit_price: decimal:14,2
+
+    total_price: decimal:14,2
+
+    relationships:
+      belongsTo: CommitteeBudget
+      hasMany: CommitteeExpense
+
+  CommitteeExpense:
+    committee_budget_item_id: id foreign:committee_budget_items.id
+
+    amount: decimal:14,2
+    description: text nullable
+    receipt_file: string nullable
+
+    expense_date: date
+
+    status: enum:submitted,approved,rejected
+
+    approved_by: id nullable foreign:employees.id
+
+    relationships:
+      belongsTo: CommitteeBudgetItem, Employee
+
+  # ======================
+  # MEETING
+  # ======================
+
+  Meeting:
+    title: string
+    description: text nullable
+
+    organizer_id: id foreign:employees.id
+    leader_id: id foreign:employees.id
+
+    meeting_type: enum:offline,online,hybrid
+
+    meeting_date: date
+    start_time: time
+    end_time: time
+
+    asset_room_id: id nullable foreign:asset_rooms.id
+
+    online_platform: string nullable
+    online_link: string nullable
+
+    committee_id: id nullable foreign:committees.id
+
+    is_confidential: boolean default:false
+
+    status: enum:draft,scheduled,completed,cancelled
+
+    relationships:
+      belongsTo: Employee:organizer_id, Employee:leader_id, AssetRoom, Committee
+      hasMany: MeetingParticipant, MeetingExternalParticipant, MeetingConsumptionRequest, MeetingMinutes, MeetingDocument
+
+  # ======================
+  # INTERNAL PARTICIPANT
+  # ======================
+
+  MeetingParticipant:
+    meeting_id: id foreign:meetings.id
+    employee_id: id foreign:employees.id
+
+    status: enum:invited,confirmed,attended
+
+    relationships:
+      belongsTo: Meeting, Employee
+
+  # ======================
+  # EXTERNAL PARTICIPANT
+  # ======================
+
+  MeetingExternalParticipant:
+    meeting_id: id foreign:meetings.id
+
+    name: string
+    institution: string nullable
+    email: string nullable
+
+    relationships:
+      belongsTo: Meeting
+
+  # ======================
+  # CONSUMPTION REQUEST
+  # ======================
+
+  MeetingConsumptionRequest:
+    meeting_id: id foreign:meetings.id
+
+    description: text nullable
+    estimated_participants: integer
+
+    status: enum:requested,approved,rejected,fulfilled
+
+    requested_at: timestamp
+    approved_by: id nullable foreign:employees.id
+
+    relationships:
+      belongsTo: Meeting, Employee
+
+  # ======================
+  # MEETING MINUTES
+  # ======================
+
+  MeetingMinutes:
+    meeting_id: id foreign:meetings.id
+
+    summary: text
+    file: string nullable
+
+    is_confidential: boolean default:false
+
+    created_by: id foreign:employees.id
+
+    relationships:
+      belongsTo: Meeting, Employee
+
+  # ======================
+  # DOCUMENTATION
+  # ======================
+
+  MeetingDocument:
+    meeting_id: id foreign:meetings.id
+
+    title: string
+    file_path: string
+    file_type: string nullable
+
+    uploaded_by: id foreign:employees.id
+    uploaded_at: timestamp
+
+    relationships:
+      belongsTo: Meeting, Employee
+
+  # ======================
+  # SURVEY QUESTION BANK
+  # ======================
+  SurveyQuestion:
+    question_text: text
+    type: enum:single_choice,multiple_choice,short_answer
+
+    is_active: boolean default:true
+
+    relationships:
+      hasMany: SurveyQuestionOption, SurveyQuestionAssignment
+
+  SurveyQuestionOption:
+    survey_question_id: id foreign:survey_questions.id
+
+    option_text: string
+    weight: decimal:5,2 default:0
+
+    relationships:
+      belongsTo: SurveyQuestion
+
+  # ======================
+  # SURVEY
+  # ======================
+
+  Survey:
+    title: string
+    description: text nullable
+
+    start_date: date
+    end_date: date
+
+    is_active: boolean default:false
+
+    created_by: id foreign:employees.id
+
+    relationships:
+      belongsTo: Employee
+      hasMany: SurveyQuestionAssignment, SurveyResponse, SurveyInvitation
+
+  SurveyQuestionAssignment:
+    survey_id: id foreign:surveys.id
+    survey_question_id: id foreign:survey_questions.id
+
+    order: integer nullable
+
+    relationships:
+      belongsTo: Survey, SurveyQuestion
+
+  # ======================
+  # INVITATION (PIN)
+  # ======================
+
+  SurveyInvitation:
+    survey_id: id foreign:surveys.id
+
+    name: string nullable
+    email: string nullable
+    phone: string nullable
+
+    pin: string unique
+
+    is_used: boolean default:false
+    used_at: timestamp nullable
+
+    relationships:
+      belongsTo: Survey
+      hasOne: SurveyResponse
+
+  # ======================
+  # RESPONSE
+  # ======================
+
+  SurveyResponse:
+    survey_id: id foreign:surveys.id
+    survey_invitation_id: id foreign:survey_invitations.id
+
+    submitted_at: timestamp
+
+    relationships:
+      belongsTo: Survey, SurveyInvitation
+      hasMany: SurveyAnswer
+
+  SurveyAnswer:
+    survey_response_id: id foreign:survey_responses.id
+    survey_question_id: id foreign:survey_questions.id
+
+    answer_text: text nullable
+
+    relationships:
+      belongsTo: SurveyResponse, SurveyQuestion
+      hasMany: SurveyAnswerOption
+
+  SurveyAnswerOption:
+    survey_answer_id: id foreign:survey_answers.id
+    survey_question_option_id: id foreign:survey_question_options.id
+
+    relationships:
+      belongsTo: SurveyAnswer, SurveyQuestionOption
+
+  # ======================
+  # KERJASAMA
+  # ======================
+
+  # ======================
+  # PARTNER (EXISTING - EXTENDED)
+  # ======================
+
+  Partner:
+    name: string
+    type: enum:university,company,government,ngo,other
+
+    address: text nullable
+    email: string nullable
+    phone: string nullable
+
+    description: text nullable
+
+    relationships:
+      hasMany: PartnerContact, PartnerPotential, Partnership
+
+
+  # ======================
+  # PARTNER CONTACT
+  # ======================
+
+  PartnerContact:
+    partner_id: id foreign:partners.id
+
+    name: string
+    position: string nullable
+
+    email: string nullable
+    phone: string nullable
+
+    is_primary: boolean default:false
+
+    notes: text nullable
+
+    relationships:
+      belongsTo: Partner
+
+  # ======================
+  # POTENTIAL COOPERATION
+  # ======================
+
+  PartnerPotential:
+    partner_id: id foreign:partners.id
+
+    title: string
+    description: text nullable
+
+    status: enum:identified,in_discussion,proposed,converted,rejected
+
+    relationships:
+      belongsTo: Partner
+      hasMany: PartnerPotentialField, PartnerFollowUp, Partnership
+
+  PartnerPotentialField:
+    partner_potential_id: id foreign:partner_potentials.id
+
+    field: enum:research,community_service,internship,training,other
+
+    relationships:
+      belongsTo: PartnerPotential
+
+  # ======================
+  # FOLLOW UP / PENJAJAKAN
+  # ======================
+
+  PartnerFollowUp:
+    partner_potential_id: id foreign:partner_potentials.id
+
+    activity_date: date
+    notes: text nullable
+
+    status: enum:planned,ongoing,completed
+
+    conducted_by: id foreign:employees.id
+
+    relationships:
+      belongsTo: PartnerPotential, Employee
+
+  # ======================
+  # PARTNERSHIP (KERJASAMA RESMI)
+  # ======================
+
+  Partnership:
+    partner_id: id foreign:partners.id
+    partner_potential_id: id nullable foreign:partner_potentials.id
+
+    title: string
+    description: text nullable
+
+    document_type: enum:moa,pks
+    document_number: string
+
+    start_date: date
+    end_date: date
+
+    status: enum:active,expired,terminated
+
+    relationships:
+      belongsTo: Partner, PartnerPotential
+      hasMany: PartnershipDocument, PartnershipImplementation, ImplementationArrangement
+
+  PartnershipDocument:
+    partnership_id: id foreign:partnerships.id
+
+    file_path: string
+    signed_date: date
+
+    relationships:
+      belongsTo: Partnership
+
+  # ======================
+  # IMPLEMENTATION (REALISASI)
+  # ======================
+
+  PartnershipImplementation:
+    partnership_id: id foreign:partnerships.id
+
+    title: string
+    description: text nullable
+
+    start_date: date
+    end_date: date nullable
+
+    status: enum:planned,ongoing,completed
+
+    relationships:
+      belongsTo: Partnership
+      hasMany: ImplementationArrangement
+
+  # ======================
+  # IMPLEMENTATION ARRANGEMENT (IA)
+  # ======================
+
+  ImplementationArrangement:
+    partnership_id: id foreign:partnerships.id
+    partnership_impl_id: id foreign:partnership_implementations.id
+
+    title: string
+    description: text nullable
+
+    document_number: string nullable
+    document_file: string nullable
+
+    start_date: date nullable
+    end_date: date nullable
+
+    relationships:
+      belongsTo: Partnership, PartnershipImplementation
+
+  # ======================
+  # ASSIGNMENT (TASK HEADER)
+  # ======================
+
+  Assignment:
+    title: string
+    description: text nullable
+
+    assigned_by: id foreign:employees.id
+    assigned_to: id foreign:employees.id
+
+    parent_id: id nullable foreign:assignments.id
+
+    start_date: date nullable
+    due_date: date nullable
+
+    status: enum:assigned,in_progress,completed,delegated,cancelled
+    priority: enum:low,medium,high
+
+    relationships:
+      belongsTo: Employee:assigned_by, Employee:assigned_to, Assignment:parent_id
+      hasMany: Assignment:parent_id, AssignmentProgress
+
+  # ======================
+  # ASSIGNMENT PROGRESS
+  # ======================
+
+  AssignmentProgress:
+    assignment_id: id foreign:assignments.id
+
+    description: text nullable
+    progress_date: date
+
+    status: enum:in_progress,completed
+
+    attachment: string nullable
+
+    created_by: id foreign:employees.id
+
+    relationships:
+      belongsTo: Assignment, Employee
+
+  # ======================
+  # EVENT
+  # ======================
+
+  Event:
+    title: string
+    slug: string unique
+
+    description: text nullable
+    objectives: text nullable
+
+    event_type: enum:seminar,workshop,training,conference,webinar,other
+    delivery_mode: enum:offline,online,hybrid
+
+    start_date: date
+    end_date: date
+
+    start_time: time nullable
+    end_time: time nullable
+
+    venue: string nullable
+    online_platform: string nullable
+    online_link: string nullable
+
+    quota: integer nullable
+    registration_deadline: datetime nullable
+
+    cover_image: string nullable
+    banner_image: string nullable
+
+    status: enum:draft,published,closed,cancelled
+
+    created_by: id foreign:employees.id
+    published_by: id nullable
+    published_at: timestamp nullable
+
+    relationships:
+      belongsTo: Employee:created_by, Employee:published_by
+      hasMany: EventCommitteeMember, EventRegistration, EventReminder, EventAttendance, EventCertificate, EventDocument
+
+  # ======================
+  # EVENT COMMITTEE
+  # ======================
+
+  EventCommitteeMember:
+    event_id: id foreign:events.id
+    employee_id: id foreign:employees.id
+
+    role: string
+    is_leader: boolean default:false
+
+    relationships:
+      belongsTo: Event, Employee
+
+  # ======================
+  # EVENT REGISTRATION
+  # ======================
+
+  EventRegistration:
+    event_id: id foreign:employees.id
+    user_id: id foreign:users.id
+
+    registration_number: string unique
+
+    registered_at: timestamp
+
+    attendance_status: enum:registered,attended,no_show,cancelled
+
+    notes: text nullable
+    ticket_number: string unique
+    qr_code: string nullable
+    issued_at: timestamp
+
+    certificate_number: string unique
+
+    file_path: string nullable
+
+    generated_by: id nullable foreign:employees.id
+    generated_at: timestamp nullable
+
+    relationships:
+      belongsTo: Event, User
+      hasOne: Employee:generated_by
+
+  # ======================
+  # EVENT REMINDER
+  # ======================
+
+  EventReminder:
+    event_id: id foreign:events.id
+
+    sent_by: id foreign:employees.id
+
+    channel: enum:email,whatsapp,sms,system
+    message: text
+
+    sent_at: timestamp
+
+    relationships:
+      belongsTo: Event, Employee:sent_by
+
+  # ======================
+  # EVENT ATTENDANCE
+  # ======================
+
+  EventAttendance:
+    event_registration_id: id foreign:event_registrations.id
+
+    checked_in_at: timestamp nullable
+    checked_out_at: timestamp nullable
+
+    checked_by: id nullable foreign:employees.id
+
+    attendance_method: enum:manual,qr_scan,system
+
+    status: enum:present,absent,partial
+
+    relationships:
+      belongsTo: Event, EventRegistration, Employee:checked_by
+
+  # ======================
+  # EVENT DOCUMENT / REPORT
+  # ======================
+
+  EventDocument:
+    event_id: id foreign:events.id
+
+    title: string
+    document_type: enum:report,photo,proposal,minutes,attendance,other
+
+    file_path: string
+    description: text nullable
+
+    uploaded_by: id foreign:employees.id
+    uploaded_at: timestamp
+
+    relationships:
+      belongsTo: Event, Employee:uploaded_by
+
+seeders:
+  Organization,
+  StructuralPosition,
+  JobResponsibility,
+  StructuralPositionHistory,
+  Employee,
+  EmployeeGrade,
+  Lecturer,
+  Staff,
+  EmploymentStatus,
+  EducationHistory,
+  FunctionalPosition,
+  LecturerFunctionalPosition,
+  Research,
+  ResearchMember,
+  CommunityService,
+  CommunityServiceMember,
+  Publication,
+  PublicationAuthor,
+  JournalPublication,
+  ConferenceProceeding,
+  Attendance,
+  Holiday,
+  LeaveType,
+  LeaveBalance,
+  LeaveRequest,
+  LeaveApproval,
+  OvertimeRequest,
+  OvertimeRequestMember,
+  OvertimeApprovalLog,
+  Nomenclature,
+  NomenclatureClassification,
+  StaffNomenclatureHistory,
+  OfficialTravel,
+  OfficialTravelMember,
+  OfficialTravelItinerary,
+  OfficialTravelApproval,
+  TravelCostComponent,
+  TravelCostStandard,
+  TravelExpense,
+  OfficialTravelDocument,
+  Asset,
+  AssetEquipment,
+  AssetEquipmentRequest,
+  AssetEquipmentProcurement,
+  AssetEquipmentProcItem,
+  AssetGrant,
+  AssetMaintenanceRequest,
+  AssetLoan,
+  AssetTracking,
+  AssetTrackingLog,
+  AssetAudit,
+  AssetAuditDetail,
+  AssetInsurance,
+  AssetInsuranceClaim,
+  Building,
+  AssetRoom,
+  RoomMaintenanceRequest,
+  RoomLoan,
+  AssetAssignment,
+  Item,
+  Inventory,
+  InventoryTransaction,
+  InventoryProcurement,
+  InventoryProcurementItem,
+  InventoryPurchase,
+  InventoryPurchaseItem,
+  InventoryRequest,
+  InventoryRequestDetail,
+  InventoryRequestApproval,
+  Committee,
+  CommitteeMember,
+  CommitteeExternalMember,
+  CommitteeTask,
+  CommitteeTaskProgress,
+  CommitteeBudget,
+  CommitteeBudgetItem,
+  CommitteeExpense,
+  Meeting,
+  MeetingParticipant,
+  MeetingExternalParticipant,
+  MeetingConsumptionRequest,
+  MeetingMinutes,
+  MeetingDocument,
+  SurveyQuestion,
+  SurveyQuestionOption,
+  Survey,
+  SurveyQuestionAssignment,
+  SurveyInvitation,
+  SurveyResponse,
+  SurveyAnswer,
+  SurveyAnswerOption,
+  Partner,
+  PartnerContact,
+  PartnerPotential,
+  PartnerPotentialField,
+  PartnerFollowUp,
+  Partnership,
+  PartnershipDocument,
+  PartnershipImplementation,
+  ImplementationArrangement,
+  Assignment,
+  AssignmentProgress,
+  Event,
+  EventCommitteeMember,
+  EventRegistration,
+  EventReminder,
+  EventAttendance,
+  EventDocument
+
+controllers:
+  OrganizationController:
+    resource
+  StructuralPositionController:
+    resource
+  JobResponsibilityController:
+    resource
+  StructuralPositionHistoryController:
+    resource
+  EmployeeController:
+    resource
+  EmployeeGradeController:
+    resource
+  LecturerController:
+    resource
+  StaffController:
+    resource
+  EmploymentStatusController:
+    resource
+  EducationHistoryController:
+    resource
+  FunctionalPositionController:
+    resource
+  LecturerFunctionalPositionController:
+    resource
+  ResearchController:
+    resource
+  ResearchMemberController:
+    resource
+  CommunityServiceController:
+    resource
+  CommunityServiceMemberController:
+    resource
+  PublicationController:
+    resource
+  PublicationAuthorController:
+    resource
+  JournalPublicationController:
+    resource
+  ConferenceProceedingController:
+    resource
+  AttendanceController:
+    resource
+  HolidayController:
+    resource
+  LeaveTypeController:
+    resource
+  LeaveBalanceController:
+    resource
+  LeaveRequestController:
+    resource
+  LeaveApprovalController:
+    resource
+  OvertimeRequestController:
+    resource
+  OvertimeRequestMemberController:
+    resource
+  OvertimeApprovalLogController:
+    resource
+  NomenclatureController:
+    resource
+  NomenclatureClassificationController:
+    resource
+  StaffNomenclatureHistoryController:
+    resource
+  OfficialTravelController:
+    resource
+  OfficialTravelMemberController:
+    resource
+  OfficialTravelItineraryController:
+    resource
+  OfficialTravelApprovalController:
+    resource
+  TravelCostComponentController:
+    resource
+  TravelCostStandardController:
+    resource
+  TravelExpenseController:
+    resource
+  OfficialTravelDocumentController:
+    resource
+  AssetController:
+    resource
+  AssetEquipmentController:
+    resource
+  AssetEquipmentRequestController:
+    resource
+  AssetEquipmentProcurementController:
+    resource
+  AssetEquipmentProcItemController:
+    resource
+  AssetGrantController:
+    resource
+  AssetMaintenanceRequestController:
+    resource
+  AssetLoanController:
+    resource
+  AssetTrackingController:
+    resource
+  AssetTrackingLogController:
+    resource
+  AssetAuditController:
+    resource
+  AssetAuditDetailController:
+    resource
+  AssetInsuranceController:
+    resource
+  AssetInsuranceClaimController:
+    resource
+  BuildingController:
+    resource
+  AssetRoomController:
+    resource
+  RoomMaintenanceRequestController:
+    resource
+  RoomLoanController:
+    resource
+  AssetAssignmentController:
+    resource
+  ItemController:
+    resource
+  InventoryController:
+    resource
+  InventoryTransactionController:
+    resource
+  InventoryProcurementController:
+    resource
+  InventoryProcurementItemController:
+    resource
+  InventoryPurchaseController:
+    resource
+  InventoryPurchaseItemController:
+    resource
+  InventoryRequestController:
+    resource
+  InventoryRequestDetailController:
+    resource
+  InventoryRequestApprovalController:
+    resource
+  CommitteeController:
+    resource
+  CommitteeMemberController:
+    resource
+  CommitteeExternalMemberController:
+    resource
+  CommitteeTaskController:
+    resource
+  CommitteeTaskProgressController:
+    resource
+  CommitteeBudgetController:
+    resource
+  CommitteeBudgetItemController:
+    resource
+  CommitteeExpenseController:
+    resource
+  MeetingController:
+    resource
+  MeetingParticipantController:
+    resource
+  MeetingExternalParticipantController:
+    resource
+  MeetingConsumptionRequestController:
+    resource
+  MeetingMinutesController:
+    resource
+  MeetingDocumentController:
+    resource
+  SurveyQuestionController:
+    resource
+  SurveyQuestionOptionController:
+    resource
+  SurveyController:
+    resource
+  SurveyQuestionAssignmentController:
+    resource
+  SurveyInvitationController:
+    resource
+  SurveyResponseController:
+    resource
+  SurveyAnswerController:
+    resource
+  SurveyAnswerOptionController:
+    resource
+  PartnerController:
+    resource
+  PartnerContactController:
+    resource
+  PartnerPotentialController:
+    resource
+  PartnerPotentialFieldController:
+    resource
+  PartnerFollowUpController:
+    resource
+  PartnershipController:
+    resource
+  PartnershipDocumentController:
+    resource
+  PartnershipImplementationController:
+    resource
+  ImplementationArrangementController:
+    resource
+  AssignmentController:
+    resource
+  AssignmentProgressController:
+    resource
+  EventController:
+    resource
+  EventCommitteeMemberController:
+    resource
+  EventRegistrationController:
+    resource
+  EventReminderController:
+    resource
+  EventAttendanceController:
+    resource
+  EventDocumentController:
+    resource

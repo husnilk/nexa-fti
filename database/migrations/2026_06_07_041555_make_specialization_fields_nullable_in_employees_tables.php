@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('lecturers', function (Blueprint $table) {
+            $table->string('academic_rank')->nullable()->change();
+            $table->uuid('functional_position_id')->nullable()->change();
+        });
+
+        Schema::table('staff', function (Blueprint $table) {
+            $table->uuid('position_id')->nullable()->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('staff', function (Blueprint $table) {
+            $table->uuid('position_id')->nullable(false)->change();
+        });
+
+        Schema::table('lecturers', function (Blueprint $table) {
+            $table->uuid('functional_position_id')->nullable(false)->change();
+            $table->string('academic_rank')->nullable(false)->change();
+        });
+    }
+};

@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class EquipmentAuditStoreRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function rules(): array
+    {
+        return [
+            'audit_number' => ['required', 'string', 'unique:equipment_audits,audit_number'],
+            'audit_date' => ['required', 'date'],
+            'conducted_by' => ['required'],
+            'notes' => ['nullable', 'string'],
+            'conducted_by_id' => ['required', 'integer', 'exists:Employees,id'],
+        ];
+    }
+}
