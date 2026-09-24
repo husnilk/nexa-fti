@@ -38,7 +38,15 @@ beforeEach(function () {
 test('authorized user can view employee list', function () {
     actingAs($this->admin)
         ->get(route('employees.index'))
-        ->assertOk();
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('employees/index')
+            ->has('employees')
+            ->has('employmentTypes')
+            ->has('functionalPositions')
+            ->has('positions')
+            ->has('supervisors')
+        );
 });
 
 test('authorized user can create lecturer', function () {
@@ -131,6 +139,116 @@ test('authorized user can update employee', function () {
 
     $this->assertDatabaseHas('employees', ['id' => $user->id, 'name' => 'Updated Name']);
     $this->assertDatabaseHas('users', ['id' => $user->id, 'email' => 'updated@example.com']);
+});
+
+test('authorized user can update employee with lecturer specialization', function () {
+    $user = User::factory()->create();
+    $emp = Employee::create([
+        'id' => $user->id,
+        'name' => 'Dr. Initial',
+        'email' => $user->email,
+        'emp_number' => 'LEC-1',
+        'id_card_number' => 'KTP-LEC',
+        'birth_place' => 'City',
+        'birth_date' => '1980-01-01',
+        'gender' => 'male',
+        'religion' => 'Islam',
+        'marital_status' => 'Single',
+        'join_date' => '2020-01-01',
+        'employment_type_id' => $this->empType->id,
+        'status' => 1,
+    ]);
+
+    actingAs($this->admin)
+        ->patchJson(route('employees.update', $emp), [
+            'name' => 'Dr. Updated Lecturer',
+            'email' => 'updated.lec@example.com',
+            'emp_number' => 'LEC-1',
+            'id_card_number' => 'KTP-LEC',
+            'tax_id_number' => 'NPWP-1234',
+            'birth_place' => 'New City',
+            'birth_date' => '1985-05-05',
+            'gender' => 'female',
+            'religion' => 'Islam',
+            'marital_status' => 'Married',
+            'address' => 'Lecturer Street 45',
+            'phone' => '08123456789',
+            'join_date' => '2020-01-01',
+            'employment_type_id' => $this->empType->id,
+            'status' => 1,
+            'specialization' => 'lecturer',
+            'academic_rank' => 'Associate Professor',
+            'functional_position_id' => $this->funcPos->id,
+            'nuptk' => 'NUP-UPDATED',
+            'expertise' => 'Cybersecurity',
+        ])
+        ->assertRedirect(route('employees.index'));
+
+    $this->assertDatabaseHas('employees', [
+        'id' => $user->id,
+        'name' => 'Dr. Updated Lecturer',
+        'tax_id_number' => 'NPWP-1234',
+        'address' => 'Lecturer Street 45',
+        'phone' => '08123456789',
+    ]);
+    $this->assertDatabaseHas('lecturers', [
+        'id' => $user->id,
+        'academic_rank' => 'Associate Professor',
+        'expertise' => 'Cybersecurity',
+    ]);
+});
+
+test('authorized user can switch employee specialization from staff to lecturer', function () {
+    $user = User::factory()->create();
+    $emp = Employee::create([
+        'id' => $user->id,
+        'name' => 'Staff Switching',
+        'email' => $user->email,
+        'emp_number' => 'SW-1',
+        'id_card_number' => 'KTP-SW',
+        'birth_place' => 'City',
+        'birth_date' => '1980-01-01',
+        'gender' => 'male',
+        'religion' => 'Islam',
+        'marital_status' => 'Single',
+        'join_date' => '2020-01-01',
+        'employment_type_id' => $this->empType->id,
+        'status' => 1,
+    ]);
+
+    Staff::create([
+        'id' => $emp->id,
+        'position_id' => $this->pos->id,
+        'skills' => 'IT Support',
+    ]);
+
+    actingAs($this->admin)
+        ->patchJson(route('employees.update', $emp), [
+            'name' => 'Staff Now Lecturer',
+            'email' => 'switching@example.com',
+            'emp_number' => 'SW-1',
+            'id_card_number' => 'KTP-SW',
+            'birth_place' => 'City',
+            'birth_date' => '1980-01-01',
+            'gender' => 'male',
+            'religion' => 'Islam',
+            'marital_status' => 'Single',
+            'join_date' => '2020-01-01',
+            'employment_type_id' => $this->empType->id,
+            'status' => 1,
+            'specialization' => 'lecturer',
+            'academic_rank' => 'Lektor',
+            'functional_position_id' => $this->funcPos->id,
+            'expertise' => 'Software Engineering',
+        ])
+        ->assertRedirect(route('employees.index'));
+
+    $this->assertDatabaseMissing('staff', ['id' => $emp->id]);
+    $this->assertDatabaseHas('lecturers', [
+        'id' => $emp->id,
+        'academic_rank' => 'Lektor',
+        'expertise' => 'Software Engineering',
+    ]);
 });
 
 test('authorized user can delete employee', function () {

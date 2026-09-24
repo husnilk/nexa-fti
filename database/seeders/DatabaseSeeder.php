@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             PublicationSeeder::class,
             LeaveTypeSeeder::class,
             InventorySeeder::class,
+            InventoryItemSeeder::class,
             EquipmentCategorySeeder::class,
             BookSeeder::class,
             RoomSeeder::class,

@@ -73,7 +73,7 @@ test('store saves and redirects', function () {
                 ],
             ],
         ]);
-        
+
     $response->dump();
 
     $response->assertRedirect(route('equipment-disposals.index'));

@@ -19,6 +19,7 @@ class ItemFactory extends Factory
             'unit' => $this->faker->randomElement(['pcs', 'box', 'set', 'unit', 'pack']),
             'minimal_quantity' => $this->faker->numberBetween(5, 50),
             'description' => $this->faker->paragraph(),
+            'picture' => null,
         ];
     }
 }

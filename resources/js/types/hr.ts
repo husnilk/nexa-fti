@@ -1,7 +1,11 @@
 export interface Employee {
     id: string;
     emp_number: string;
+    id_card_number?: string;
+    tax_id_number?: string;
     name: string;
+    birth_place?: string;
+    birth_date?: string;
     email: string;
     gender: string;
     religion?: string;
@@ -11,7 +15,7 @@ export interface Employee {
     join_date: string;
     status: number;
     employment_type_id?: string;
-    supervisor_id?: string;
+    supervisor_id?: string | null;
     employment_type?: {
         employee_type: { name: string };
         employment_contract: { name: string };

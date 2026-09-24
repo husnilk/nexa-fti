@@ -15,7 +15,7 @@ class Item extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'item_category_id',
@@ -24,6 +24,16 @@ class Item extends Model
         'unit',
         'minimal_quantity',
         'description',
+        'picture',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'picture_url',
     ];
 
     /**
@@ -36,6 +46,22 @@ class Item extends Model
         return [
             'item_category_id' => 'integer',
         ];
+    }
+
+    /**
+     * Get the public URL for the item picture.
+     */
+    public function getPictureUrlAttribute(): ?string
+    {
+        return $this->picture ? asset('storage/'.$this->picture) : null;
+    }
+
+    /**
+     * Get the variants for the item.
+     */
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ItemVariant::class);
     }
 
     public function inventories(): HasMany

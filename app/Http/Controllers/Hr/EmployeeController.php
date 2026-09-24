@@ -47,6 +47,10 @@ class EmployeeController extends Controller
                 ->latest()
                 ->get(),
             'filters' => ['search' => $search],
+            'employmentTypes' => EmploymentType::with(['employeeType', 'employmentContract'])->get(),
+            'functionalPositions' => FunctionalPosition::all(),
+            'positions' => Position::all(),
+            'supervisors' => Employee::select('id', 'name', 'emp_number')->orderBy('name')->get(),
         ]);
     }
 
@@ -160,17 +164,58 @@ class EmployeeController extends Controller
     public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
     {
         DB::transaction(function () use ($request, $employee) {
-            $employee->update($request->validated());
-            $employee->user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'is_active' => $request->status == 1,
-            ]);
+            $employeeData = $request->validated();
+            if (array_key_exists('supervisor_id', $employeeData) && empty($employeeData['supervisor_id'])) {
+                $employeeData['supervisor_id'] = null;
+            }
 
-            if ($employee->lecturer) {
-                $employee->lecturer->update($request->only(['academic_rank', 'functional_position_id', 'nuptk', 'expertise']));
-            } elseif ($employee->staff) {
-                $employee->staff->update($request->only(['position_id', 'skills']));
+            $employee->update($employeeData);
+
+            if ($employee->user) {
+                $employee->user->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'is_active' => $request->status == 1,
+                ]);
+            }
+
+            $specialization = $request->input(
+                'specialization',
+                $employee->lecturer ? 'lecturer' : ($employee->staff ? 'staff' : null)
+            );
+
+            if ($specialization === 'lecturer') {
+                $lecturerData = [
+                    'academic_rank' => $request->academic_rank,
+                    'functional_position_id' => $request->functional_position_id ?: null,
+                    'nuptk' => $request->nuptk,
+                    'expertise' => $request->expertise,
+                ];
+
+                if ($employee->lecturer) {
+                    $employee->lecturer->update($lecturerData);
+                } else {
+                    Lecturer::create(array_merge(['id' => $employee->id], $lecturerData));
+                }
+
+                if ($employee->staff) {
+                    $employee->staff->delete();
+                }
+            } elseif ($specialization === 'staff') {
+                $staffData = [
+                    'position_id' => $request->position_id ?: null,
+                    'skills' => $request->skills,
+                ];
+
+                if ($employee->staff) {
+                    $employee->staff->update($staffData);
+                } else {
+                    Staff::create(array_merge(['id' => $employee->id], $staffData));
+                }
+
+                if ($employee->lecturer) {
+                    $employee->lecturer->delete();
+                }
             }
         });
 

@@ -44,6 +44,7 @@ class UpdateEmployeeRequest extends FormRequest
             'status' => ['required', 'integer'],
 
             // Specialized fields (Optional)
+            'specialization' => ['nullable', 'string', 'in:lecturer,staff'],
             'academic_rank' => ['nullable', 'string', 'max:255'],
             'functional_position_id' => ['nullable', 'uuid', 'exists:functional_positions,id'],
             'nuptk' => ['nullable', 'string', 'max:255'],
@@ -52,5 +53,17 @@ class UpdateEmployeeRequest extends FormRequest
             'position_id' => ['nullable', 'uuid', 'exists:positions,id'],
             'skills' => ['nullable', 'string'],
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'supervisor_id' => ($this->supervisor_id === '' || $this->supervisor_id === 'none') ? null : $this->supervisor_id,
+            'functional_position_id' => ($this->functional_position_id === '' || $this->functional_position_id === 'none') ? null : $this->functional_position_id,
+            'position_id' => ($this->position_id === '' || $this->position_id === 'none') ? null : $this->position_id,
+        ]);
     }
 }

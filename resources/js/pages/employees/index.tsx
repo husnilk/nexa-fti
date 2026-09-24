@@ -26,34 +26,17 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { EmployeeFormModal } from '@/pages/employees/components/employee-form-modal';
 import { index as employeeRanksIndex } from '@/routes/employee-ranks';
 import { index as employeeTypesIndex } from '@/routes/employee-types';
 import {
     index as employeesIndex,
     show as employeeShow,
-    create as employeeCreate,
-    edit as employeeEdit,
 } from '@/routes/employees';
 import { index as employmentContractsIndex } from '@/routes/employment-contracts';
 import { index as employmentTypesIndex } from '@/routes/employment-types';
 import type { Auth } from '@/types';
-
-type Employee = {
-    id: string;
-    emp_number: string;
-    name: string;
-    email: string;
-    gender: string;
-    join_date: string;
-    status: number;
-    employment_type?: {
-        employee_type: { name: string };
-        employment_contract: { name: string };
-    };
-    lecturer?: any;
-    staff?: any;
-    created_at: string;
-};
+import type { Employee } from '@/types/hr';
 
 type PageProps = {
     auth: Auth;
@@ -61,6 +44,10 @@ type PageProps = {
     filters: {
         search?: string;
     };
+    employmentTypes?: any[];
+    functionalPositions?: any[];
+    positions?: any[];
+    supervisors?: any[];
 };
 
 function can(auth: Auth, ability: string): boolean {
@@ -73,11 +60,21 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
 });
 
-export default function EmployeesIndex({ employees, filters }: PageProps) {
+export default function EmployeesIndex({
+    employees,
+    filters,
+    employmentTypes = [],
+    functionalPositions = [],
+    positions = [],
+    supervisors = [],
+}: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters.search || '');
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
+
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
     const filteredEmployees = employees.filter((emp) => {
         const matchesSearch =
@@ -161,12 +158,14 @@ export default function EmployeesIndex({ employees, filters }: PageProps) {
                         </DropdownMenu>
 
                         {mayCreate && (
-                            <Link href={employeeCreate()}>
-                                <Button className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-md">
-                                    <Plus className="h-4 w-4" />
-                                    Add Employee
-                                </Button>
-                            </Link>
+                            <Button
+                                type="button"
+                                onClick={() => setIsCreateOpen(true)}
+                                className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-md"
+                            >
+                                <Plus className="h-4 w-4" />
+                                Add Employee
+                            </Button>
                         )}
                     </div>
                 </div>
@@ -383,16 +382,16 @@ export default function EmployeesIndex({ employees, filters }: PageProps) {
                                                         </Button>
                                                     </Link>
                                                     {mayUpdate && (
-                                                        <Link href={employeeEdit.url(emp.id)}>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                                                title="Edit"
-                                                            >
-                                                                <Pencil className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                            title="Edit"
+                                                            onClick={() => setEditingEmployee(emp)}
+                                                        >
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
                                                     )}
                                                     {mayDelete && (
                                                         <Button
@@ -416,6 +415,38 @@ export default function EmployeesIndex({ employees, filters }: PageProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Add Employee Modal */}
+            <EmployeeFormModal
+                open={isCreateOpen}
+                onOpenChange={setIsCreateOpen}
+                employee={null}
+                employmentTypes={employmentTypes}
+                functionalPositions={functionalPositions}
+                positions={positions}
+                supervisors={supervisors}
+                onSuccess={() => {
+                    setSearch('');
+                    setTypeFilter('all');
+                    setStatusFilter('all');
+                }}
+            />
+
+            {/* Edit Employee Modal */}
+            <EmployeeFormModal
+                open={!!editingEmployee}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setEditingEmployee(null);
+                    }
+                }}
+                employee={editingEmployee}
+                employmentTypes={employmentTypes}
+                functionalPositions={functionalPositions}
+                positions={positions}
+                supervisors={supervisors}
+                onSuccess={() => setEditingEmployee(null)}
+            />
         </>
     );
 }

@@ -57,4 +57,16 @@ class StoreEmployeeRequest extends FormRequest
             'skills' => ['nullable', 'string'],
         ];
     }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'supervisor_id' => ($this->supervisor_id === '' || $this->supervisor_id === 'none') ? null : $this->supervisor_id,
+            'functional_position_id' => ($this->functional_position_id === '' || $this->functional_position_id === 'none') ? null : $this->functional_position_id,
+            'position_id' => ($this->position_id === '' || $this->position_id === 'none') ? null : $this->position_id,
+        ]);
+    }
 }

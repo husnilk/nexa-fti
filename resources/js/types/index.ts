@@ -6,3 +6,4 @@ export type * from './community-service';
 export type * from './publication';
 export type * from './hr';
 export type * from './equipment';
+export type * from './inventory';

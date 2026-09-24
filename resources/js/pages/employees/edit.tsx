@@ -14,6 +14,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { toEmployeeFormData, type EmployeeFormData } from '@/pages/employees/components/employee-form-modal';
 import { index as employeesIndex } from '@/routes/employees';
 
 type PageProps = {
@@ -31,38 +34,16 @@ export default function EmployeeEdit({
     positions,
     supervisors,
 }: PageProps) {
-    const { data, setData, patch, processing, errors } = useForm({
-        name: employee.name,
-        email: employee.email,
-        emp_number: employee.emp_number,
-        id_card_number: employee.id_card_number,
-        tax_id_number: employee.tax_id_number || '',
-        birth_place: employee.birth_place,
-        birth_date: employee.birth_date,
-        gender: employee.gender,
-        religion: employee.religion,
-        marital_status: employee.marital_status,
-        address: employee.address || '',
-        phone: employee.phone || '',
-        join_date: employee.join_date,
-        employment_type_id: employee.employment_type_id,
-        supervisor_id: employee.supervisor_id as string | null,
-        status: employee.status,
-
-        // Specialization data (passed from controller load)
-        academic_rank: employee.lecturer?.academic_rank || '',
-        functional_position_id: employee.lecturer?.functional_position_id || '',
-        nuptk: employee.lecturer?.nuptk || '',
-        expertise: employee.lecturer?.expertise || '',
-
-        position_id: employee.staff?.position_id || '',
-        skills: employee.staff?.skills || '',
-    });
+    const { data, setData, patch, processing, errors } = useForm<EmployeeFormData>(
+        toEmployeeFormData(employee),
+    );
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
         patch(EmployeeController.update.url(employee.id));
     }
+
+    const availableSupervisors = supervisors.filter((s) => s.id !== employee.id);
 
     return (
         <>
@@ -82,264 +63,369 @@ export default function EmployeeEdit({
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
-                    <div className="space-y-6 rounded-lg border bg-card p-6">
+                    {/* 1. Personal Information */}
+                    <div className="space-y-6 rounded-lg border bg-card p-6 shadow-xs">
+                        <h3 className="border-b pb-2 text-lg font-semibold">
+                            Personal Information
+                        </h3>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Full Name</Label>
+                                <Label htmlFor="name">Full Name <span className="text-destructive">*</span></Label>
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(e) =>
-                                        setData('name', e.target.value)
-                                    }
+                                    onChange={(e) => setData('name', e.target.value)}
                                 />
                                 <InputError message={errors.name} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Work Email</Label>
+                                <Label htmlFor="email">Work Email <span className="text-destructive">*</span></Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(e) =>
-                                        setData('email', e.target.value)
-                                    }
+                                    onChange={(e) => setData('email', e.target.value)}
                                 />
                                 <InputError message={errors.email} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="emp_number">
-                                    Employee Number
+                                    Employee Number (NIP/NIDN) <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="emp_number"
                                     value={data.emp_number}
-                                    onChange={(e) =>
-                                        setData('emp_number', e.target.value)
-                                    }
+                                    onChange={(e) => setData('emp_number', e.target.value)}
                                 />
                                 <InputError message={errors.emp_number} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="id_card_number">
-                                    ID Card (KTP)
+                                    ID Card (KTP) <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="id_card_number"
                                     value={data.id_card_number}
-                                    onChange={(e) =>
-                                        setData(
-                                            'id_card_number',
-                                            e.target.value,
-                                        )
-                                    }
+                                    onChange={(e) => setData('id_card_number', e.target.value)}
                                 />
                                 <InputError message={errors.id_card_number} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="tax_id">Tax ID (NPWP)</Label>
+                                <Input
+                                    id="tax_id"
+                                    value={data.tax_id_number}
+                                    onChange={(e) => setData('tax_id_number', e.target.value)}
+                                />
+                                <InputError message={errors.tax_id_number} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="phone">Phone Number</Label>
+                                <Input
+                                    id="phone"
+                                    value={data.phone}
+                                    onChange={(e) => setData('phone', e.target.value)}
+                                />
+                                <InputError message={errors.phone} />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <div className="space-y-2">
-                                <Label htmlFor="gender">Gender</Label>
+                                <Label htmlFor="birth_place">Birth Place <span className="text-destructive">*</span></Label>
+                                <Input
+                                    id="birth_place"
+                                    value={data.birth_place}
+                                    onChange={(e) => setData('birth_place', e.target.value)}
+                                />
+                                <InputError message={errors.birth_place} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="birth_date">Birth Date <span className="text-destructive">*</span></Label>
+                                <Input
+                                    id="birth_date"
+                                    type="date"
+                                    value={data.birth_date}
+                                    onChange={(e) => setData('birth_date', e.target.value)}
+                                />
+                                <InputError message={errors.birth_date} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="gender">Gender <span className="text-destructive">*</span></Label>
                                 <Select
                                     value={data.gender}
-                                    onValueChange={(v) => setData('gender', v)}
+                                    onValueChange={(v: 'male' | 'female') => setData('gender', v)}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger id="gender">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="male">
-                                            Male
-                                        </SelectItem>
-                                        <SelectItem value="female">
-                                            Female
-                                        </SelectItem>
+                                        <SelectItem value="male">Male</SelectItem>
+                                        <SelectItem value="female">Female</SelectItem>
                                     </SelectContent>
                                 </Select>
+                                <InputError message={errors.gender} />
                             </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="status">Status</Label>
+                                <Label htmlFor="religion">Religion <span className="text-destructive">*</span></Label>
                                 <Select
-                                    value={data.status.toString()}
-                                    onValueChange={(v) =>
-                                        setData('status', parseInt(v))
-                                    }
+                                    value={data.religion}
+                                    onValueChange={(v) => setData('religion', v)}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger id="religion">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="1">
-                                            Active
-                                        </SelectItem>
-                                        <SelectItem value="0">
-                                            Inactive
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="emp_type">
-                                    Employment Type
-                                </Label>
-                                <Select
-                                    value={data.employment_type_id}
-                                    onValueChange={(v) =>
-                                        setData('employment_type_id', v)
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {employmentTypes.map((t) => (
-                                            <SelectItem key={t.id} value={t.id}>
-                                                {t.employee_type.name} /{' '}
-                                                {t.employment_contract.name}
+                                        {[
+                                            'Islam',
+                                            'Kristen',
+                                            'Katolik',
+                                            'Hindu',
+                                            'Budha',
+                                            'Konghucu',
+                                            'Lainnya',
+                                        ].map((r) => (
+                                            <SelectItem key={r} value={r}>
+                                                {r}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                <InputError message={errors.religion} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="marital">Marital Status <span className="text-destructive">*</span></Label>
+                                <Input
+                                    id="marital"
+                                    value={data.marital_status}
+                                    onChange={(e) => setData('marital_status', e.target.value)}
+                                />
+                                <InputError message={errors.marital_status} />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="supervisor">
-                                Direct Supervisor
-                            </Label>
-                            <Select
-                                value={data.supervisor_id || 'none'}
-                                onValueChange={(v) =>
-                                    setData(
-                                        'supervisor_id',
-                                        v === 'none' ? null : v,
-                                    )
-                                }
-                            >
-                                <SelectTrigger id="supervisor">
-                                    <SelectValue placeholder="Select supervisor" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="none">None</SelectItem>
-                                    {supervisors.map((s) => (
-                                        <SelectItem key={s.id} value={s.id}>
-                                            {s.name} ({s.emp_number})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <InputError message={errors.supervisor_id} />
+                            <Label htmlFor="address">Address</Label>
+                            <Textarea
+                                id="address"
+                                rows={3}
+                                value={data.address}
+                                onChange={(e) => setData('address', e.target.value)}
+                            />
+                            <InputError message={errors.address} />
                         </div>
                     </div>
 
-                    {employee.lecturer && (
-                        <div className="space-y-6 rounded-lg border bg-card p-6">
-                            <h3 className="border-b pb-2 text-lg font-semibold text-primary">
-                                Lecturer Specification
-                            </h3>
-                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="rank">Academic Rank</Label>
-                                    <Input
-                                        id="rank"
-                                        value={data.academic_rank}
-                                        onChange={(e) =>
-                                            setData(
-                                                'academic_rank',
-                                                e.target.value,
-                                            )
-                                        }
-                                    />
-                                    <InputError
-                                        message={errors.academic_rank}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="func">
-                                        Functional Position
-                                    </Label>
-                                    <Select
-                                        value={data.functional_position_id}
-                                        onValueChange={(v) =>
-                                            setData('functional_position_id', v)
-                                        }
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {functionalPositions.map((f) => (
-                                                <SelectItem
-                                                    key={f.id}
-                                                    value={f.id}
-                                                >
-                                                    {f.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
+                    {/* 2. Employment Information */}
+                    <div className="space-y-6 rounded-lg border bg-card p-6 shadow-xs">
+                        <h3 className="border-b pb-2 text-lg font-semibold">
+                            Employment Information
+                        </h3>
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="expertise">Expertise</Label>
-                                <textarea
-                                    id="expertise"
-                                    className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                    value={data.expertise}
-                                    onChange={(e) =>
-                                        setData('expertise', e.target.value)
-                                    }
+                                <Label htmlFor="join_date">Join Date <span className="text-destructive">*</span></Label>
+                                <Input
+                                    id="join_date"
+                                    type="date"
+                                    value={data.join_date}
+                                    onChange={(e) => setData('join_date', e.target.value)}
                                 />
+                                <InputError message={errors.join_date} />
                             </div>
-                        </div>
-                    )}
-
-                    {employee.staff && (
-                        <div className="space-y-6 rounded-lg border bg-card p-6">
-                            <h3 className="border-b pb-2 text-lg font-semibold text-primary">
-                                Staff Specification
-                            </h3>
                             <div className="space-y-2">
-                                <Label htmlFor="pos">Structural Position</Label>
+                                <Label htmlFor="emp_type">Employment Type <span className="text-destructive">*</span></Label>
                                 <Select
-                                    value={data.position_id}
-                                    onValueChange={(v) =>
-                                        setData('position_id', v)
-                                    }
+                                    value={data.employment_type_id}
+                                    onValueChange={(v) => setData('employment_type_id', v)}
                                 >
-                                    <SelectTrigger>
-                                        <SelectValue />
+                                    <SelectTrigger id="emp_type">
+                                        <SelectValue placeholder="Select type" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {positions.map((p) => (
-                                            <SelectItem key={p.id} value={p.id}>
-                                                {p.name}
+                                        {employmentTypes.map((t) => (
+                                            <SelectItem key={t.id} value={t.id}>
+                                                {t.employee_type?.name} / {t.employment_contract?.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                <InputError message={errors.employment_type_id} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="skills">Skills</Label>
-                                <textarea
-                                    id="skills"
-                                    className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                    value={data.skills}
-                                    onChange={(e) =>
-                                        setData('skills', e.target.value)
-                                    }
-                                />
+                                <Label htmlFor="supervisor">Direct Supervisor</Label>
+                                <Select
+                                    value={data.supervisor_id || 'none'}
+                                    onValueChange={(v) => setData('supervisor_id', v === 'none' ? null : v)}
+                                >
+                                    <SelectTrigger id="supervisor">
+                                        <SelectValue placeholder="Select supervisor" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">None</SelectItem>
+                                        {availableSupervisors.map((s) => (
+                                            <SelectItem key={s.id} value={s.id}>
+                                                {s.name} ({s.emp_number})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.supervisor_id} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="status">Status <span className="text-destructive">*</span></Label>
+                                <Select
+                                    value={data.status.toString()}
+                                    onValueChange={(v) => setData('status', parseInt(v))}
+                                >
+                                    <SelectTrigger id="status">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1">Active</SelectItem>
+                                        <SelectItem value="0">Inactive</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.status} />
                             </div>
                         </div>
-                    )}
+                    </div>
+
+                    {/* 3. Professional Specification */}
+                    <div className="space-y-6 rounded-lg border bg-card p-6 shadow-xs">
+                        <div className="flex items-center justify-between border-b pb-2">
+                            <h3 className="text-lg font-semibold">
+                                Professional Specification
+                            </h3>
+                            <div className="flex rounded-md bg-muted p-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setData('specialization', 'lecturer')}
+                                    className={cn(
+                                        'cursor-pointer rounded-sm px-4 py-1.5 text-sm font-medium transition-all',
+                                        data.specialization === 'lecturer'
+                                            ? 'bg-background shadow-xs text-foreground font-semibold'
+                                            : 'text-muted-foreground hover:text-foreground',
+                                    )}
+                                >
+                                    Lecturer
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setData('specialization', 'staff')}
+                                    className={cn(
+                                        'cursor-pointer rounded-sm px-4 py-1.5 text-sm font-medium transition-all',
+                                        data.specialization === 'staff'
+                                            ? 'bg-background shadow-xs text-foreground font-semibold'
+                                            : 'text-muted-foreground hover:text-foreground',
+                                    )}
+                                >
+                                    Staff
+                                </button>
+                            </div>
+                        </div>
+
+                        {data.specialization === 'lecturer' ? (
+                            <div className="space-y-6 pt-2">
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="rank">Academic Rank</Label>
+                                        <Input
+                                            id="rank"
+                                            value={data.academic_rank}
+                                            onChange={(e) => setData('academic_rank', e.target.value)}
+                                        />
+                                        <InputError message={errors.academic_rank} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="func">Functional Position</Label>
+                                        <Select
+                                            value={data.functional_position_id || 'none'}
+                                            onValueChange={(v) => setData('functional_position_id', v === 'none' ? '' : v)}
+                                        >
+                                            <SelectTrigger id="func">
+                                                <SelectValue placeholder="Select level" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="none">None</SelectItem>
+                                                {functionalPositions.map((f) => (
+                                                    <SelectItem key={f.id} value={f.id}>
+                                                        {f.name} (Lvl {f.level})
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError message={errors.functional_position_id} />
+                                    </div>
+                                    <div className="space-y-2 md:col-span-2">
+                                        <Label htmlFor="nuptk">NUPTK</Label>
+                                        <Input
+                                            id="nuptk"
+                                            value={data.nuptk}
+                                            onChange={(e) => setData('nuptk', e.target.value)}
+                                        />
+                                        <InputError message={errors.nuptk} />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="expertise">Area of Expertise</Label>
+                                    <Textarea
+                                        id="expertise"
+                                        rows={3}
+                                        value={data.expertise}
+                                        onChange={(e) => setData('expertise', e.target.value)}
+                                    />
+                                    <InputError message={errors.expertise} />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-6 pt-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="pos">Structural Position</Label>
+                                    <Select
+                                        value={data.position_id || 'none'}
+                                        onValueChange={(v) => setData('position_id', v === 'none' ? '' : v)}
+                                    >
+                                        <SelectTrigger id="pos">
+                                            <SelectValue placeholder="Select position" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">None</SelectItem>
+                                            {positions.map((p) => (
+                                                <SelectItem key={p.id} value={p.id}>
+                                                    {p.name} {p.grade ? `(Grade ${p.grade})` : ''}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={errors.position_id} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="skills">Key Skills</Label>
+                                    <Textarea
+                                        id="skills"
+                                        rows={3}
+                                        value={data.skills}
+                                        onChange={(e) => setData('skills', e.target.value)}
+                                    />
+                                    <InputError message={errors.skills} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="flex justify-end gap-4">
                         <Button type="button" variant="outline" asChild>
                             <Link href={employeesIndex()}>Cancel</Link>
                         </Button>
-                        <Button type="submit" disabled={processing}>
-                            Update Employee
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-xs"
+                        >
+                            {processing ? 'Updating...' : 'Update Employee'}
                         </Button>
                     </div>
                 </form>

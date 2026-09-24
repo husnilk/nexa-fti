@@ -19,6 +19,7 @@ class ItemCategory extends Model
     protected $fillable = [
         'code',
         'name',
+        'description',
     ];
 
     public function items(): HasMany
