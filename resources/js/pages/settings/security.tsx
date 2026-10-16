@@ -6,6 +6,7 @@ import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { __ } from '@/lib/i18n';
 import { edit } from '@/routes/security';
 
 type Props = {
@@ -18,15 +19,17 @@ export default function Security(props: Props) {
 
     return (
         <>
-            <Head title="Security settings" />
+            <Head title={__('Security settings')} />
 
-            <h1 className="sr-only">Security settings</h1>
+            <h1 className="sr-only">{__('Security settings')}</h1>
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
+                    title={__('Update password')}
+                    description={__(
+                        'Ensure your account is using a long, random password to stay secure',
+                    )}
                 />
 
                 <Form
@@ -56,7 +59,7 @@ export default function Security(props: Props) {
                         <>
                             <div className="grid gap-2">
                                 <Label htmlFor="current_password">
-                                    Current password
+                                    {__('Current password')}
                                 </Label>
 
                                 <PasswordInput
@@ -65,14 +68,16 @@ export default function Security(props: Props) {
                                     name="current_password"
                                     className="mt-1 block w-full"
                                     autoComplete="current-password"
-                                    placeholder="Current password"
+                                    placeholder={__('Current password')}
                                 />
 
                                 <InputError message={errors.current_password} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">New password</Label>
+                                <Label htmlFor="password">
+                                    {__('New password')}
+                                </Label>
 
                                 <PasswordInput
                                     id="password"
@@ -80,7 +85,7 @@ export default function Security(props: Props) {
                                     name="password"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="New password"
+                                    placeholder={__('New password')}
                                     passwordrules={props.passwordRules}
                                 />
 
@@ -89,7 +94,7 @@ export default function Security(props: Props) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirm password
+                                    {__('Confirm password')}
                                 </Label>
 
                                 <PasswordInput
@@ -97,7 +102,7 @@ export default function Security(props: Props) {
                                     name="password_confirmation"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="Confirm password"
+                                    placeholder={__('Confirm password')}
                                     passwordrules={props.passwordRules}
                                 />
 
@@ -111,7 +116,7 @@ export default function Security(props: Props) {
                                     disabled={processing}
                                     data-test="update-password-button"
                                 >
-                                    Save
+                                    {__('Save')}
                                 </Button>
                             </div>
                         </>
@@ -125,7 +130,7 @@ export default function Security(props: Props) {
 Security.layout = {
     breadcrumbs: [
         {
-            title: 'Security settings',
+            title: __('Security settings'),
             href: edit(),
         },
     ],

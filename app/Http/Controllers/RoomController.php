@@ -63,7 +63,7 @@ class RoomController extends Controller
             ]);
         });
 
-        return redirect()->route('rooms.index')->with('success', 'Room created successfully.');
+        return redirect()->route('rooms.index')->with('success', __('Room created successfully.'));
     }
 
     public function show(Room $room): Response
@@ -110,7 +110,7 @@ class RoomController extends Controller
             ]);
         });
 
-        return redirect()->route('rooms.index')->with('success', 'Room updated successfully.');
+        return redirect()->route('rooms.index')->with('success', __('Room updated successfully.'));
     }
 
     public function destroy(Room $room): RedirectResponse
@@ -123,6 +123,6 @@ class RoomController extends Controller
             $asset->delete();
         });
 
-        return redirect()->route('rooms.index')->with('success', 'Room deleted successfully.');
+        return redirect()->route('rooms.index')->with('success', __('Room deleted successfully.'));
     }
 }

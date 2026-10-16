@@ -37,7 +37,7 @@ class WarehouseController extends Controller
 
         Warehouse::create($validated);
 
-        return back()->with('success', 'Warehouse created successfully.');
+        return back()->with('success', __('Warehouse created successfully.'));
     }
 
     public function update(Request $request, Warehouse $warehouse): RedirectResponse
@@ -52,13 +52,13 @@ class WarehouseController extends Controller
 
         $warehouse->update($validated);
 
-        return back()->with('success', 'Warehouse updated successfully.');
+        return back()->with('success', __('Warehouse updated successfully.'));
     }
 
     public function destroy(Warehouse $warehouse): RedirectResponse
     {
         $warehouse->delete();
 
-        return back()->with('success', 'Warehouse deleted successfully.');
+        return back()->with('success', __('Warehouse deleted successfully.'));
     }
 }

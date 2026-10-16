@@ -1,19 +1,11 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import {
-    ArrowLeft,
-    BookOpen,
-    ChevronRight,
-    Pencil,
-    Plus,
-    Trash2,
-} from 'lucide-react';
+import { ArrowLeft, BookOpen, Pencil, Plus, Trash2 } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import PositionNomenclatureClassificationController from '@/actions/App/Http/Controllers/Acl/PositionNomenclatureClassificationController';
 import PositionNomenclatureResponsibilityController from '@/actions/App/Http/Controllers/Acl/PositionNomenclatureResponsibilityController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -25,10 +17,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    index as nomenclaturesIndex,
-    show as nomenclatureShow,
-} from '@/routes/position-nomenclatures';
+import { __, intlLocale } from '@/lib/i18n';
+import { index as nomenclaturesIndex } from '@/routes/position-nomenclatures';
 import type { Auth } from '@/types';
 
 type Responsibility = {
@@ -72,7 +62,7 @@ type PageProps = {
     nomenclature: PositionNomenclature;
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'long',
     timeStyle: 'short',
 });
@@ -142,8 +132,8 @@ export default function PositionNomenclatureShow({ nomenclature }: PageProps) {
         e.preventDefault();
 
         if (!editingResponsibility) {
-return;
-}
+            return;
+        }
 
         respEditForm.patch(
             PositionNomenclatureResponsibilityController.update.url(
@@ -158,8 +148,8 @@ return;
 
     function destroyResponsibility() {
         if (!deletingResponsibility) {
-return;
-}
+            return;
+        }
 
         router.delete(
             PositionNomenclatureResponsibilityController.destroy.url(
@@ -201,8 +191,8 @@ return;
         e.preventDefault();
 
         if (!editingClassification) {
-return;
-}
+            return;
+        }
 
         classEditForm.patch(
             PositionNomenclatureClassificationController.update.url(
@@ -217,8 +207,8 @@ return;
 
     function destroyClassification() {
         if (!deletingClassification) {
-return;
-}
+            return;
+        }
 
         router.delete(
             PositionNomenclatureClassificationController.destroy.url(
@@ -233,7 +223,9 @@ return;
 
     return (
         <>
-            <Head title={`Nomenclature: ${nomenclature.name}`} />
+            <Head
+                title={__('Nomenclature: :name', { name: nomenclature.name })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -243,11 +235,13 @@ return;
                             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                         >
                             <ArrowLeft className="size-4" />
-                            Back to Nomenclatures
+                            {__('Back to Nomenclatures')}
                         </Link>
                         <Heading
                             title={nomenclature.name}
-                            description="Nomenclature details, duties, and classifications"
+                            description={__(
+                                'Nomenclature details, duties, and classifications',
+                            )}
                         />
                     </div>
                 </div>
@@ -257,12 +251,12 @@ return;
                         <div className="rounded-lg border border-sidebar-border/70 p-6 dark:border-sidebar-border">
                             <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold">
                                 <BookOpen className="size-5" />
-                                General Info
+                                {__('General Info')}
                             </h3>
                             <div className="grid gap-4">
                                 <div className="grid grid-cols-2 border-b pb-2">
                                     <span className="text-sm font-medium text-muted-foreground">
-                                        Grade
+                                        {__('Grade')}
                                     </span>
                                     <span className="font-mono text-sm">
                                         {nomenclature.grade}
@@ -270,7 +264,7 @@ return;
                                 </div>
                                 <div className="grid grid-cols-1 gap-1 border-b pb-2">
                                     <span className="text-sm font-medium text-muted-foreground">
-                                        Qualification
+                                        {__('Qualification')}
                                     </span>
                                     <p className="text-sm whitespace-pre-wrap">
                                         {nomenclature.qualification || '-'}
@@ -278,7 +272,7 @@ return;
                                 </div>
                                 <div className="grid grid-cols-1 gap-1">
                                     <span className="text-sm font-medium text-muted-foreground">
-                                        Created
+                                        {__('Created')}
                                     </span>
                                     <span className="text-sm">
                                         {dateFormatter.format(
@@ -292,7 +286,7 @@ return;
                         <div className="rounded-lg border border-sidebar-border/70 p-6 dark:border-sidebar-border">
                             <div className="mb-4 flex items-center justify-between">
                                 <h3 className="text-lg font-semibold">
-                                    Classifications
+                                    {__('Classifications')}
                                 </h3>
                                 <Button
                                     size="sm"
@@ -351,7 +345,7 @@ return;
                                     ))
                                 ) : (
                                     <span className="block py-4 text-center text-sm text-muted-foreground italic">
-                                        No classifications.
+                                        {__('No classifications.')}
                                     </span>
                                 )}
                             </div>
@@ -362,7 +356,7 @@ return;
                         <div className="rounded-lg border border-sidebar-border/70 p-6 dark:border-sidebar-border">
                             <div className="mb-4 flex items-center justify-between">
                                 <h3 className="text-lg font-semibold text-primary">
-                                    Key Responsibilities / Duties
+                                    {__('Key Responsibilities / Duties')}
                                 </h3>
                                 <Button
                                     size="sm"
@@ -371,7 +365,7 @@ return;
                                     }
                                 >
                                     <Plus className="mr-1 size-4" />
-                                    Add Duty
+                                    {__('Add Duty')}
                                 </Button>
                             </div>
 
@@ -418,7 +412,7 @@ return;
                                     )
                                 ) : (
                                     <div className="rounded-lg border-2 border-dashed py-10 text-center text-sm text-muted-foreground">
-                                        No responsibilities defined.
+                                        {__('No responsibilities defined.')}
                                     </div>
                                 )}
                             </div>
@@ -434,7 +428,7 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Add Responsibility</DialogTitle>
+                        <DialogTitle>{__('Add Responsibility')}</DialogTitle>
                     </DialogHeader>
                     <form
                         onSubmit={submitCreateResponsibility}
@@ -442,7 +436,7 @@ return;
                     >
                         <div className="grid gap-2">
                             <Label htmlFor="resp_name">
-                                Duty / Responsibility Name
+                                {__('Duty / Responsibility Name')}
                             </Label>
                             <Input
                                 id="resp_name"
@@ -453,7 +447,9 @@ return;
                                         e.target.value,
                                     )
                                 }
-                                placeholder="e.g. Design system architecture"
+                                placeholder={__(
+                                    'e.g. Design system architecture',
+                                )}
                             />
                             <InputError message={respCreateForm.errors.name} />
                         </div>
@@ -465,13 +461,13 @@ return;
                                     setIsCreatingResponsibility(false)
                                 }
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={respCreateForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -484,14 +480,16 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Responsibility</DialogTitle>
+                        <DialogTitle>{__('Edit Responsibility')}</DialogTitle>
                     </DialogHeader>
                     <form
                         onSubmit={submitEditResponsibility}
                         className="grid gap-4"
                     >
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_resp_name">Duty Name</Label>
+                            <Label htmlFor="edit_resp_name">
+                                {__('Duty Name')}
+                            </Label>
                             <Input
                                 id="edit_resp_name"
                                 value={respEditForm.data.name}
@@ -507,13 +505,13 @@ return;
                                 variant="outline"
                                 onClick={() => setEditingResponsibility(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={respEditForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -528,9 +526,9 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Responsibility</DialogTitle>
+                        <DialogTitle>{__('Delete Responsibility')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to remove this duty?
+                            {__('Are you sure you want to remove this duty?')}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -539,14 +537,14 @@ return;
                             variant="outline"
                             onClick={() => setDeletingResponsibility(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyResponsibility}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -559,7 +557,7 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Add Classification</DialogTitle>
+                        <DialogTitle>{__('Add Classification')}</DialogTitle>
                     </DialogHeader>
                     <form
                         onSubmit={submitCreateClassification}
@@ -567,7 +565,7 @@ return;
                     >
                         <div className="grid gap-2">
                             <Label htmlFor="class_name">
-                                Classification Name
+                                {__('Classification Name')}
                             </Label>
                             <Input
                                 id="class_name"
@@ -578,12 +576,14 @@ return;
                                         e.target.value,
                                     )
                                 }
-                                placeholder="e.g. Technical"
+                                placeholder={__('e.g. Technical')}
                             />
                             <InputError message={classCreateForm.errors.name} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="class_desc">Description</Label>
+                            <Label htmlFor="class_desc">
+                                {__('Description')}
+                            </Label>
                             <textarea
                                 id="class_desc"
                                 className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
@@ -607,13 +607,13 @@ return;
                                     setIsCreatingClassification(false)
                                 }
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={classCreateForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -626,14 +626,16 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Classification</DialogTitle>
+                        <DialogTitle>{__('Edit Classification')}</DialogTitle>
                     </DialogHeader>
                     <form
                         onSubmit={submitEditClassification}
                         className="grid gap-4"
                     >
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_class_name">Name</Label>
+                            <Label htmlFor="edit_class_name">
+                                {__('Name')}
+                            </Label>
                             <Input
                                 id="edit_class_name"
                                 value={classEditForm.data.name}
@@ -647,7 +649,9 @@ return;
                             <InputError message={classEditForm.errors.name} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_class_desc">Description</Label>
+                            <Label htmlFor="edit_class_desc">
+                                {__('Description')}
+                            </Label>
                             <textarea
                                 id="edit_class_desc"
                                 className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
@@ -669,13 +673,13 @@ return;
                                 variant="outline"
                                 onClick={() => setEditingClassification(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={classEditForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -690,9 +694,11 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Classification</DialogTitle>
+                        <DialogTitle>{__('Delete Classification')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to remove this classification?
+                            {__(
+                                'Are you sure you want to remove this classification?',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -701,14 +707,14 @@ return;
                             variant="outline"
                             onClick={() => setDeletingClassification(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyClassification}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -720,11 +726,11 @@ return;
 PositionNomenclatureShow.layout = {
     breadcrumbs: [
         {
-            title: 'Position Nomenclatures',
+            title: __('Position Nomenclatures'),
             href: nomenclaturesIndex(),
         },
         {
-            title: 'Detail',
+            title: __('Detail'),
             href: '',
         },
     ],

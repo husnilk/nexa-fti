@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import {
     ArrowLeft,
     UserRound,
@@ -8,16 +8,14 @@ import {
     Mail,
     MapPin,
     Calendar,
-    FileText,
     UserPlus,
     Info,
     Home,
 } from 'lucide-react';
-import type { FormEvent } from 'react';
-import StudentController from '@/actions/App/Http/Controllers/Hr/StudentController';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as studentsIndex } from '@/routes/students';
 import type { Auth } from '@/types';
 
@@ -26,14 +24,35 @@ type PageProps = {
     student: any;
 };
 
+const statusLabels: Record<string, string> = {
+    active: __('Active'),
+    inactive: __('Inactive'),
+    graduated: __('Graduated'),
+    withdrawn: __('Withdrawn'),
+    on_leave: __('On Leave'),
+};
+
+const genderLabels: Record<string, string> = {
+    male: __('Male'),
+    female: __('Female'),
+};
+
+const religionLabels: Record<string, string> = {
+    Kristen: __('Protestant'),
+    Katolik: __('Catholic'),
+    Budha: __('Buddhist'),
+    Konghucu: __('Confucian'),
+    Lainnya: __('Other'),
+};
+
 export default function StudentShow({ student }: PageProps) {
     if (!student) {
-return null;
-}
+        return null;
+    }
 
     return (
         <>
-            <Head title={`Student: ${student.name}`} />
+            <Head title={__('Student: :name', { name: student.name })} />
             <div className="mx-auto flex h-full max-w-7xl flex-1 flex-col gap-6 p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex flex-col gap-2">
@@ -41,11 +60,17 @@ return null;
                             href={studentsIndex()}
                             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                         >
-                            <ArrowLeft className="size-4" /> Back to Students
+                            <ArrowLeft className="size-4" />{' '}
+                            {__('Back to Students')}
                         </Link>
                         <Heading
                             title={student.name}
-                            description={`Student Profile • Class of ${student.year}`}
+                            description={__(
+                                'Student Profile • Class of :year',
+                                {
+                                    year: student.year,
+                                },
+                            )}
                         />
                     </div>
                     <div className="flex gap-2">
@@ -57,7 +82,7 @@ return null;
                             }
                             className="h-8 px-3 uppercase"
                         >
-                            {student.status}
+                            {statusLabels[student.status] ?? student.status}
                         </Badge>
                         <Badge variant="outline" className="h-8 px-3 font-mono">
                             {student.reg_no}
@@ -112,12 +137,12 @@ return null;
                         <div className="space-y-4 rounded-lg border bg-card p-6 shadow-sm">
                             <h4 className="flex items-center gap-2 border-b pb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 <Info className="size-3" />
-                                Academic Information
+                                {__('Academic Information')}
                             </h4>
                             <div className="space-y-4">
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold tracking-tight text-muted-foreground uppercase">
-                                        Department
+                                        {__('Department')}
                                     </Label>
                                     <div className="flex items-center gap-2">
                                         <Building className="size-3.5 text-muted-foreground" />
@@ -128,19 +153,19 @@ return null;
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold tracking-tight text-muted-foreground uppercase">
-                                        Academic Advisor
+                                        {__('Academic Advisor')}
                                     </Label>
                                     <div className="flex items-center gap-2">
                                         <UserPlus className="size-3.5 text-muted-foreground" />
                                         <p className="text-sm leading-none font-medium">
                                             {student.advisor?.employee?.name ||
-                                                'Not Assigned'}
+                                                __('Not Assigned')}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold tracking-tight text-muted-foreground uppercase">
-                                        Registration Date
+                                        {__('Registration Date')}
                                     </Label>
                                     <div className="flex items-center gap-2">
                                         <Calendar className="size-3.5 text-muted-foreground" />
@@ -149,7 +174,7 @@ return null;
                                                 ? new Date(
                                                       student.reg_date,
                                                   ).toLocaleDateString(
-                                                      'en-GB',
+                                                      intlLocale(),
                                                       { dateStyle: 'long' },
                                                   )
                                                 : '-'}
@@ -166,12 +191,12 @@ return null;
                             <div className="space-y-6">
                                 <h3 className="flex items-center gap-2 border-b pb-2 text-lg font-semibold">
                                     <UserRound className="size-5 text-primary" />
-                                    Personal Bio
+                                    {__('Personal Bio')}
                                 </h3>
                                 <div className="grid gap-4">
                                     <div className="grid grid-cols-2 border-b border-dashed pb-2">
                                         <span className="text-sm text-muted-foreground">
-                                            Place of Birth
+                                            {__('Place of Birth')}
                                         </span>
                                         <span className="text-right text-sm font-medium">
                                             {student.birth_place}
@@ -179,31 +204,37 @@ return null;
                                     </div>
                                     <div className="grid grid-cols-2 border-b border-dashed pb-2">
                                         <span className="text-sm text-muted-foreground">
-                                            Date of Birth
+                                            {__('Date of Birth')}
                                         </span>
                                         <span className="text-right text-sm font-medium">
                                             {student.birth_date
                                                 ? new Date(
                                                       student.birth_date,
-                                                  ).toLocaleDateString()
+                                                  ).toLocaleDateString(
+                                                      intlLocale(),
+                                                  )
                                                 : '-'}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-2 border-b border-dashed pb-2">
                                         <span className="text-sm text-muted-foreground">
-                                            Gender / Religion
+                                            {__('Gender / Religion')}
                                         </span>
                                         <span className="text-right text-sm font-medium capitalize">
-                                            {student.gender} /{' '}
-                                            {student.religion}
+                                            {genderLabels[student.gender] ??
+                                                student.gender}{' '}
+                                            /{' '}
+                                            {religionLabels[student.religion] ??
+                                                student.religion}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-2 border-b border-dashed pb-2">
                                         <span className="text-sm text-muted-foreground">
-                                            Marital Status
+                                            {__('Marital Status')}
                                         </span>
                                         <span className="text-right text-sm font-medium capitalize">
-                                            {student.marital_status || 'Single'}
+                                            {student.marital_status ||
+                                                __('Single')}
                                         </span>
                                     </div>
                                 </div>
@@ -212,14 +243,14 @@ return null;
                             <div className="space-y-6">
                                 <h3 className="flex items-center gap-2 border-b pb-2 text-lg font-semibold">
                                     <MapPin className="size-5 text-primary" />
-                                    Residence Information
+                                    {__('Residence Information')}
                                 </h3>
                                 <div className="space-y-5">
                                     <div className="space-y-1.5">
                                         <div className="flex items-center gap-1.5">
                                             <Home className="size-3 text-muted-foreground" />
                                             <Label className="text-[10px] font-bold tracking-tight text-muted-foreground uppercase">
-                                                Home Town Address
+                                                {__('Home Town Address')}
                                             </Label>
                                         </div>
                                         <p className="mt-1 border-l-2 border-muted pl-4.5 text-sm leading-relaxed">
@@ -235,12 +266,12 @@ return null;
                                         <div className="flex items-center gap-1.5">
                                             <MapPin className="size-3 text-muted-foreground" />
                                             <Label className="text-[10px] font-bold tracking-tight text-muted-foreground uppercase">
-                                                Current Residence
+                                                {__('Current Residence')}
                                             </Label>
                                         </div>
                                         <p className="mt-1 border-l-2 border-primary/30 pl-4.5 text-sm leading-relaxed">
                                             {student.current_address ||
-                                                'Same as home address'}
+                                                __('Same as home address')}
                                         </p>
                                         <p className="mt-1 pl-4.5 text-xs text-muted-foreground">
                                             {student.current_town},{' '}
@@ -256,12 +287,12 @@ return null;
                         <div className="flex flex-col items-center rounded-lg border-2 border-dashed bg-muted/20 p-10 text-center">
                             <Calendar className="mb-3 size-10 text-muted-foreground/40" />
                             <h4 className="font-semibold text-muted-foreground">
-                                Academic History & Enrollment
+                                {__('Academic History & Enrollment')}
                             </h4>
                             <p className="mx-auto max-w-xs text-sm text-muted-foreground/60">
-                                This section will manage course enrollments,
-                                semester statuses, and academic transcripts in
-                                future updates.
+                                {__(
+                                    'This section will manage course enrollments, semester statuses, and academic transcripts in future updates.',
+                                )}
                             </p>
                         </div>
                     </div>
@@ -273,7 +304,7 @@ return null;
 
 StudentShow.layout = {
     breadcrumbs: [
-        { title: 'Students', href: studentsIndex() },
-        { title: 'Detail', href: '' },
+        { title: __('Students'), href: studentsIndex() },
+        { title: __('Details'), href: '' },
     ],
 };

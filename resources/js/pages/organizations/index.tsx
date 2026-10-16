@@ -37,6 +37,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as organizationTypesIndex } from '@/routes/organization-types';
 import {
     index as organizationsIndex,
@@ -52,6 +53,7 @@ type Organization = {
     name: string;
     code: string;
     is_active: boolean;
+    has_pagu: boolean;
     description: string | null;
     parent?: Organization | null;
     organization_type?: {
@@ -68,6 +70,7 @@ type OrganizationForm = {
     name: string;
     code: string;
     is_active: boolean;
+    has_pagu: boolean;
     description: string | null;
 };
 
@@ -96,11 +99,12 @@ function toOrganizationFormData(
         name: organization?.name || '',
         code: organization?.code || '',
         is_active: organization?.is_active ?? true,
+        has_pagu: organization?.has_pagu ?? false,
         description: organization?.description || '',
     };
 }
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -179,6 +183,7 @@ export default function OrganizationsIndex({
         name: '',
         code: '',
         is_active: true,
+        has_pagu: false,
         description: '',
     });
 
@@ -238,17 +243,18 @@ export default function OrganizationsIndex({
 
     return (
         <>
-            <Head title="Organizations" />
+            <Head title={__('Organizations')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                            Organizations
+                            {__('Organizations')}
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Manage institutional units, their hierarchy, and
-                            active status.
+                            {__(
+                                'Manage institutional units, their hierarchy, and active status.',
+                            )}
                         </p>
                     </div>
 
@@ -259,7 +265,7 @@ export default function OrganizationsIndex({
                                 className="gap-2"
                             >
                                 <Network className="h-4 w-4" />
-                                View Structure
+                                {__('View Structure')}
                             </Link>
                         </Button>
 
@@ -270,7 +276,7 @@ export default function OrganizationsIndex({
                                     className="gap-2"
                                 >
                                     <Network className="h-4 w-4" />
-                                    Manage Types
+                                    {__('Manage Types')}
                                 </Link>
                             </Button>
                         )}
@@ -282,7 +288,7 @@ export default function OrganizationsIndex({
                                 className="cursor-pointer gap-2"
                             >
                                 <Plus className="h-4 w-4" />
-                                Add Organization
+                                {__('Add Organization')}
                             </Button>
                         )}
                     </div>
@@ -296,7 +302,7 @@ export default function OrganizationsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total organizations
+                                    {__('Total organizations')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {organizations.length}
@@ -312,7 +318,7 @@ export default function OrganizationsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Active organizations
+                                    {__('Active organizations')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {
@@ -333,7 +339,7 @@ export default function OrganizationsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Root organizations
+                                    {__('Root organizations')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {
@@ -353,7 +359,7 @@ export default function OrganizationsIndex({
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search organizations..."
+                            placeholder={__('Search organizations...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
@@ -373,7 +379,7 @@ export default function OrganizationsIndex({
                         variant="outline"
                         className="h-10 rounded-full px-4 text-xs tracking-wide uppercase"
                     >
-                        {organizations.length} records
+                        {__(':count records', { count: organizations.length })}
                     </Badge>
                 </div>
 
@@ -382,16 +388,22 @@ export default function OrganizationsIndex({
                         <table className="w-full min-w-[880px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">Organization</th>
-                                    <th className="px-6 py-4">Code</th>
-                                    <th className="px-6 py-4">Type</th>
-                                    <th className="px-6 py-4">Parent</th>
-                                    <th className="px-6 py-4 text-center">
-                                        Status
+                                    <th className="px-6 py-4">
+                                        {__('Organization')}
                                     </th>
-                                    <th className="px-6 py-4">Created</th>
+                                    <th className="px-6 py-4">{__('Code')}</th>
+                                    <th className="px-6 py-4">{__('Type')}</th>
+                                    <th className="px-6 py-4">
+                                        {__('Parent')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Status')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Created')}
+                                    </th>
                                     <th className="px-6 py-4 text-right">
-                                        Actions
+                                        {__('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -402,8 +414,9 @@ export default function OrganizationsIndex({
                                             colSpan={7}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No organizations found matching your
-                                            search.
+                                            {__(
+                                                'No organizations found matching your search.',
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -419,7 +432,9 @@ export default function OrganizationsIndex({
                                                     </span>
                                                     <span className="line-clamp-1 text-xs text-muted-foreground">
                                                         {organization.description ||
-                                                            'No description provided.'}
+                                                            __(
+                                                                'No description provided.',
+                                                            )}
                                                     </span>
                                                 </div>
                                             </td>
@@ -445,9 +460,14 @@ export default function OrganizationsIndex({
                                                     }`}
                                                 >
                                                     {organization.is_active
-                                                        ? 'Active'
-                                                        : 'Inactive'}
+                                                        ? __('Active')
+                                                        : __('Inactive')}
                                                 </span>
+                                                {organization.has_pagu && (
+                                                    <span className="ml-1.5 inline-flex items-center rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold tracking-wide text-violet-700 uppercase dark:bg-violet-950/35 dark:text-violet-400">
+                                                        Pagu
+                                                    </span>
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
                                                 {dateFormatter.format(
@@ -481,7 +501,12 @@ export default function OrganizationsIndex({
                                                                     organization,
                                                                 )
                                                             }
-                                                            aria-label={`Edit ${organization.name}`}
+                                                            aria-label={__(
+                                                                'Edit :name',
+                                                                {
+                                                                    name: organization.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                         >
                                                             <Pencil className="h-4 w-4" />
@@ -497,7 +522,12 @@ export default function OrganizationsIndex({
                                                                     organization,
                                                                 )
                                                             }
-                                                            aria-label={`Delete ${organization.name}`}
+                                                            aria-label={__(
+                                                                'Delete :name',
+                                                                {
+                                                                    name: organization.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -519,11 +549,12 @@ export default function OrganizationsIndex({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Create Organization
+                                {__('Create Organization')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Add a new organization and place it within the
-                                institutional hierarchy.
+                                {__(
+                                    'Add a new organization and place it within the institutional hierarchy.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -531,7 +562,9 @@ export default function OrganizationsIndex({
                     <form onSubmit={submitCreate} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_name">Name</Label>
+                                <Label htmlFor="create_name">
+                                    {__('Name')}
+                                </Label>
                                 <Input
                                     id="create_name"
                                     value={createForm.data.name}
@@ -546,7 +579,9 @@ export default function OrganizationsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="create_code">Code</Label>
+                                <Label htmlFor="create_code">
+                                    {__('Code')}
+                                </Label>
                                 <Input
                                     id="create_code"
                                     value={createForm.data.code}
@@ -563,7 +598,9 @@ export default function OrganizationsIndex({
 
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_type">Type</Label>
+                                <Label htmlFor="create_type">
+                                    {__('Type')}
+                                </Label>
                                 <Select
                                     value={createForm.data.organization_type_id}
                                     onValueChange={(value) =>
@@ -574,7 +611,9 @@ export default function OrganizationsIndex({
                                     }
                                 >
                                     <SelectTrigger id="create_type">
-                                        <SelectValue placeholder="Select a type" />
+                                        <SelectValue
+                                            placeholder={__('Select a type')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {organizationTypes.map((type) => (
@@ -582,7 +621,10 @@ export default function OrganizationsIndex({
                                                 key={type.id}
                                                 value={type.id}
                                             >
-                                                {type.name} (Level {type.level})
+                                                {__(':name (Level :level)', {
+                                                    name: type.name,
+                                                    level: type.level,
+                                                })}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -596,7 +638,7 @@ export default function OrganizationsIndex({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="create_parent">
-                                    Parent Organization
+                                    {__('Parent Organization')}
                                 </Label>
                                 <Select
                                     value={createForm.data.parent_id || 'none'}
@@ -608,11 +650,13 @@ export default function OrganizationsIndex({
                                     }
                                 >
                                     <SelectTrigger id="create_parent">
-                                        <SelectValue placeholder="Select a parent" />
+                                        <SelectValue
+                                            placeholder={__('Select a parent')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="none">
-                                            None
+                                            {__('None')}
                                         </SelectItem>
                                         {parentOrganizations.map((org) => (
                                             <SelectItem
@@ -638,13 +682,36 @@ export default function OrganizationsIndex({
                                     createForm.setData('is_active', checked)
                                 }
                             />
-                            <Label htmlFor="create_is_active">Active</Label>
+                            <Label htmlFor="create_is_active">
+                                {__('Active')}
+                            </Label>
                             <InputError message={createForm.errors.is_active} />
+                        </div>
+
+                        <div className="flex items-center gap-3 rounded-xl border bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/30">
+                            <Switch
+                                id="create_has_pagu"
+                                checked={createForm.data.has_pagu}
+                                onCheckedChange={(checked) =>
+                                    createForm.setData('has_pagu', checked)
+                                }
+                            />
+                            <div>
+                                <Label htmlFor="create_has_pagu">
+                                    {__('Has Pagu')}
+                                </Label>
+                                <p className="text-xs text-muted-foreground">
+                                    {__(
+                                        'Budget-holding unit that appears in remuneration periods.',
+                                    )}
+                                </p>
+                            </div>
+                            <InputError message={createForm.errors.has_pagu} />
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="create_description">
-                                Description
+                                {__('Description')}
                             </Label>
                             <Textarea
                                 id="create_description"
@@ -669,14 +736,14 @@ export default function OrganizationsIndex({
                                 onClick={() => setIsCreating(false)}
                                 className="cursor-pointer"
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                                 className="cursor-pointer bg-gradient-to-r from-violet-600 to-indigo-600 font-medium text-white shadow-md hover:from-violet-700 hover:to-indigo-700"
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -691,10 +758,12 @@ export default function OrganizationsIndex({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Edit Organization
+                                {__('Edit Organization')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Update the organization details and hierarchy.
+                                {__(
+                                    'Update the organization details and hierarchy.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -702,7 +771,7 @@ export default function OrganizationsIndex({
                     <form onSubmit={submitEdit} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_name">Name</Label>
+                                <Label htmlFor="edit_name">{__('Name')}</Label>
                                 <Input
                                     id="edit_name"
                                     value={editForm.data.name}
@@ -714,7 +783,7 @@ export default function OrganizationsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_code">Code</Label>
+                                <Label htmlFor="edit_code">{__('Code')}</Label>
                                 <Input
                                     id="edit_code"
                                     value={editForm.data.code}
@@ -728,7 +797,7 @@ export default function OrganizationsIndex({
 
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_type">Type</Label>
+                                <Label htmlFor="edit_type">{__('Type')}</Label>
                                 <Select
                                     value={editForm.data.organization_type_id}
                                     onValueChange={(value) =>
@@ -739,7 +808,9 @@ export default function OrganizationsIndex({
                                     }
                                 >
                                     <SelectTrigger id="edit_type">
-                                        <SelectValue placeholder="Select a type" />
+                                        <SelectValue
+                                            placeholder={__('Select a type')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {organizationTypes.map((type) => (
@@ -747,19 +818,24 @@ export default function OrganizationsIndex({
                                                 key={type.id}
                                                 value={type.id}
                                             >
-                                                {type.name} (Level {type.level})
+                                                {__(':name (Level :level)', {
+                                                    name: type.name,
+                                                    level: type.level,
+                                                })}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                                 <InputError
-                                    message={editForm.errors.organization_type_id}
+                                    message={
+                                        editForm.errors.organization_type_id
+                                    }
                                 />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="edit_parent">
-                                    Parent Organization
+                                    {__('Parent Organization')}
                                 </Label>
                                 <Select
                                     value={editForm.data.parent_id || 'none'}
@@ -771,11 +847,13 @@ export default function OrganizationsIndex({
                                     }
                                 >
                                     <SelectTrigger id="edit_parent">
-                                        <SelectValue placeholder="Select a parent" />
+                                        <SelectValue
+                                            placeholder={__('Select a parent')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="none">
-                                            None
+                                            {__('None')}
                                         </SelectItem>
                                         {parentOrganizations
                                             .filter(
@@ -807,13 +885,36 @@ export default function OrganizationsIndex({
                                     editForm.setData('is_active', checked)
                                 }
                             />
-                            <Label htmlFor="edit_is_active">Active</Label>
+                            <Label htmlFor="edit_is_active">
+                                {__('Active')}
+                            </Label>
                             <InputError message={editForm.errors.is_active} />
+                        </div>
+
+                        <div className="flex items-center gap-3 rounded-xl border bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/30">
+                            <Switch
+                                id="edit_has_pagu"
+                                checked={editForm.data.has_pagu}
+                                onCheckedChange={(checked) =>
+                                    editForm.setData('has_pagu', checked)
+                                }
+                            />
+                            <div>
+                                <Label htmlFor="edit_has_pagu">
+                                    {__('Has Pagu')}
+                                </Label>
+                                <p className="text-xs text-muted-foreground">
+                                    {__(
+                                        'Budget-holding unit that appears in remuneration periods.',
+                                    )}
+                                </p>
+                            </div>
+                            <InputError message={editForm.errors.has_pagu} />
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="edit_description">
-                                Description
+                                {__('Description')}
                             </Label>
                             <Textarea
                                 id="edit_description"
@@ -836,14 +937,14 @@ export default function OrganizationsIndex({
                                 onClick={() => setEditingOrganization(null)}
                                 className="cursor-pointer"
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                                 className="cursor-pointer bg-gradient-to-r from-violet-600 to-indigo-600 font-medium text-white shadow-md hover:from-violet-700 hover:to-indigo-700"
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -858,13 +959,13 @@ export default function OrganizationsIndex({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Delete Organization
+                                {__('Delete Organization')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Are you sure you want to delete{' '}
-                                {deletingOrganization?.name}? This action cannot
-                                be undone and will also delete all child
-                                organizations.
+                                {__(
+                                    'Are you sure you want to delete :name? This action cannot be undone and will also delete all child organizations.',
+                                    { name: deletingOrganization?.name ?? '' },
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -875,7 +976,7 @@ export default function OrganizationsIndex({
                             onClick={() => setDeletingOrganization(null)}
                             className="cursor-pointer"
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -883,7 +984,7 @@ export default function OrganizationsIndex({
                             onClick={destroyOrganization}
                             className="cursor-pointer"
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -895,7 +996,7 @@ export default function OrganizationsIndex({
 OrganizationsIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Organizations',
+            title: __('Organizations'),
             href: organizationsIndex(),
         },
     ],

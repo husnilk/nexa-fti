@@ -1,13 +1,12 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Eye, Plus, Search, ClipboardCheck } from 'lucide-react';
 import { useState } from 'react';
-import {
-    index as procurementIndex,
-} from '@/actions/App/Http/Controllers/Inventory/InventoryProcurementController';
+import { index as procurementIndex } from '@/actions/App/Http/Controllers/Inventory/InventoryProcurementController';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { __ } from '@/lib/i18n';
 import { index as receiptIndex } from '@/routes/inventory-receipts';
 import type { Auth, InventoryProcurement, ProcurementStatus } from '@/types';
 
@@ -28,6 +27,13 @@ const statusColors: Record<ProcurementStatus, string> = {
     rejected: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
 };
 
+const statusLabels: Record<ProcurementStatus, string> = {
+    draft: __('Draft'),
+    submitted: __('Submitted'),
+    approved: __('Approved'),
+    rejected: __('Rejected'),
+};
+
 function can(auth: Auth, ability: string): boolean {
     return (
         auth.roles.includes('super-admin') || auth.permissions.includes(ability)
@@ -43,31 +49,39 @@ export default function ProcurementIndex({ procurements }: PageProps) {
     const filteredProcurements = procurements.data.filter(
         (proc) =>
             proc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            proc.request_number.toLowerCase().includes(searchTerm.toLowerCase()),
+            proc.request_number
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()),
     );
 
     return (
         <>
-            <Head title="Procurements" />
+            <Head title={__('Procurements')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title="Procurements"
-                        description="Manage item procurement requests and approvals."
+                        title={__('Procurements')}
+                        description={__(
+                            'Manage item procurement requests and approvals.',
+                        )}
                     />
                     <div className="flex items-center gap-2">
                         {mayManage && (
                             <Link href={receiptIndex()}>
-                                <Button variant="outline" className="cursor-pointer gap-2">
-                                    <ClipboardCheck className="h-4 w-4" /> Receipts
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer gap-2"
+                                >
+                                    <ClipboardCheck className="h-4 w-4" />{' '}
+                                    {__('Receipts')}
                                 </Button>
                             </Link>
                         )}
                         <Button asChild>
                             <Link href="/inventory/procurements/create">
                                 <Plus className="mr-2 h-4 w-4" />
-                                New Procurement
+                                {__('New Procurement')}
                             </Link>
                         </Button>
                     </div>
@@ -77,7 +91,7 @@ export default function ProcurementIndex({ procurements }: PageProps) {
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search procurements..."
+                            placeholder={__('Search procurements...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -90,19 +104,19 @@ export default function ProcurementIndex({ procurements }: PageProps) {
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Number
+                                    {__('Number')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Title
+                                    {__('Title')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Submitter
+                                    {__('Submitter')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Status
+                                    {__('Status')}
                                 </th>
                                 <th className="h-12 px-4 text-left text-right align-middle font-medium text-muted-foreground">
-                                    Actions
+                                    {__('Actions')}
                                 </th>
                             </tr>
                         </thead>
@@ -124,9 +138,12 @@ export default function ProcurementIndex({ procurements }: PageProps) {
                                     <td className="p-4 align-middle">
                                         <Badge
                                             variant="outline"
-                                            className={statusColors[proc.status]}
+                                            className={
+                                                statusColors[proc.status]
+                                            }
                                         >
-                                            {proc.status}
+                                            {statusLabels[proc.status] ??
+                                                proc.status}
                                         </Badge>
                                     </td>
                                     <td className="p-4 text-right align-middle">
@@ -150,7 +167,7 @@ export default function ProcurementIndex({ procurements }: PageProps) {
                                         colSpan={5}
                                         className="p-8 text-center text-muted-foreground"
                                     >
-                                        No procurements found.
+                                        {__('No procurements found.')}
                                     </td>
                                 </tr>
                             )}
@@ -165,11 +182,11 @@ export default function ProcurementIndex({ procurements }: PageProps) {
 ProcurementIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Inventory',
+            title: __('Inventory'),
             href: '#',
         },
         {
-            title: 'Procurements',
+            title: __('Procurements'),
             href: procurementIndex(),
         },
     ],

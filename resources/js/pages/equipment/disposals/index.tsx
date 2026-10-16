@@ -20,6 +20,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { __, intlLocale } from '@/lib/i18n';
 import type { Auth, EquipmentDisposal } from '@/types';
 
 interface PageProps {
@@ -35,22 +36,33 @@ const statusColors: Record<string, string> = {
     completed: 'bg-blue-500',
 };
 
-const methodLabels: Record<string, string> = {
-    sold: 'Sold',
-    donated: 'Donated',
-    scrapped: 'Scrapped',
-    lost: 'Lost',
-    mutation: 'Mutation',
+const statusLabels: Record<string, string> = {
+    draft: __('Draft'),
+    pending: __('Pending'),
+    approved: __('Approved'),
+    rejected: __('Rejected'),
+    completed: __('Completed'),
 };
 
-export default function EquipmentDisposalIndex({ equipmentDisposals = [] }: PageProps) {
-    const [deletingDisposal, setDeletingDisposal] = useState<EquipmentDisposal | null>(null);
+const methodLabels: Record<string, string> = {
+    sold: __('Sold'),
+    donated: __('Donated'),
+    scrapped: __('Scrapped'),
+    lost: __('Lost'),
+    mutation: __('Mutation'),
+};
+
+export default function EquipmentDisposalIndex({
+    equipmentDisposals = [],
+}: PageProps) {
+    const [deletingDisposal, setDeletingDisposal] =
+        useState<EquipmentDisposal | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleDelete = () => {
         if (!deletingDisposal) {
-return;
-}
+            return;
+        }
 
         router.delete(destroy.url(deletingDisposal.id), {
             onSuccess: () => setDeletingDisposal(null),
@@ -65,17 +77,19 @@ return;
 
     return (
         <>
-            <Head title="Equipment Disposals" />
+            <Head title={__('Equipment Disposals')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title="Equipment Disposals"
-                        description="Manage and track disposal requests for equipment assets."
+                        title={__('Equipment Disposals')}
+                        description={__(
+                            'Manage and track disposal requests for equipment assets.',
+                        )}
                     />
                     <Button onClick={() => router.get(create.url())}>
                         <Plus className="mr-2 h-4 w-4" />
-                        New Request
+                        {__('New Request')}
                     </Button>
                 </div>
 
@@ -83,7 +97,7 @@ return;
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search disposals..."
+                            placeholder={__('Search disposals...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -95,39 +109,101 @@ return;
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Number</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Title</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Method</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Items</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Number')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Title')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Date')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Method')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Items')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Status')}
+                                </th>
+                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                                    {__('Actions')}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredDisposals.map((d) => (
-                                <tr key={d.id} className="border-b transition-colors hover:bg-muted/50">
-                                    <td className="p-4 align-middle font-medium">{d.disposal_number}</td>
-                                    <td className="p-4 align-middle">{d.title}</td>
-                                    <td className="p-4 align-middle">{d.disposal_date ? new Date(d.disposal_date).toLocaleDateString() : '-'}</td>
-                                    <td className="p-4 align-middle capitalize">{methodLabels[d.disposal_method] || d.disposal_method}</td>
-                                    <td className="p-4 align-middle">{d.equipment_disposal_items_count} items</td>
+                                <tr
+                                    key={d.id}
+                                    className="border-b transition-colors hover:bg-muted/50"
+                                >
+                                    <td className="p-4 align-middle font-medium">
+                                        {d.disposal_number}
+                                    </td>
                                     <td className="p-4 align-middle">
-                                        <Badge className={`${statusColors[d.status]} text-white border-none capitalize`}>
-                                            {d.status}
+                                        {d.title}
+                                    </td>
+                                    <td className="p-4 align-middle">
+                                        {d.disposal_date
+                                            ? new Date(
+                                                  d.disposal_date,
+                                              ).toLocaleDateString(intlLocale())
+                                            : '-'}
+                                    </td>
+                                    <td className="p-4 align-middle capitalize">
+                                        {methodLabels[d.disposal_method] ||
+                                            d.disposal_method}
+                                    </td>
+                                    <td className="p-4 align-middle">
+                                        {__(':count items', {
+                                            count:
+                                                d.equipment_disposal_items_count ??
+                                                0,
+                                        })}
+                                    </td>
+                                    <td className="p-4 align-middle">
+                                        <Badge
+                                            className={`${statusColors[d.status]} border-none text-white capitalize`}
+                                        >
+                                            {statusLabels[d.status] ?? d.status}
                                         </Badge>
                                     </td>
                                     <td className="p-4 text-right align-middle">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => router.get(show.url(d.id))}>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() =>
+                                                    router.get(show.url(d.id))
+                                                }
+                                            >
                                                 <Eye className="h-4 w-4 text-blue-500" />
                                             </Button>
-                                            {['draft', 'pending'].includes(d.status) && (
+                                            {['draft', 'pending'].includes(
+                                                d.status,
+                                            ) && (
                                                 <>
-                                                    <Button variant="ghost" size="icon" onClick={() => router.get(edit.url(d.id))}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            router.get(
+                                                                edit.url(d.id),
+                                                            )
+                                                        }
+                                                    >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => setDeletingDisposal(d)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            setDeletingDisposal(
+                                                                d,
+                                                            )
+                                                        }
+                                                    >
                                                         <Trash2 className="h-4 w-4 text-destructive" />
                                                     </Button>
                                                 </>
@@ -138,7 +214,14 @@ return;
                             ))}
                             {filteredDisposals.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} className="p-8 text-center text-muted-foreground">No equipment disposal requests found.</td>
+                                    <td
+                                        colSpan={7}
+                                        className="p-8 text-center text-muted-foreground"
+                                    >
+                                        {__(
+                                            'No equipment disposal requests found.',
+                                        )}
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
@@ -147,17 +230,35 @@ return;
             </div>
 
             {/* Delete/Cancel Dialog */}
-            <Dialog open={!!deletingDisposal} onOpenChange={() => setDeletingDisposal(null)}>
+            <Dialog
+                open={!!deletingDisposal}
+                onOpenChange={() => setDeletingDisposal(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Cancel/Delete Disposal Request</DialogTitle>
+                        <DialogTitle>
+                            {__('Cancel/Delete Disposal Request')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to cancel and delete request "{deletingDisposal?.disposal_number}"? This action cannot be undone.
+                            {__(
+                                'Are you sure you want to cancel and delete request ":number"? This action cannot be undone.',
+                                {
+                                    number:
+                                        deletingDisposal?.disposal_number ?? '',
+                                },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeletingDisposal(null)}>Cancel</Button>
-                        <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeletingDisposal(null)}
+                        >
+                            {__('Cancel')}
+                        </Button>
+                        <Button variant="destructive" onClick={handleDelete}>
+                            {__('Delete')}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -167,7 +268,7 @@ return;
 
 EquipmentDisposalIndex.layout = {
     breadcrumbs: [
-        { title: 'Equipment', href: '#' },
-        { title: 'Disposals', href: disposalIndex() },
+        { title: __('Equipment'), href: '#' },
+        { title: __('Disposals'), href: disposalIndex() },
     ],
 };

@@ -17,6 +17,9 @@ return new class extends Migration
             $table->uuid('parent_id')->nullable();
             $table->integer('grade')->default(0);
             $table->integer('job_value')->default(0);
+            $table->integer('cg')->default(0);
+            $table->integer('skp_point')->default(0);
+            $table->integer('is_active')->default(1);
             $table->text('qualification')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();

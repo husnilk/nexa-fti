@@ -21,7 +21,7 @@ class OvertimeApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $overtimeRequests = OvertimeRequest::with(['requester', 'approver', 'approvalLogs.approver'])
@@ -39,7 +39,7 @@ class OvertimeApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $overtimeRequest->load(['requester', 'approver', 'members.employee', 'approvalLogs.approver']);
@@ -54,11 +54,11 @@ class OvertimeApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         if ($overtimeRequest->status !== 'pending') {
-            abort(400, 'This request is not pending approval.');
+            abort(400, __('This request is not pending approval.'));
         }
 
         $validated = $request->validate([
@@ -81,7 +81,7 @@ class OvertimeApprovalController extends Controller
         });
 
         return redirect()->route('overtime-approvals.index')
-            ->with('success', 'Overtime request approved successfully.');
+            ->with('success', __('Overtime request approved successfully.'));
     }
 
     public function reject(Request $request, OvertimeRequest $overtimeRequest): RedirectResponse
@@ -89,11 +89,11 @@ class OvertimeApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         if ($overtimeRequest->status !== 'pending') {
-            abort(400, 'This request is not pending approval.');
+            abort(400, __('This request is not pending approval.'));
         }
 
         $validated = $request->validate([
@@ -114,6 +114,6 @@ class OvertimeApprovalController extends Controller
         });
 
         return redirect()->route('overtime-approvals.index')
-            ->with('success', 'Overtime request rejected.');
+            ->with('success', __('Overtime request rejected.'));
     }
 }

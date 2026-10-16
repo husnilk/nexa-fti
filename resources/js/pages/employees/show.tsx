@@ -5,7 +5,6 @@ import {
     Mail,
     Phone,
     MapPin,
-    Briefcase,
     Award,
     GraduationCap,
     Plus,
@@ -13,7 +12,6 @@ import {
     Trash2,
     Download,
     History,
-    FileText,
     Tags,
     Users,
 } from 'lucide-react';
@@ -34,7 +32,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -49,6 +46,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as employeesIndex } from '@/routes/employees';
 import type { Auth } from '@/types';
 
@@ -61,7 +59,20 @@ type PageProps = {
     ranks: any[];
 };
 
-const shortDateFormatter = new Intl.DateTimeFormat(undefined, {
+const relationshipLabels: Record<string, string> = {
+    spouse: __('Spouse'),
+    child: __('Child'),
+    parent: __('Father/Mother'),
+    sibling: __('Sibling'),
+    other: __('Other'),
+};
+
+const genderLabels: Record<string, string> = {
+    male: __('Male'),
+    female: __('Female'),
+};
+
+const shortDateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
 });
 
@@ -73,11 +84,13 @@ export default function EmployeeShow({
     nomenclatureClassifications,
     ranks,
 }: PageProps) {
-    const canManageCert = auth?.roles?.includes('super-admin') || auth?.permissions?.includes('hr.manage');
+    const canManageCert =
+        auth?.roles?.includes('super-admin') ||
+        auth?.permissions?.includes('hr.manage');
 
     if (!employee) {
-return null;
-}
+        return null;
+    }
 
     const isLecturer = !!employee.lecturer;
     const isStaff = !!employee.staff;
@@ -320,7 +333,9 @@ return null;
             institution: cert.institution,
             certification_number: cert.certification_number || '',
             issue_date: cert.issue_date ? cert.issue_date.substring(0, 10) : '',
-            expiry_date: cert.expiry_date ? cert.expiry_date.substring(0, 10) : '',
+            expiry_date: cert.expiry_date
+                ? cert.expiry_date.substring(0, 10)
+                : '',
             certificate_file: null,
         });
         certForm.clearErrors();
@@ -443,7 +458,9 @@ return null;
             relationship: member.relationship,
             gender: member.gender,
             birth_place: member.birth_place || '',
-            birth_date: member.birth_date ? member.birth_date.substring(0, 10) : '',
+            birth_date: member.birth_date
+                ? member.birth_date.substring(0, 10)
+                : '',
             id_card_number: member.id_card_number || '',
             occupation: member.occupation || '',
             phone: member.phone || '',
@@ -496,7 +513,7 @@ return null;
 
     return (
         <>
-            <Head title={`Employee: ${employee.name}`} />
+            <Head title={__('Employee: :name', { name: employee.name })} />
             <div className="mx-auto flex h-full max-w-7xl flex-1 flex-col gap-6 p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex flex-col gap-2">
@@ -504,11 +521,12 @@ return null;
                             href={employeesIndex()}
                             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                         >
-                            <ArrowLeft className="size-4" /> Back to Employees
+                            <ArrowLeft className="size-4" />{' '}
+                            {__('Back to Employees')}
                         </Link>
                         <Heading
                             title={employee.name}
-                            description={`${isLecturer ? 'Lecturer' : 'Staff'} • ${employee.emp_number}`}
+                            description={`${isLecturer ? __('Lecturer') : __('Staff')} • ${employee.emp_number}`}
                         />
                     </div>
                     <div className="flex gap-2">
@@ -518,11 +536,13 @@ return null;
                             }
                             className="h-8 px-3 uppercase"
                         >
-                            {employee.status === 1 ? 'Active' : 'Inactive'}
+                            {employee.status === 1
+                                ? __('Active')
+                                : __('Inactive')}
                         </Badge>
                         <Badge variant="outline" className="h-8 px-3">
                             {employee.employment_type?.employee_type?.name ||
-                                'N/A'}
+                                __('N/A')}
                         </Badge>
                     </div>
                 </div>
@@ -562,13 +582,13 @@ return null;
 
                         <div className="space-y-4 rounded-lg border bg-card p-6 shadow-sm">
                             <h4 className="border-b pb-2 text-sm font-semibold tracking-wider text-muted-foreground uppercase">
-                                Professional Specification
+                                {__('Professional Specification')}
                             </h4>
                             {isLecturer ? (
                                 <div className="space-y-4">
                                     <div>
                                         <Label className="text-xs text-muted-foreground uppercase">
-                                            Academic Rank
+                                            {__('Academic Rank')}
                                         </Label>
                                         <p className="text-sm font-medium">
                                             {employee.lecturer.academic_rank ||
@@ -577,7 +597,7 @@ return null;
                                     </div>
                                     <div>
                                         <Label className="text-xs text-muted-foreground uppercase">
-                                            Functional Position
+                                            {__('Functional Position')}
                                         </Label>
                                         <p className="text-sm font-medium">
                                             {employee.lecturer
@@ -598,7 +618,7 @@ return null;
                                 <div className="space-y-4">
                                     <div>
                                         <Label className="text-xs text-muted-foreground uppercase">
-                                            Structural Position
+                                            {__('Structural Position')}
                                         </Label>
                                         <p className="text-sm font-medium">
                                             {employee.staff?.position?.name ||
@@ -607,7 +627,7 @@ return null;
                                     </div>
                                     <div>
                                         <Label className="text-xs text-muted-foreground uppercase">
-                                            Key Skills
+                                            {__('Key Skills')}
                                         </Label>
                                         <p className="text-xs leading-relaxed text-muted-foreground italic">
                                             {employee.staff?.skills || '-'}
@@ -626,7 +646,7 @@ return null;
                                 <div className="mb-6 flex items-center justify-between">
                                     <h3 className="flex items-center gap-2 text-lg font-semibold">
                                         <Award className="size-5 text-indigo-500" />
-                                        Functional Position History
+                                        {__('Functional Position History')}
                                     </h3>
                                     <Button
                                         size="sm"
@@ -634,8 +654,8 @@ return null;
                                         className="border-indigo-200 text-indigo-600 hover:bg-indigo-50"
                                         onClick={() => setIsCreatingFunc(true)}
                                     >
-                                        <Plus className="mr-1 size-4" /> Add
-                                        Record
+                                        <Plus className="mr-1 size-4" />{' '}
+                                        {__('Add Record')}
                                     </Button>
                                 </div>
 
@@ -665,12 +685,15 @@ return null;
                                                                     }
                                                                 </h4>
                                                                 <p className="text-xs text-muted-foreground">
-                                                                    Effective
-                                                                    from{' '}
-                                                                    {shortDateFormatter.format(
-                                                                        new Date(
-                                                                            hist.start_date,
-                                                                        ),
+                                                                    {__(
+                                                                        'Effective from :date',
+                                                                        {
+                                                                            date: shortDateFormatter.format(
+                                                                                new Date(
+                                                                                    hist.start_date,
+                                                                                ),
+                                                                            ),
+                                                                        },
                                                                     )}{' '}
                                                                     • SK:{' '}
                                                                     {
@@ -726,8 +749,9 @@ return null;
                                         </div>
                                     ) : (
                                         <div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground italic">
-                                            No functional position history
-                                            recorded.
+                                            {__(
+                                                'No functional position history recorded.',
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -740,7 +764,7 @@ return null;
                                 <div className="mb-6 flex items-center justify-between">
                                     <h3 className="flex items-center gap-2 text-lg font-semibold">
                                         <Tags className="size-5 text-amber-500" />
-                                        Classification History
+                                        {__('Classification History')}
                                     </h3>
                                     <Button
                                         size="sm"
@@ -748,8 +772,8 @@ return null;
                                         className="border-amber-200 text-amber-600 hover:bg-amber-50"
                                         onClick={() => setIsCreatingClass(true)}
                                     >
-                                        <Plus className="mr-1 size-4" /> Add
-                                        Record
+                                        <Plus className="mr-1 size-4" />{' '}
+                                        {__('Add Record')}
                                     </Button>
                                 </div>
 
@@ -791,7 +815,9 @@ return null;
                                                                                   hist.end_date,
                                                                               ),
                                                                           )
-                                                                        : 'Present'}
+                                                                        : __(
+                                                                              'Now',
+                                                                          )}
                                                                 </p>
                                                                 <p className="mt-1 text-[10px] text-muted-foreground">
                                                                     SK:{' '}
@@ -848,7 +874,9 @@ return null;
                                         </div>
                                     ) : (
                                         <div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground italic">
-                                            No classification history recorded.
+                                            {__(
+                                                'No classification history recorded.',
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -860,13 +888,14 @@ return null;
                             <div className="mb-6 flex items-center justify-between">
                                 <h3 className="flex items-center gap-2 text-lg font-semibold">
                                     <History className="size-5 text-primary" />
-                                    Structural Career History
+                                    {__('Structural Career History')}
                                 </h3>
                                 <Button
                                     size="sm"
                                     onClick={() => setIsCreatingPos(true)}
                                 >
-                                    <Plus className="mr-1 size-4" /> Add Record
+                                    <Plus className="mr-1 size-4" />{' '}
+                                    {__('Add Record')}
                                 </Button>
                             </div>
 
@@ -886,7 +915,9 @@ return null;
                                                             <h4 className="mb-1 text-base leading-none font-bold">
                                                                 {hist.position
                                                                     ?.name ||
-                                                                    'Unknown Position'}
+                                                                    __(
+                                                                        'Unknown Position',
+                                                                    )}
                                                             </h4>
                                                             <p className="mb-2 text-xs text-muted-foreground">
                                                                 {shortDateFormatter.format(
@@ -901,12 +932,16 @@ return null;
                                                                               hist.end_date,
                                                                           ),
                                                                       )
-                                                                    : 'Present'}
+                                                                    : __(
+                                                                          'Present',
+                                                                      )}
                                                             </p>
                                                             <div className="grid grid-cols-1 gap-x-6 gap-y-1 rounded border border-sidebar-border bg-muted/30 p-2 text-xs sm:grid-cols-2">
                                                                 <div>
                                                                     <span className="text-[10px] font-medium text-muted-foreground uppercase">
-                                                                        SK Num:
+                                                                        {__(
+                                                                            'SK Num:',
+                                                                        )}
                                                                     </span>{' '}
                                                                     {
                                                                         hist.decree_number
@@ -914,7 +949,9 @@ return null;
                                                                 </div>
                                                                 <div>
                                                                     <span className="text-[10px] font-medium text-muted-foreground uppercase">
-                                                                        SK Date:
+                                                                        {__(
+                                                                            'SK Date:',
+                                                                        )}
                                                                     </span>{' '}
                                                                     {shortDateFormatter.format(
                                                                         new Date(
@@ -935,7 +972,9 @@ return null;
                                                                     <a
                                                                         href={`/storage/${hist.document}`}
                                                                         target="_blank"
-                                                                        title="Download Document"
+                                                                        title={__(
+                                                                            'Download Document',
+                                                                        )}
                                                                     >
                                                                         <Download className="size-3.5" />
                                                                     </a>
@@ -973,7 +1012,7 @@ return null;
                                     </div>
                                 ) : (
                                     <div className="rounded-lg border-2 border-dashed py-10 text-center text-sm text-muted-foreground italic">
-                                        No position history recorded.
+                                        {__('No position history recorded.')}
                                     </div>
                                 )}
                             </div>
@@ -984,13 +1023,14 @@ return null;
                             <div className="mb-6 flex items-center justify-between">
                                 <h3 className="flex items-center gap-2 text-lg font-semibold">
                                     <GraduationCap className="size-5 text-primary" />
-                                    Education Background
+                                    {__('Education Background')}
                                 </h3>
                                 <Button
                                     size="sm"
                                     onClick={() => setIsCreatingEdu(true)}
                                 >
-                                    <Plus className="mr-1 size-4" /> Add Degree
+                                    <Plus className="mr-1 size-4" />{' '}
+                                    {__('Add Degree')}
                                 </Button>
                             </div>
 
@@ -1013,11 +1053,13 @@ return null;
                                                         {hist.institution}
                                                     </h4>
                                                     <p className="truncate text-xs text-muted-foreground">
-                                                        {hist.major || 'N/A'}
+                                                        {hist.major ||
+                                                            __('N/A')}
                                                     </p>
                                                     <p className="mt-1 font-mono text-[10px]">
                                                         {hist.start_year} —{' '}
-                                                        {hist.end_year} • GPA:{' '}
+                                                        {hist.end_year} •{' '}
+                                                        {__('GPA:')}{' '}
                                                         {hist.gpa || '-'}
                                                     </p>
                                                 </div>
@@ -1063,7 +1105,7 @@ return null;
                                     )
                                 ) : (
                                     <div className="col-span-full rounded-lg border-2 border-dashed py-10 text-center text-sm text-muted-foreground italic">
-                                        No education records found.
+                                        {__('No education records found.')}
                                     </div>
                                 )}
                             </div>
@@ -1074,14 +1116,15 @@ return null;
                             <div className="mb-6 flex items-center justify-between">
                                 <h3 className="flex items-center gap-2 text-lg font-semibold">
                                     <Award className="size-5 text-primary" />
-                                    Certifications
+                                    {__('Certifications')}
                                 </h3>
                                 {canManageCert && (
                                     <Button
                                         size="sm"
                                         onClick={() => setIsCreatingCert(true)}
                                     >
-                                        <Plus className="mr-1 size-4" /> Add Certification
+                                        <Plus className="mr-1 size-4" />{' '}
+                                        {__('Add Certification')}
                                     </Button>
                                 )}
                             </div>
@@ -1089,77 +1132,96 @@ return null;
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 {employee.certifications &&
                                 employee.certifications.length > 0 ? (
-                                    employee.certifications.map(
-                                        (cert: any) => (
-                                            <div
-                                                key={cert.id}
-                                                className="group relative flex items-start gap-4 rounded-md border bg-muted/10 p-4 transition-colors hover:border-primary/50"
-                                            >
-                                                <div className="flex size-10 shrink-0 items-center justify-center rounded bg-muted">
-                                                    <Award className="size-5 text-muted-foreground" />
-                                                </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <h4 className="truncate text-sm font-semibold">
-                                                        {cert.name}
-                                                    </h4>
-                                                    <p className="truncate text-xs text-muted-foreground">
-                                                        {cert.institution}
+                                    employee.certifications.map((cert: any) => (
+                                        <div
+                                            key={cert.id}
+                                            className="group relative flex items-start gap-4 rounded-md border bg-muted/10 p-4 transition-colors hover:border-primary/50"
+                                        >
+                                            <div className="flex size-10 shrink-0 items-center justify-center rounded bg-muted">
+                                                <Award className="size-5 text-muted-foreground" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h4 className="truncate text-sm font-semibold">
+                                                    {cert.name}
+                                                </h4>
+                                                <p className="truncate text-xs text-muted-foreground">
+                                                    {cert.institution}
+                                                </p>
+                                                {cert.certification_number && (
+                                                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                                                        {__('No: :number', {
+                                                            number: cert.certification_number,
+                                                        })}
                                                     </p>
-                                                    {cert.certification_number && (
-                                                        <p className="truncate text-[11px] text-muted-foreground mt-0.5">
-                                                            No: {cert.certification_number}
-                                                        </p>
-                                                    )}
-                                                    <p className="mt-1 font-mono text-[10px]">
-                                                        Issued: {cert.issue_date ? shortDateFormatter.format(new Date(cert.issue_date)) : '-'} • 
-                                                        Expiry: {cert.expiry_date ? shortDateFormatter.format(new Date(cert.expiry_date)) : 'No Expiry'}
-                                                    </p>
-                                                </div>
-                                                {canManageCert && (
-                                                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                                                        {cert.certificate_file && (
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="size-7"
-                                                                asChild
-                                                            >
-                                                                <a
-                                                                    href={`/storage/${cert.certificate_file}`}
-                                                                    target="_blank"
-                                                                >
-                                                                    <Download className="size-3" />
-                                                                </a>
-                                                            </Button>
-                                                        )}
+                                                )}
+                                                <p className="mt-1 font-mono text-[10px]">
+                                                    {__('Issued: :date', {
+                                                        date: cert.issue_date
+                                                            ? shortDateFormatter.format(
+                                                                  new Date(
+                                                                      cert.issue_date,
+                                                                  ),
+                                                              )
+                                                            : '-',
+                                                    })}{' '}
+                                                    •{' '}
+                                                    {__('Expiry: :date', {
+                                                        date: cert.expiry_date
+                                                            ? shortDateFormatter.format(
+                                                                  new Date(
+                                                                      cert.expiry_date,
+                                                                  ),
+                                                              )
+                                                            : __('No Expiry'),
+                                                    })}
+                                                </p>
+                                            </div>
+                                            {canManageCert && (
+                                                <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                                    {cert.certificate_file && (
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
                                                             className="size-7"
-                                                            onClick={() =>
-                                                                openEditCert(cert)
-                                                            }
+                                                            asChild
                                                         >
-                                                            <Pencil className="size-3" />
+                                                            <a
+                                                                href={`/storage/${cert.certificate_file}`}
+                                                                target="_blank"
+                                                            >
+                                                                <Download className="size-3" />
+                                                            </a>
                                                         </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="size-7 text-destructive"
-                                                            onClick={() =>
-                                                                setDeletingCert(cert)
-                                                            }
-                                                        >
-                                                            <Trash2 className="size-3" />
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ),
-                                    )
+                                                    )}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="size-7"
+                                                        onClick={() =>
+                                                            openEditCert(cert)
+                                                        }
+                                                    >
+                                                        <Pencil className="size-3" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="size-7 text-destructive"
+                                                        onClick={() =>
+                                                            setDeletingCert(
+                                                                cert,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 className="size-3" />
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))
                                 ) : (
                                     <div className="col-span-full rounded-lg border-2 border-dashed py-10 text-center text-sm text-muted-foreground italic">
-                                        No certifications found.
+                                        {__('No certifications found.')}
                                     </div>
                                 )}
                             </div>
@@ -1170,7 +1232,7 @@ return null;
                             <div className="mb-6 flex items-center justify-between">
                                 <h3 className="flex items-center gap-2 text-lg font-semibold">
                                     <Users className="size-5 text-emerald-500" />
-                                    Family Members
+                                    {__('Family Members')}
                                 </h3>
                                 <Button
                                     size="sm"
@@ -1178,68 +1240,97 @@ return null;
                                     className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
                                     onClick={() => setIsCreatingFamily(true)}
                                 >
-                                    <Plus className="mr-1 size-4" /> Add Member
+                                    <Plus className="mr-1 size-4" />{' '}
+                                    {__('Add Member')}
                                 </Button>
                             </div>
 
                             <div className="space-y-3">
-                                {employee.family_members && employee.family_members.length > 0 ? (
+                                {employee.family_members &&
+                                employee.family_members.length > 0 ? (
                                     <div className="grid gap-3">
-                                        {employee.family_members.map((member: any) => (
-                                            <div
-                                                key={member.id}
-                                                className="group flex items-center justify-between rounded-lg border bg-emerald-50/20 p-4 transition-all hover:border-emerald-300"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className="rounded-full border border-emerald-100 bg-white p-2 shadow-sm">
-                                                        <Users className="size-5 text-emerald-500" />
-                                                    </div>
-                                                    <div>
-                                                        <div className="flex items-center gap-2">
-                                                            <h4 className="text-sm font-bold text-emerald-900">
-                                                                {member.name}
-                                                            </h4>
-                                                            {member.is_dependent && (
-                                                                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 uppercase">
-                                                                    Dependent
-                                                                </span>
+                                        {employee.family_members.map(
+                                            (member: any) => (
+                                                <div
+                                                    key={member.id}
+                                                    className="group flex items-center justify-between rounded-lg border bg-emerald-50/20 p-4 transition-all hover:border-emerald-300"
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="rounded-full border border-emerald-100 bg-white p-2 shadow-sm">
+                                                            <Users className="size-5 text-emerald-500" />
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <h4 className="text-sm font-bold text-emerald-900">
+                                                                    {
+                                                                        member.name
+                                                                    }
+                                                                </h4>
+                                                                {member.is_dependent && (
+                                                                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 uppercase">
+                                                                        {__(
+                                                                            'Dependent',
+                                                                        )}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-xs text-muted-foreground capitalize">
+                                                                {relationshipLabels[
+                                                                    member
+                                                                        .relationship
+                                                                ] ??
+                                                                    member.relationship}{' '}
+                                                                •{' '}
+                                                                {genderLabels[
+                                                                    member
+                                                                        .gender
+                                                                ] ??
+                                                                    member.gender}
+                                                                {member.birth_date &&
+                                                                    ` • ${__('Born :date', { date: shortDateFormatter.format(new Date(member.birth_date)) })}`}
+                                                            </p>
+                                                            {member.occupation && (
+                                                                <p className="text-xs text-muted-foreground italic">
+                                                                    {
+                                                                        member.occupation
+                                                                    }
+                                                                </p>
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-muted-foreground capitalize">
-                                                            {member.relationship} • {member.gender}
-                                                            {member.birth_date && ` • Born ${shortDateFormatter.format(new Date(member.birth_date))}`}
-                                                        </p>
-                                                        {member.occupation && (
-                                                            <p className="text-xs text-muted-foreground italic">
-                                                                {member.occupation}
-                                                            </p>
-                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="size-8"
+                                                            onClick={() =>
+                                                                openEditFamily(
+                                                                    member,
+                                                                )
+                                                            }
+                                                        >
+                                                            <Pencil className="size-3.5" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="size-8 text-destructive"
+                                                            onClick={() =>
+                                                                setDeletingFamily(
+                                                                    member,
+                                                                )
+                                                            }
+                                                        >
+                                                            <Trash2 className="size-3.5" />
+                                                        </Button>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="size-8"
-                                                        onClick={() => openEditFamily(member)}
-                                                    >
-                                                        <Pencil className="size-3.5" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="size-8 text-destructive"
-                                                        onClick={() => setDeletingFamily(member)}
-                                                    >
-                                                        <Trash2 className="size-3.5" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            ),
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground italic">
-                                        No family members recorded.
+                                        {__('No family members recorded.')}
                                     </div>
                                 )}
                             </div>
@@ -1250,7 +1341,7 @@ return null;
                             <div className="mb-6 flex items-center justify-between">
                                 <h3 className="flex items-center gap-2 text-lg font-semibold">
                                     <History className="size-5 text-blue-500" />
-                                    Rank History
+                                    {__('Rank History')}
                                 </h3>
                                 <Button
                                     size="sm"
@@ -1258,96 +1349,152 @@ return null;
                                     className="border-blue-200 text-blue-600 hover:bg-blue-50"
                                     onClick={() => setIsCreatingRank(true)}
                                 >
-                                    <Plus className="mr-1 size-4" /> Add Record
+                                    <Plus className="mr-1 size-4" />{' '}
+                                    {__('Add Record')}
                                 </Button>
                             </div>
 
                             <div className="space-y-4">
-                                {employee.rank_histories && employee.rank_histories.length > 0 ? (
+                                {employee.rank_histories &&
+                                employee.rank_histories.length > 0 ? (
                                     <div className="grid gap-4">
-                                        {employee.rank_histories.map((hist: any) => (
-                                            <div
-                                                key={hist.id}
-                                                className="group relative flex flex-col gap-3 rounded-lg border bg-blue-50/10 p-4 transition-all hover:border-blue-300"
-                                            >
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="rounded-full border border-blue-100 bg-white p-2 shadow-sm">
-                                                            <History className="size-5 text-blue-500" />
+                                        {employee.rank_histories.map(
+                                            (hist: any) => (
+                                                <div
+                                                    key={hist.id}
+                                                    className="group relative flex flex-col gap-3 rounded-lg border bg-blue-50/10 p-4 transition-all hover:border-blue-300"
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="rounded-full border border-blue-100 bg-white p-2 shadow-sm">
+                                                                <History className="size-5 text-blue-500" />
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-sm font-bold text-blue-900">
+                                                                    {
+                                                                        hist
+                                                                            .rank
+                                                                            ?.name
+                                                                    }{' '}
+                                                                    (
+                                                                    {
+                                                                        hist
+                                                                            .rank
+                                                                            ?.code
+                                                                    }
+                                                                    )
+                                                                </h4>
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    {shortDateFormatter.format(
+                                                                        new Date(
+                                                                            hist.start_date,
+                                                                        ),
+                                                                    )}{' '}
+                                                                    —{' '}
+                                                                    {hist.end_date
+                                                                        ? shortDateFormatter.format(
+                                                                              new Date(
+                                                                                  hist.end_date,
+                                                                              ),
+                                                                          )
+                                                                        : __(
+                                                                              'Now',
+                                                                          )}
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <h4 className="text-sm font-bold text-blue-900">
-                                                                {hist.rank?.name} ({hist.rank?.code})
-                                                            </h4>
-                                                            <p className="text-xs text-muted-foreground">
-                                                                {shortDateFormatter.format(new Date(hist.start_date))} —{' '}
-                                                                {hist.end_date
-                                                                    ? shortDateFormatter.format(new Date(hist.end_date))
-                                                                    : 'Present'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                                                        {hist.decree_file && (
+                                                        <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                                            {hist.decree_file && (
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="size-8"
+                                                                    asChild
+                                                                >
+                                                                    <a
+                                                                        href={`/storage/${hist.decree_file}`}
+                                                                        target="_blank"
+                                                                        title={__(
+                                                                            'Download Decree',
+                                                                        )}
+                                                                    >
+                                                                        <Download className="size-3.5" />
+                                                                    </a>
+                                                                </Button>
+                                                            )}
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className="size-8"
-                                                                asChild
+                                                                onClick={() =>
+                                                                    openEditRankHist(
+                                                                        hist,
+                                                                    )
+                                                                }
                                                             >
-                                                                <a
-                                                                    href={`/storage/${hist.decree_file}`}
-                                                                    target="_blank"
-                                                                    title="Download Decree"
-                                                                >
-                                                                    <Download className="size-3.5" />
-                                                                </a>
+                                                                <Pencil className="size-3.5" />
                                                             </Button>
-                                                        )}
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="size-8"
-                                                            onClick={() => openEditRankHist(hist)}
-                                                        >
-                                                            <Pencil className="size-3.5" />
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="size-8 text-destructive"
-                                                            onClick={() => setDeletingRankHist(hist)}
-                                                        >
-                                                            <Trash2 className="size-3.5" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 gap-x-6 gap-y-1 rounded border border-blue-100 bg-blue-50/5 p-2 text-xs sm:grid-cols-2">
-                                                    <div>
-                                                        <span className="font-semibold text-muted-foreground">Effective Date:</span>{' '}
-                                                        {shortDateFormatter.format(new Date(hist.effective_date))}
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-semibold text-muted-foreground">Decree Number:</span>{' '}
-                                                        {hist.decree_number}
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-semibold text-muted-foreground">Decree Date:</span>{' '}
-                                                        {shortDateFormatter.format(new Date(hist.decree_date))}
-                                                    </div>
-                                                    {hist.remarks && (
-                                                        <div className="col-span-full mt-1 border-t pt-1 italic text-muted-foreground">
-                                                            {hist.remarks}
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="size-8 text-destructive"
+                                                                onClick={() =>
+                                                                    setDeletingRankHist(
+                                                                        hist,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Trash2 className="size-3.5" />
+                                                            </Button>
                                                         </div>
-                                                    )}
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 gap-x-6 gap-y-1 rounded border border-blue-100 bg-blue-50/5 p-2 text-xs sm:grid-cols-2">
+                                                        <div>
+                                                            <span className="font-semibold text-muted-foreground">
+                                                                {__(
+                                                                    'Effective Date:',
+                                                                )}
+                                                            </span>{' '}
+                                                            {shortDateFormatter.format(
+                                                                new Date(
+                                                                    hist.effective_date,
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <span className="font-semibold text-muted-foreground">
+                                                                {__(
+                                                                    'Decree Number:',
+                                                                )}
+                                                            </span>{' '}
+                                                            {hist.decree_number}
+                                                        </div>
+                                                        <div>
+                                                            <span className="font-semibold text-muted-foreground">
+                                                                {__(
+                                                                    'Decree Date:',
+                                                                )}
+                                                            </span>{' '}
+                                                            {shortDateFormatter.format(
+                                                                new Date(
+                                                                    hist.decree_date,
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        {hist.remarks && (
+                                                            <div className="col-span-full mt-1 border-t pt-1 text-muted-foreground italic">
+                                                                {hist.remarks}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ),
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground italic">
-                                        No rank history recorded.
+                                        {__('No rank history recorded.')}
                                     </div>
                                 )}
                             </div>
@@ -1371,13 +1518,13 @@ return null;
                     <DialogHeader>
                         <DialogTitle>
                             {editingPos
-                                ? 'Edit Career Record'
-                                : 'Add Career Record'}
+                                ? __('Edit Career Record')
+                                : __('Add Career Record')}
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitPos} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="pos_id">Position</Label>
+                            <Label htmlFor="pos_id">{__('Position')}</Label>
                             <Select
                                 value={posForm.data.position_id}
                                 onValueChange={(v) =>
@@ -1385,7 +1532,9 @@ return null;
                                 }
                             >
                                 <SelectTrigger id="pos_id">
-                                    <SelectValue placeholder="Select position" />
+                                    <SelectValue
+                                        placeholder={__('Select position')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {(positions || []).map((p) => (
@@ -1399,7 +1548,9 @@ return null;
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="start_date">Start Date</Label>
+                                <Label htmlFor="start_date">
+                                    {__('Start Date')}
+                                </Label>
                                 <Input
                                     id="start_date"
                                     type="date"
@@ -1417,7 +1568,7 @@ return null;
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="end_date">
-                                    End Date (Optional)
+                                    {__('End Date (Optional)')}
                                 </Label>
                                 <Input
                                     id="end_date"
@@ -1433,7 +1584,9 @@ return null;
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="dec_num">Decree (SK) Number</Label>
+                            <Label htmlFor="dec_num">
+                                {__('Decree (SK) Number')}
+                            </Label>
                             <Input
                                 id="dec_num"
                                 value={posForm.data.decree_number}
@@ -1443,14 +1596,16 @@ return null;
                                         e.target.value,
                                     )
                                 }
-                                placeholder="e.g. 123/SK/2026"
+                                placeholder={__('e.g. 123/SK/2026')}
                             />
                             <InputError
                                 message={posForm.errors.decree_number}
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="dec_date">Decree (SK) Date</Label>
+                            <Label htmlFor="dec_date">
+                                {__('Decree (SK) Date')}
+                            </Label>
                             <Input
                                 id="dec_date"
                                 type="date"
@@ -1466,7 +1621,7 @@ return null;
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="pos_doc">
-                                Document (PDF/JPG/PNG)
+                                {__('Document (PDF/JPG/PNG)')}
                             </Label>
                             <Input
                                 id="pos_doc"
@@ -1489,10 +1644,10 @@ return null;
                                     setEditingPos(null);
                                 }}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button type="submit" disabled={posForm.processing}>
-                                Save Record
+                                {__('Save Record')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -1514,14 +1669,14 @@ return null;
                     <DialogHeader>
                         <DialogTitle>
                             {editingFunc
-                                ? 'Edit Functional History'
-                                : 'Add Functional History'}
+                                ? __('Edit Functional History')
+                                : __('Add Functional History')}
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitFunc} className="grid gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="func_pos_id">
-                                Functional Position
+                                {__('Functional Position')}
                             </Label>
                             <Select
                                 value={funcForm.data.functional_position_id}
@@ -1533,12 +1688,20 @@ return null;
                                 }
                             >
                                 <SelectTrigger id="func_pos_id">
-                                    <SelectValue placeholder="Select functional position" />
+                                    <SelectValue
+                                        placeholder={__(
+                                            'Select functional position',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {functionalPositions.map((f) => (
                                         <SelectItem key={f.id} value={f.id}>
-                                            {f.name} (Lvl {f.level})
+                                            {f.name} (
+                                            {__('Lvl :level', {
+                                                level: f.level,
+                                            })}
+                                            )
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -1548,7 +1711,9 @@ return null;
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="f_start_date">Start Date</Label>
+                            <Label htmlFor="f_start_date">
+                                {__('Start Date')}
+                            </Label>
                             <Input
                                 id="f_start_date"
                                 type="date"
@@ -1564,7 +1729,7 @@ return null;
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="f_dec_num">
-                                Decree (SK) Number
+                                {__('Decree (SK) Number')}
                             </Label>
                             <Input
                                 id="f_dec_num"
@@ -1583,7 +1748,7 @@ return null;
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="f_dec_date">
-                                    Decree (SK) Date
+                                    {__('Decree (SK) Date')}
                                 </Label>
                                 <Input
                                     id="f_dec_date"
@@ -1602,7 +1767,7 @@ return null;
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="f_dec_signer">
-                                    Decree Signer
+                                    {__('Decree Signer')}
                                 </Label>
                                 <Input
                                     id="f_dec_signer"
@@ -1620,7 +1785,9 @@ return null;
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="f_cert">Certificate/SK File</Label>
+                            <Label htmlFor="f_cert">
+                                {__('Certificate/SK File')}
+                            </Label>
                             <Input
                                 id="f_cert"
                                 type="file"
@@ -1644,13 +1811,13 @@ return null;
                                     setEditingFunc(null);
                                 }}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={funcForm.processing}
                             >
-                                Save functional record
+                                {__('Save functional record')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -1672,13 +1839,15 @@ return null;
                     <DialogHeader>
                         <DialogTitle>
                             {editingClass
-                                ? 'Edit Classification History'
-                                : 'Add Classification History'}
+                                ? __('Edit Classification History')
+                                : __('Add Classification History')}
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitClass} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="class_id">Classification</Label>
+                            <Label htmlFor="class_id">
+                                {__('Classification')}
+                            </Label>
                             <Select
                                 value={
                                     classForm.data
@@ -1692,7 +1861,11 @@ return null;
                                 }
                             >
                                 <SelectTrigger id="class_id">
-                                    <SelectValue placeholder="Select classification" />
+                                    <SelectValue
+                                        placeholder={__(
+                                            'Select classification',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {nomenclatureClassifications.map((c) => (
@@ -1711,7 +1884,9 @@ return null;
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="c_start_date">Start Date</Label>
+                                <Label htmlFor="c_start_date">
+                                    {__('Start Date')}
+                                </Label>
                                 <Input
                                     id="c_start_date"
                                     type="date"
@@ -1729,7 +1904,7 @@ return null;
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="c_end_date">
-                                    End Date (Optional)
+                                    {__('End Date (Optional)')}
                                 </Label>
                                 <Input
                                     id="c_end_date"
@@ -1745,7 +1920,9 @@ return null;
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="c_dec_num">Decree Number</Label>
+                            <Label htmlFor="c_dec_num">
+                                {__('Decree Number')}
+                            </Label>
                             <Input
                                 id="c_dec_num"
                                 value={classForm.data.decree_number}
@@ -1762,7 +1939,9 @@ return null;
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="c_dec_date">Decree Date</Label>
+                                <Label htmlFor="c_dec_date">
+                                    {__('Decree Date')}
+                                </Label>
                                 <Input
                                     id="c_dec_date"
                                     type="date"
@@ -1780,7 +1959,7 @@ return null;
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="c_dec_signer">
-                                    Decree Signer
+                                    {__('Decree Signer')}
                                 </Label>
                                 <Input
                                     id="c_dec_signer"
@@ -1798,7 +1977,7 @@ return null;
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="c_file">Decree File</Label>
+                            <Label htmlFor="c_file">{__('Decree File')}</Label>
                             <Input
                                 id="c_file"
                                 type="file"
@@ -1822,13 +2001,13 @@ return null;
                                     setEditingClass(null);
                                 }}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={classForm.processing}
                             >
-                                Save record
+                                {__('Save record')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -1849,13 +2028,13 @@ return null;
                 <DialogContent className="max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            {editingEdu ? 'Edit Degree' : 'Add Degree'}
+                            {editingEdu ? __('Edit Degree') : __('Add Degree')}
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitEdu} className="grid gap-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="degree">Degree</Label>
+                                <Label htmlFor="degree">{__('Degree')}</Label>
                                 <Select
                                     value={eduForm.data.degree}
                                     onValueChange={(v) =>
@@ -1863,7 +2042,9 @@ return null;
                                     }
                                 >
                                     <SelectTrigger id="degree">
-                                        <SelectValue placeholder="Degree" />
+                                        <SelectValue
+                                            placeholder={__('Degree')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {degrees.map((d) => (
@@ -1876,7 +2057,7 @@ return null;
                                 <InputError message={eduForm.errors.degree} />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="major">Major</Label>
+                                <Label htmlFor="major">{__('Major')}</Label>
                                 <Input
                                     id="major"
                                     value={eduForm.data.major}
@@ -1888,7 +2069,7 @@ return null;
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="inst">Institution</Label>
+                            <Label htmlFor="inst">{__('Institution')}</Label>
                             <Input
                                 id="inst"
                                 value={eduForm.data.institution}
@@ -1903,7 +2084,7 @@ return null;
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="sy">Start Year</Label>
+                                <Label htmlFor="sy">{__('Start Year')}</Label>
                                 <Input
                                     id="sy"
                                     type="number"
@@ -1920,7 +2101,7 @@ return null;
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="ey">End Year</Label>
+                                <Label htmlFor="ey">{__('End Year')}</Label>
                                 <Input
                                     id="ey"
                                     type="number"
@@ -1935,7 +2116,7 @@ return null;
                                 <InputError message={eduForm.errors.end_year} />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="gpa">GPA</Label>
+                                <Label htmlFor="gpa">{__('GPA')}</Label>
                                 <Input
                                     id="gpa"
                                     type="number"
@@ -1950,7 +2131,7 @@ return null;
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="edu_doc">
-                                Certificate (PDF/JPG/PNG)
+                                {__('Certificate (PDF/JPG/PNG)')}
                             </Label>
                             <Input
                                 id="edu_doc"
@@ -1975,10 +2156,10 @@ return null;
                                     setEditingEdu(null);
                                 }}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button type="submit" disabled={eduForm.processing}>
-                                Save Degree
+                                {__('Save Degree')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -1992,10 +2173,14 @@ return null;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Remove Structural Record</DialogTitle>
+                        <DialogTitle>
+                            {__('Remove Structural Record')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to remove this position record?
+                        {__(
+                            'Are you sure you want to remove this position record?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -2003,7 +2188,7 @@ return null;
                             variant="outline"
                             onClick={() => setDeletingPos(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -2017,7 +2202,7 @@ return null;
                                 )
                             }
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -2029,10 +2214,14 @@ return null;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Remove Functional Record</DialogTitle>
+                        <DialogTitle>
+                            {__('Remove Functional Record')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to remove this functional record?
+                        {__(
+                            'Are you sure you want to remove this functional record?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -2040,7 +2229,7 @@ return null;
                             variant="outline"
                             onClick={() => setDeletingFunc(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -2054,7 +2243,7 @@ return null;
                                 )
                             }
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -2066,11 +2255,14 @@ return null;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Remove Classification Record</DialogTitle>
+                        <DialogTitle>
+                            {__('Remove Classification Record')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to remove this classification
-                        record?
+                        {__(
+                            'Are you sure you want to remove this classification record?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -2078,7 +2270,7 @@ return null;
                             variant="outline"
                             onClick={() => setDeletingClass(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -2092,7 +2284,7 @@ return null;
                                 )
                             }
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -2104,10 +2296,14 @@ return null;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Remove Education Record</DialogTitle>
+                        <DialogTitle>
+                            {__('Remove Education Record')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to remove this degree record?
+                        {__(
+                            'Are you sure you want to remove this degree record?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -2115,7 +2311,7 @@ return null;
                             variant="outline"
                             onClick={() => setDeletingEdu(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -2129,7 +2325,7 @@ return null;
                                 )
                             }
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -2149,12 +2345,16 @@ return null;
                 <DialogContent className="max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            {editingCert ? 'Edit Certification' : 'Add Certification'}
+                            {editingCert
+                                ? __('Edit Certification')
+                                : __('Add Certification')}
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitCert} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="cert_name">Certification Name</Label>
+                            <Label htmlFor="cert_name">
+                                {__('Certification Name')}
+                            </Label>
                             <Input
                                 id="cert_name"
                                 value={certForm.data.name}
@@ -2165,56 +2365,82 @@ return null;
                             <InputError message={certForm.errors.name} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="cert_inst">Issuing Organization / Institution</Label>
+                            <Label htmlFor="cert_inst">
+                                {__('Issuing Organization / Institution')}
+                            </Label>
                             <Input
                                 id="cert_inst"
                                 value={certForm.data.institution}
                                 onChange={(e) =>
-                                    certForm.setData('institution', e.target.value)
+                                    certForm.setData(
+                                        'institution',
+                                        e.target.value,
+                                    )
                                 }
                             />
                             <InputError message={certForm.errors.institution} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="cert_num">Certification Number</Label>
+                            <Label htmlFor="cert_num">
+                                {__('Certification Number')}
+                            </Label>
                             <Input
                                 id="cert_num"
                                 value={certForm.data.certification_number}
                                 onChange={(e) =>
-                                    certForm.setData('certification_number', e.target.value)
+                                    certForm.setData(
+                                        'certification_number',
+                                        e.target.value,
+                                    )
                                 }
                             />
-                            <InputError message={certForm.errors.certification_number} />
+                            <InputError
+                                message={certForm.errors.certification_number}
+                            />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="issue_date">Issue Date</Label>
+                                <Label htmlFor="issue_date">
+                                    {__('Issue Date')}
+                                </Label>
                                 <Input
                                     id="issue_date"
                                     type="date"
                                     value={certForm.data.issue_date}
                                     onChange={(e) =>
-                                        certForm.setData('issue_date', e.target.value)
+                                        certForm.setData(
+                                            'issue_date',
+                                            e.target.value,
+                                        )
                                     }
                                 />
-                                <InputError message={certForm.errors.issue_date} />
+                                <InputError
+                                    message={certForm.errors.issue_date}
+                                />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="expiry_date">Expiry Date</Label>
+                                <Label htmlFor="expiry_date">
+                                    {__('Expiry Date')}
+                                </Label>
                                 <Input
                                     id="expiry_date"
                                     type="date"
                                     value={certForm.data.expiry_date}
                                     onChange={(e) =>
-                                        certForm.setData('expiry_date', e.target.value)
+                                        certForm.setData(
+                                            'expiry_date',
+                                            e.target.value,
+                                        )
                                     }
                                 />
-                                <InputError message={certForm.errors.expiry_date} />
+                                <InputError
+                                    message={certForm.errors.expiry_date}
+                                />
                             </div>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="cert_doc">
-                                Certificate Document (PDF/JPG/PNG)
+                                {__('Certificate Document (PDF/JPG/PNG)')}
                             </Label>
                             <Input
                                 id="cert_doc"
@@ -2226,7 +2452,9 @@ return null;
                                     )
                                 }
                             />
-                            <InputError message={certForm.errors.certificate_file} />
+                            <InputError
+                                message={certForm.errors.certificate_file}
+                            />
                         </div>
                         <DialogFooter>
                             <Button
@@ -2237,10 +2465,13 @@ return null;
                                     setEditingCert(null);
                                 }}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={certForm.processing}>
-                                Save Certification
+                            <Button
+                                type="submit"
+                                disabled={certForm.processing}
+                            >
+                                {__('Save Certification')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -2254,10 +2485,12 @@ return null;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Remove Certification</DialogTitle>
+                        <DialogTitle>{__('Remove Certification')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to remove this certification record?
+                        {__(
+                            'Are you sure you want to remove this certification record?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -2265,7 +2498,7 @@ return null;
                             variant="outline"
                             onClick={() => setDeletingCert(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -2279,7 +2512,7 @@ return null;
                                 )
                             }
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -2299,108 +2532,183 @@ return null;
                 <DialogContent className="max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            {editingFamily ? 'Edit Family Member' : 'Add Family Member'}
+                            {editingFamily
+                                ? __('Edit Family Member')
+                                : __('Add Family Member')}
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitFamily} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="fam_name">Name</Label>
+                            <Label htmlFor="fam_name">{__('Name')}</Label>
                             <Input
                                 id="fam_name"
                                 value={familyForm.data.name}
-                                onChange={(e) => familyForm.setData('name', e.target.value)}
-                                placeholder="Full Name"
+                                onChange={(e) =>
+                                    familyForm.setData('name', e.target.value)
+                                }
+                                placeholder={__('Full Name')}
                                 required
                             />
                             <InputError message={familyForm.errors.name} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="fam_relationship">Relationship</Label>
+                                <Label htmlFor="fam_relationship">
+                                    {__('Relationship')}
+                                </Label>
                                 <Select
                                     value={familyForm.data.relationship}
-                                    onValueChange={(v) => familyForm.setData('relationship', v)}
+                                    onValueChange={(v) =>
+                                        familyForm.setData('relationship', v)
+                                    }
                                 >
                                     <SelectTrigger id="fam_relationship">
-                                        <SelectValue placeholder="Relationship" />
+                                        <SelectValue
+                                            placeholder={__('Relationship')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="spouse">Spouse</SelectItem>
-                                        <SelectItem value="child">Child</SelectItem>
-                                        <SelectItem value="parent">Parent</SelectItem>
-                                        <SelectItem value="sibling">Sibling</SelectItem>
-                                        <SelectItem value="other">Other</SelectItem>
+                                        <SelectItem value="spouse">
+                                            {__('Spouse')}
+                                        </SelectItem>
+                                        <SelectItem value="child">
+                                            {__('Child')}
+                                        </SelectItem>
+                                        <SelectItem value="parent">
+                                            {__('Father/Mother')}
+                                        </SelectItem>
+                                        <SelectItem value="sibling">
+                                            {__('Sibling')}
+                                        </SelectItem>
+                                        <SelectItem value="other">
+                                            {__('Other')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <InputError message={familyForm.errors.relationship} />
+                                <InputError
+                                    message={familyForm.errors.relationship}
+                                />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="fam_gender">Gender</Label>
+                                <Label htmlFor="fam_gender">
+                                    {__('Gender')}
+                                </Label>
                                 <Select
                                     value={familyForm.data.gender}
-                                    onValueChange={(v) => familyForm.setData('gender', v)}
+                                    onValueChange={(v) =>
+                                        familyForm.setData('gender', v)
+                                    }
                                 >
                                     <SelectTrigger id="fam_gender">
-                                        <SelectValue placeholder="Gender" />
+                                        <SelectValue
+                                            placeholder={__('Gender')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="male">Male</SelectItem>
-                                        <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="male">
+                                            {__('Male')}
+                                        </SelectItem>
+                                        <SelectItem value="female">
+                                            {__('Female')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <InputError message={familyForm.errors.gender} />
+                                <InputError
+                                    message={familyForm.errors.gender}
+                                />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="fam_birth_place">Birth Place</Label>
+                                <Label htmlFor="fam_birth_place">
+                                    {__('Birth Place')}
+                                </Label>
                                 <Input
                                     id="fam_birth_place"
                                     value={familyForm.data.birth_place}
-                                    onChange={(e) => familyForm.setData('birth_place', e.target.value)}
-                                    placeholder="Birth Place"
+                                    onChange={(e) =>
+                                        familyForm.setData(
+                                            'birth_place',
+                                            e.target.value,
+                                        )
+                                    }
+                                    placeholder={__('Birth Place')}
                                 />
-                                <InputError message={familyForm.errors.birth_place} />
+                                <InputError
+                                    message={familyForm.errors.birth_place}
+                                />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="fam_birth_date">Birth Date</Label>
+                                <Label htmlFor="fam_birth_date">
+                                    {__('Birth Date')}
+                                </Label>
                                 <Input
                                     id="fam_birth_date"
                                     type="date"
                                     value={familyForm.data.birth_date}
-                                    onChange={(e) => familyForm.setData('birth_date', e.target.value)}
+                                    onChange={(e) =>
+                                        familyForm.setData(
+                                            'birth_date',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
-                                <InputError message={familyForm.errors.birth_date} />
+                                <InputError
+                                    message={familyForm.errors.birth_date}
+                                />
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="fam_id_card">ID Card Number (NIK)</Label>
+                            <Label htmlFor="fam_id_card">
+                                {__('ID Card Number (NIK)')}
+                            </Label>
                             <Input
                                 id="fam_id_card"
                                 value={familyForm.data.id_card_number}
-                                onChange={(e) => familyForm.setData('id_card_number', e.target.value)}
-                                placeholder="ID Card Number"
+                                onChange={(e) =>
+                                    familyForm.setData(
+                                        'id_card_number',
+                                        e.target.value,
+                                    )
+                                }
+                                placeholder={__('ID Card Number')}
                             />
-                            <InputError message={familyForm.errors.id_card_number} />
+                            <InputError
+                                message={familyForm.errors.id_card_number}
+                            />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="fam_occupation">Occupation</Label>
+                                <Label htmlFor="fam_occupation">
+                                    {__('Occupation')}
+                                </Label>
                                 <Input
                                     id="fam_occupation"
                                     value={familyForm.data.occupation}
-                                    onChange={(e) => familyForm.setData('occupation', e.target.value)}
-                                    placeholder="Occupation"
+                                    onChange={(e) =>
+                                        familyForm.setData(
+                                            'occupation',
+                                            e.target.value,
+                                        )
+                                    }
+                                    placeholder={__('Occupation')}
                                 />
-                                <InputError message={familyForm.errors.occupation} />
+                                <InputError
+                                    message={familyForm.errors.occupation}
+                                />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="fam_phone">Phone</Label>
+                                <Label htmlFor="fam_phone">{__('Phone')}</Label>
                                 <Input
                                     id="fam_phone"
                                     value={familyForm.data.phone}
-                                    onChange={(e) => familyForm.setData('phone', e.target.value)}
-                                    placeholder="Phone Number"
+                                    onChange={(e) =>
+                                        familyForm.setData(
+                                            'phone',
+                                            e.target.value,
+                                        )
+                                    }
+                                    placeholder={__('Phone Number')}
                                 />
                                 <InputError message={familyForm.errors.phone} />
                             </div>
@@ -2410,19 +2718,31 @@ return null;
                                 id="fam_is_dependent"
                                 checked={familyForm.data.is_dependent}
                                 onCheckedChange={(checked) =>
-                                    familyForm.setData('is_dependent', checked === true)
+                                    familyForm.setData(
+                                        'is_dependent',
+                                        checked === true,
+                                    )
                                 }
                             />
-                            <Label htmlFor="fam_is_dependent" className="cursor-pointer">Is Dependent (Tanggungan)</Label>
-                            <InputError message={familyForm.errors.is_dependent} />
+                            <Label
+                                htmlFor="fam_is_dependent"
+                                className="cursor-pointer"
+                            >
+                                {__('Is Dependent')}
+                            </Label>
+                            <InputError
+                                message={familyForm.errors.is_dependent}
+                            />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="fam_notes">Notes</Label>
+                            <Label htmlFor="fam_notes">{__('Notes')}</Label>
                             <Textarea
                                 id="fam_notes"
                                 value={familyForm.data.notes}
-                                onChange={(e) => familyForm.setData('notes', e.target.value)}
-                                placeholder="Additional details..."
+                                onChange={(e) =>
+                                    familyForm.setData('notes', e.target.value)
+                                }
+                                placeholder={__('Additional details...')}
                             />
                             <InputError message={familyForm.errors.notes} />
                         </div>
@@ -2435,10 +2755,13 @@ return null;
                                     setEditingFamily(null);
                                 }}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={familyForm.processing}>
-                                Save Family Member
+                            <Button
+                                type="submit"
+                                disabled={familyForm.processing}
+                            >
+                                {__('Save Family Member')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -2452,10 +2775,12 @@ return null;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Remove Family Member</DialogTitle>
+                        <DialogTitle>{__('Remove Family Member')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to remove this family member?
+                        {__(
+                            'Are you sure you want to remove this family member?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -2463,7 +2788,7 @@ return null;
                             variant="outline"
                             onClick={() => setDeletingFamily(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -2473,11 +2798,14 @@ return null;
                                     EmployeeFamilyMemberController.destroy.url(
                                         deletingFamily.id,
                                     ),
-                                    { onSuccess: () => setDeletingFamily(null) },
+                                    {
+                                        onSuccess: () =>
+                                            setDeletingFamily(null),
+                                    },
                                 )
                             }
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -2497,18 +2825,24 @@ return null;
                 <DialogContent className="max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            {editingRankHist ? 'Edit Rank Record' : 'Add Rank Record'}
+                            {editingRankHist
+                                ? __('Edit Rank Record')
+                                : __('Add Rank Record')}
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitRankHist} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="rank_id">Rank</Label>
+                            <Label htmlFor="rank_id">{__('Rank')}</Label>
                             <Select
                                 value={rankHistForm.data.employee_rank_id}
-                                onValueChange={(v) => rankHistForm.setData('employee_rank_id', v)}
+                                onValueChange={(v) =>
+                                    rankHistForm.setData('employee_rank_id', v)
+                                }
                             >
                                 <SelectTrigger id="rank_id">
-                                    <SelectValue placeholder="Select rank" />
+                                    <SelectValue
+                                        placeholder={__('Select rank')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {(ranks || []).map((r) => (
@@ -2518,74 +2852,113 @@ return null;
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <InputError message={rankHistForm.errors.employee_rank_id} />
+                            <InputError
+                                message={rankHistForm.errors.employee_rank_id}
+                            />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="rank_start_date">Start Date</Label>
+                                <Label htmlFor="rank_start_date">
+                                    {__('Start Date')}
+                                </Label>
                                 <Input
                                     id="rank_start_date"
                                     type="date"
                                     value={rankHistForm.data.start_date}
                                     onChange={(e) =>
-                                        rankHistForm.setData('start_date', e.target.value)
+                                        rankHistForm.setData(
+                                            'start_date',
+                                            e.target.value,
+                                        )
                                     }
                                 />
-                                <InputError message={rankHistForm.errors.start_date} />
+                                <InputError
+                                    message={rankHistForm.errors.start_date}
+                                />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="rank_end_date">End Date (Optional)</Label>
+                                <Label htmlFor="rank_end_date">
+                                    {__('End Date (Optional)')}
+                                </Label>
                                 <Input
                                     id="rank_end_date"
                                     type="date"
                                     value={rankHistForm.data.end_date}
                                     onChange={(e) =>
-                                        rankHistForm.setData('end_date', e.target.value)
+                                        rankHistForm.setData(
+                                            'end_date',
+                                            e.target.value,
+                                        )
                                     }
                                 />
-                                <InputError message={rankHistForm.errors.end_date} />
+                                <InputError
+                                    message={rankHistForm.errors.end_date}
+                                />
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="rank_effective_date">Effective Date</Label>
+                            <Label htmlFor="rank_effective_date">
+                                {__('Effective Date')}
+                            </Label>
                             <Input
                                 id="rank_effective_date"
                                 type="date"
                                 value={rankHistForm.data.effective_date}
                                 onChange={(e) =>
-                                    rankHistForm.setData('effective_date', e.target.value)
+                                    rankHistForm.setData(
+                                        'effective_date',
+                                        e.target.value,
+                                    )
                                 }
                             />
-                            <InputError message={rankHistForm.errors.effective_date} />
+                            <InputError
+                                message={rankHistForm.errors.effective_date}
+                            />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="rank_dec_num">Decree Number</Label>
+                                <Label htmlFor="rank_dec_num">
+                                    {__('Decree Number')}
+                                </Label>
                                 <Input
                                     id="rank_dec_num"
                                     value={rankHistForm.data.decree_number}
                                     onChange={(e) =>
-                                        rankHistForm.setData('decree_number', e.target.value)
+                                        rankHistForm.setData(
+                                            'decree_number',
+                                            e.target.value,
+                                        )
                                     }
-                                    placeholder="e.g. 89/SK/2026"
+                                    placeholder={__('e.g. 89/SK/2026')}
                                 />
-                                <InputError message={rankHistForm.errors.decree_number} />
+                                <InputError
+                                    message={rankHistForm.errors.decree_number}
+                                />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="rank_dec_date">Decree Date</Label>
+                                <Label htmlFor="rank_dec_date">
+                                    {__('Decree Date')}
+                                </Label>
                                 <Input
                                     id="rank_dec_date"
                                     type="date"
                                     value={rankHistForm.data.decree_date}
                                     onChange={(e) =>
-                                        rankHistForm.setData('decree_date', e.target.value)
+                                        rankHistForm.setData(
+                                            'decree_date',
+                                            e.target.value,
+                                        )
                                     }
                                 />
-                                <InputError message={rankHistForm.errors.decree_date} />
+                                <InputError
+                                    message={rankHistForm.errors.decree_date}
+                                />
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="rank_dec_file">Decree File (PDF/JPG/PNG)</Label>
+                            <Label htmlFor="rank_dec_file">
+                                {__('Decree File (PDF/JPG/PNG)')}
+                            </Label>
                             <Input
                                 id="rank_dec_file"
                                 type="file"
@@ -2596,15 +2969,24 @@ return null;
                                     )
                                 }
                             />
-                            <InputError message={rankHistForm.errors.decree_file} />
+                            <InputError
+                                message={rankHistForm.errors.decree_file}
+                            />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="rank_remarks">Remarks</Label>
+                            <Label htmlFor="rank_remarks">
+                                {__('Remarks')}
+                            </Label>
                             <Textarea
                                 id="rank_remarks"
                                 value={rankHistForm.data.remarks}
-                                onChange={(e) => rankHistForm.setData('remarks', e.target.value)}
-                                placeholder="Additional remarks..."
+                                onChange={(e) =>
+                                    rankHistForm.setData(
+                                        'remarks',
+                                        e.target.value,
+                                    )
+                                }
+                                placeholder={__('Additional remarks...')}
                             />
                             <InputError message={rankHistForm.errors.remarks} />
                         </div>
@@ -2617,10 +2999,13 @@ return null;
                                     setEditingRankHist(null);
                                 }}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={rankHistForm.processing}>
-                                Save Record
+                            <Button
+                                type="submit"
+                                disabled={rankHistForm.processing}
+                            >
+                                {__('Save Record')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -2634,10 +3019,12 @@ return null;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Remove Rank Record</DialogTitle>
+                        <DialogTitle>{__('Remove Rank Record')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to remove this rank history record?
+                        {__(
+                            'Are you sure you want to remove this rank history record?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -2645,7 +3032,7 @@ return null;
                             variant="outline"
                             onClick={() => setDeletingRankHist(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -2655,11 +3042,14 @@ return null;
                                     EmployeeRankHistoryController.destroy.url(
                                         deletingRankHist.id,
                                     ),
-                                    { onSuccess: () => setDeletingRankHist(null) },
+                                    {
+                                        onSuccess: () =>
+                                            setDeletingRankHist(null),
+                                    },
                                 )
                             }
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -2670,8 +3060,8 @@ return null;
 
 EmployeeShow.layout = {
     breadcrumbs: [
-        { title: 'HR', href: '#' },
-        { title: 'Employees', href: employeesIndex() },
-        { title: 'Detail', href: '' },
+        { title: __('HR'), href: '#' },
+        { title: __('Employees'), href: employeesIndex() },
+        { title: __('Detail'), href: '' },
     ],
 };

@@ -78,7 +78,16 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'id'),
+
+    /*
+    | Interface languages users can switch between (code => native name).
+    */
+
+    'available_locales' => [
+        'id' => 'Bahasa Indonesia',
+        'en' => 'English',
+    ],
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

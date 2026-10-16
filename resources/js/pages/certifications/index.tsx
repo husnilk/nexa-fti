@@ -1,5 +1,15 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Award, Eye, Pencil, Plus, Search, Trash2, X, Download, Calendar, ShieldAlert } from 'lucide-react';
+import {
+    Award,
+    Eye,
+    Pencil,
+    Plus,
+    Search,
+    Trash2,
+    X,
+    Download,
+    ShieldAlert,
+} from 'lucide-react';
 import { useState } from 'react';
 import CertificationController from '@/actions/App/Http/Controllers/CertificationController';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +22,13 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { index as certificationsIndex, create as certificationCreate, edit as certificationEdit, show as certificationShow } from '@/routes/certifications';
+import { __, intlLocale } from '@/lib/i18n';
+import {
+    index as certificationsIndex,
+    create as certificationCreate,
+    edit as certificationEdit,
+    show as certificationShow,
+} from '@/routes/certifications';
 import type { Auth } from '@/types';
 
 type EmployeeCertification = {
@@ -40,20 +56,25 @@ type PageProps = {
 };
 
 function can(auth: Auth, ability: string): boolean {
-    return auth.roles.includes('super-admin') || auth.permissions.includes(ability);
+    return (
+        auth.roles.includes('super-admin') || auth.permissions.includes(ability)
+    );
 }
 
 const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString(intlLocale(), {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
     });
 };
 
-export default function CertificationsIndex({ certifications = [] }: PageProps) {
+export default function CertificationsIndex({
+    certifications = [],
+}: PageProps) {
     const { auth } = usePage<PageProps>().props;
-    const [deletingCertification, setDeletingCertification] = useState<EmployeeCertification | null>(null);
+    const [deletingCertification, setDeletingCertification] =
+        useState<EmployeeCertification | null>(null);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
 
@@ -61,11 +82,19 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
         const matchesSearch =
             cert.name.toLowerCase().includes(search.toLowerCase()) ||
             cert.institution.toLowerCase().includes(search.toLowerCase()) ||
-            (cert.certification_number && cert.certification_number.toLowerCase().includes(search.toLowerCase())) ||
-            (cert.employee?.name && cert.employee.name.toLowerCase().includes(search.toLowerCase()));
+            (cert.certification_number &&
+                cert.certification_number
+                    .toLowerCase()
+                    .includes(search.toLowerCase())) ||
+            (cert.employee?.name &&
+                cert.employee.name
+                    .toLowerCase()
+                    .includes(search.toLowerCase()));
 
         // Check if certification is expired or active
-        const isExpired = cert.expiry_date ? new Date(cert.expiry_date) < new Date() : false;
+        const isExpired = cert.expiry_date
+            ? new Date(cert.expiry_date) < new Date()
+            : false;
         const matchesStatus =
             statusFilter === 'all' ||
             (statusFilter === 'active' && !isExpired) ||
@@ -81,41 +110,48 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
             return;
         }
 
-        router.delete(CertificationController.destroy.url(deletingCertification.id), {
-            preserveScroll: true,
-            onSuccess: () => setDeletingCertification(null),
-        });
+        router.delete(
+            CertificationController.destroy.url(deletingCertification.id),
+            {
+                preserveScroll: true,
+                onSuccess: () => setDeletingCertification(null),
+            },
+        );
     }
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title="Employee Certifications" />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('Employee Certifications')} />
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                        <Award className="h-8 w-8 text-primary" /> Employee Certifications
+                    <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                        <Award className="h-8 w-8 text-primary" />{' '}
+                        {__('Employee Certifications')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Manage professional credentials, licenses, and certifications held by employees.
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Manage professional credentials, licenses, and certifications held by employees.',
+                        )}
                     </p>
                 </div>
                 {mayManage && (
                     <Link href={certificationCreate()}>
-                        <Button className="cursor-pointer gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-md">
-                            <Plus className="h-4 w-4" /> Add Certification
+                        <Button className="cursor-pointer gap-2 bg-primary font-medium text-primary-foreground shadow-md hover:bg-primary/90">
+                            <Plus className="h-4 w-4" />{' '}
+                            {__('Add Certification')}
                         </Button>
                     </Link>
                 )}
             </div>
 
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border dark:border-zinc-800">
+            <div className="flex flex-col items-center justify-between gap-4 rounded-xl border bg-zinc-50 p-4 md:flex-row dark:border-zinc-800 dark:bg-zinc-900/50">
                 <div className="relative w-full md:max-w-xs">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="search"
-                        placeholder="Search certifications..."
-                        className="pl-9 pr-9 bg-white dark:bg-zinc-900"
+                        placeholder={__('Search certifications...')}
+                        className="bg-white pr-9 pl-9 dark:bg-zinc-900"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -123,88 +159,139 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
                         <button
                             type="button"
                             onClick={() => setSearch('')}
-                            className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
                         >
                             <X className="h-4 w-4" />
                         </button>
                     )}
                 </div>
 
-                <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <div className="flex w-full flex-wrap gap-3 md:w-auto">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="h-10 rounded-md border border-input bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800"
+                        className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                     >
-                        <option value="all">All Statuses</option>
-                        <option value="active">Active</option>
-                        <option value="expired">Expired</option>
+                        <option value="all">{__('All Statuses')}</option>
+                        <option value="active">{__('Active')}</option>
+                        <option value="expired">{__('Expired')}</option>
                     </select>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+            <div className="overflow-hidden rounded-2xl border bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse text-left">
                         <thead>
-                            <tr className="bg-zinc-50 dark:bg-zinc-900 border-b dark:border-zinc-800 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                <th className="py-4 px-6">Employee</th>
-                                <th className="py-4 px-6">Certification Name</th>
-                                <th className="py-4 px-6">Institution</th>
-                                <th className="py-4 px-6">Credential Number</th>
-                                <th className="py-4 px-6">Validity Date</th>
-                                <th className="py-4 px-6 text-center">Status</th>
-                                <th className="py-4 px-6 text-center">File</th>
-                                <th className="py-4 px-6 text-right w-[150px]">Actions</th>
+                            <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                                <th className="px-6 py-4">{__('Employee')}</th>
+                                <th className="px-6 py-4">
+                                    {__('Certification Name')}
+                                </th>
+                                <th className="px-6 py-4">
+                                    {__('Institution')}
+                                </th>
+                                <th className="px-6 py-4">
+                                    {__('Credential Number')}
+                                </th>
+                                <th className="px-6 py-4">
+                                    {__('Validity Date')}
+                                </th>
+                                <th className="px-6 py-4 text-center">
+                                    {__('Status')}
+                                </th>
+                                <th className="px-6 py-4 text-center">
+                                    {__('File')}
+                                </th>
+                                <th className="w-[150px] px-6 py-4 text-right">
+                                    {__('Actions')}
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
+                        <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
                             {filteredCertifications.length > 0 ? (
                                 filteredCertifications.map((cert) => {
-                                    const isExpired = cert.expiry_date ? new Date(cert.expiry_date) < new Date() : false;
+                                    const isExpired = cert.expiry_date
+                                        ? new Date(cert.expiry_date) <
+                                          new Date()
+                                        : false;
 
                                     return (
-                                        <tr key={cert.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">
-                                            <td className="py-4 px-6 font-semibold text-zinc-900 dark:text-zinc-50">
-                                                {cert.employee?.name || 'Unknown Employee'}
+                                        <tr
+                                            key={cert.id}
+                                            className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50"
+                                        >
+                                            <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-50">
+                                                {cert.employee?.name ||
+                                                    __('Unknown Employee')}
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-800 dark:text-zinc-200 font-medium">
+                                            <td className="px-6 py-4 font-medium text-zinc-800 dark:text-zinc-200">
                                                 {cert.name}
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-700 dark:text-zinc-300">
+                                            <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
                                                 {cert.institution}
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="px-6 py-4">
                                                 {cert.certification_number ? (
-                                                    <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-800 dark:text-zinc-300">
-                                                        {cert.certification_number}
+                                                    <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
+                                                        {
+                                                            cert.certification_number
+                                                        }
                                                     </code>
                                                 ) : (
-                                                    <span className="text-zinc-400">—</span>
+                                                    <span className="text-zinc-400">
+                                                        —
+                                                    </span>
                                                 )}
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-600 dark:text-zinc-400">
+                                            <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
                                                 <div className="flex flex-col gap-0.5">
-                                                    <span className="text-xs text-muted-foreground">Issued: {formatDate(cert.issue_date)}</span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {__('Issued: :date', {
+                                                            date: formatDate(
+                                                                cert.issue_date,
+                                                            ),
+                                                        })}
+                                                    </span>
                                                     {cert.expiry_date ? (
-                                                        <span className="text-xs text-muted-foreground">Expires: {formatDate(cert.expiry_date)}</span>
+                                                        <span className="text-xs text-muted-foreground">
+                                                            {__(
+                                                                'Expires: :date',
+                                                                {
+                                                                    date: formatDate(
+                                                                        cert.expiry_date,
+                                                                    ),
+                                                                },
+                                                            )}
+                                                        </span>
                                                     ) : (
-                                                        <span className="text-xs text-emerald-600 font-medium">Lifetime / No Expiry</span>
+                                                        <span className="text-xs font-medium text-emerald-600">
+                                                            {__(
+                                                                'Lifetime / No Expiry',
+                                                            )}
+                                                        </span>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6 text-center">
+                                            <td className="px-6 py-4 text-center">
                                                 {isExpired ? (
-                                                    <Badge variant="destructive" className="gap-1">
-                                                        <ShieldAlert className="h-3 w-3" /> Expired
+                                                    <Badge
+                                                        variant="destructive"
+                                                        className="gap-1"
+                                                    >
+                                                        <ShieldAlert className="h-3 w-3" />{' '}
+                                                        {__('Expired')}
                                                     </Badge>
                                                 ) : (
-                                                    <Badge variant="default" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/35 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900">
-                                                        Active
+                                                    <Badge
+                                                        variant="default"
+                                                        className="border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/35 dark:text-emerald-400"
+                                                    >
+                                                        {__('Active')}
                                                     </Badge>
                                                 )}
                                             </td>
-                                            <td className="py-4 px-6 text-center">
+                                            <td className="px-6 py-4 text-center">
                                                 {cert.certificate_file ? (
                                                     <a
                                                         href={`/storage/${cert.certificate_file}`}
@@ -212,23 +299,48 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
                                                         rel="noopener noreferrer"
                                                         className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                                                     >
-                                                        <Download className="h-4.5 w-4.5" /> Certificate
+                                                        <Download className="h-4.5 w-4.5" />{' '}
+                                                        {__('Certificate')}
                                                     </a>
                                                 ) : (
-                                                    <span className="text-zinc-400">—</span>
+                                                    <span className="text-zinc-400">
+                                                        —
+                                                    </span>
                                                 )}
                                             </td>
-                                            <td className="py-4 px-6 text-right">
+                                            <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Link href={certificationShow.url(cert.id)}>
-                                                        <Button variant="ghost" size="icon" title="View Detail" className="cursor-pointer h-8 w-8 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                                                    <Link
+                                                        href={certificationShow.url(
+                                                            cert.id,
+                                                        )}
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            title={__(
+                                                                'View Detail',
+                                                            )}
+                                                            className="h-8 w-8 cursor-pointer text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                                                        >
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
                                                     {mayManage && (
                                                         <>
-                                                            <Link href={certificationEdit.url(cert.id)}>
-                                                                <Button variant="ghost" size="icon" title="Edit" className="cursor-pointer h-8 w-8 text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                            <Link
+                                                                href={certificationEdit.url(
+                                                                    cert.id,
+                                                                )}
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    title={__(
+                                                                        'Edit',
+                                                                    )}
+                                                                    className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                                >
                                                                     <Pencil className="h-4 w-4" />
                                                                 </Button>
                                                             </Link>
@@ -236,9 +348,15 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
                                                                 type="button"
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                title="Delete"
-                                                                onClick={() => setDeletingCertification(cert)}
-                                                                className="cursor-pointer h-8 w-8 text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
+                                                                title={__(
+                                                                    'Delete',
+                                                                )}
+                                                                onClick={() =>
+                                                                    setDeletingCertification(
+                                                                        cert,
+                                                                    )
+                                                                }
+                                                                className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>
@@ -251,8 +369,13 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={8} className="py-8 text-center text-muted-foreground">
-                                        No certifications found matching the filters.
+                                    <td
+                                        colSpan={8}
+                                        className="py-8 text-center text-muted-foreground"
+                                    >
+                                        {__(
+                                            'No certifications found matching the filters.',
+                                        )}
                                     </td>
                                 </tr>
                             )}
@@ -261,20 +384,39 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
                 </div>
             </div>
 
-            <Dialog open={deletingCertification !== null} onOpenChange={(open) => !open && setDeletingCertification(null)}>
+            <Dialog
+                open={deletingCertification !== null}
+                onOpenChange={(open) => !open && setDeletingCertification(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Certification</DialogTitle>
+                        <DialogTitle>{__('Delete Certification')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to delete the certification <strong className="text-zinc-950 dark:text-zinc-50">{deletingCertification?.name}</strong> for <strong>{deletingCertification?.employee?.name}</strong>? This action cannot be undone.
+                        {__(
+                            'Are you sure you want to delete the certification :name for :employee? This action cannot be undone.',
+                            {
+                                name: deletingCertification?.name,
+                                employee: deletingCertification?.employee?.name,
+                            },
+                        )}
                     </div>
                     <DialogFooter className="gap-2">
-                        <Button type="button" variant="outline" onClick={() => setDeletingCertification(null)} className="cursor-pointer">
-                            Cancel
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setDeletingCertification(null)}
+                            className="cursor-pointer"
+                        >
+                            {__('Cancel')}
                         </Button>
-                        <Button type="button" variant="destructive" onClick={destroyCertification} className="cursor-pointer">
-                            Delete
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={destroyCertification}
+                            className="cursor-pointer"
+                        >
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -285,7 +427,7 @@ export default function CertificationsIndex({ certifications = [] }: PageProps) 
 
 CertificationsIndex.layout = {
     breadcrumbs: [
-        { title: 'Trainings', href: '#' },
-        { title: 'Certifications', href: certificationsIndex() },
+        { title: __('Trainings'), href: '#' },
+        { title: __('Certifications'), href: certificationsIndex() },
     ],
 };

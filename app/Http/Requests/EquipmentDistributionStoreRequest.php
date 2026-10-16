@@ -33,8 +33,8 @@ class EquipmentDistributionStoreRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->employee_id && $this->room_id) {
-                $validator->errors()->add('employee_id', 'You can distribute to a room or to a user. But not both.');
-                $validator->errors()->add('room_id', 'You can distribute to a room or to a user. But not both.');
+                $validator->errors()->add('employee_id', __('You can distribute to a room or to a user. But not both.'));
+                $validator->errors()->add('room_id', __('You can distribute to a room or to a user. But not both.'));
             }
         });
     }

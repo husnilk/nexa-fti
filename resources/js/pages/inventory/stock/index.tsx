@@ -12,6 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { __ } from '@/lib/i18n';
 import { stock as inventoryStockIndex } from '@/routes/inventory';
 import { index as warehouseIndex } from '@/routes/inventory-warehouses';
 import type { Auth, Inventory, Item, Warehouse } from '@/types';
@@ -29,10 +30,7 @@ function can(auth: Auth, ability: string): boolean {
     );
 }
 
-export default function StockIndex({
-    inventories,
-    warehouses,
-}: PageProps) {
+export default function StockIndex({ inventories, warehouses }: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const [searchTerm, setSearchTerm] = useState('');
     const [warehouseFilter, setWarehouseFilter] = useState('all');
@@ -44,25 +42,32 @@ export default function StockIndex({
             inv.item?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             inv.item?.code.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesWarehouse =
-            warehouseFilter === 'all' || inv.warehouse_id.toString() === warehouseFilter;
+            warehouseFilter === 'all' ||
+            inv.warehouse_id.toString() === warehouseFilter;
 
         return matchesSearch && matchesWarehouse;
     });
 
     return (
         <>
-            <Head title="Stock Overview" />
+            <Head title={__('Stock Overview')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title="Stock Overview"
-                        description="Real-time inventory levels across all warehouses."
+                        title={__('Stock Overview')}
+                        description={__(
+                            'Real-time inventory levels across all warehouses.',
+                        )}
                     />
                     {mayManage && (
                         <Link href={warehouseIndex()}>
-                            <Button variant="outline" className="cursor-pointer gap-2">
-                                <Building2 className="h-4 w-4" /> Warehouses
+                            <Button
+                                variant="outline"
+                                className="cursor-pointer gap-2"
+                            >
+                                <Building2 className="h-4 w-4" />{' '}
+                                {__('Warehouses')}
                             </Button>
                         </Link>
                     )}
@@ -72,7 +77,7 @@ export default function StockIndex({
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search items..."
+                            placeholder={__('Search items...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -84,10 +89,14 @@ export default function StockIndex({
                             onValueChange={setWarehouseFilter}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="All Warehouses" />
+                                <SelectValue
+                                    placeholder={__('All Warehouses')}
+                                />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Warehouses</SelectItem>
+                                <SelectItem value="all">
+                                    {__('All Warehouses')}
+                                </SelectItem>
                                 {warehouses.map((wh) => (
                                     <SelectItem key={wh.id} value={wh.id}>
                                         {wh.name}
@@ -103,26 +112,27 @@ export default function StockIndex({
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Item Code
+                                    {__('Item Code')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Item Name
+                                    {__('Item Name')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Warehouse
+                                    {__('Warehouse')}
                                 </th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground text-right">
-                                    Quantity
+                                <th className="h-12 px-4 text-left text-right align-middle font-medium text-muted-foreground">
+                                    {__('Quantity')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Status
+                                    {__('Status')}
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredStock.map((inv) => {
                                 const isLowStock =
-                                    inv.item && inv.quantity <= inv.item.minimal_quantity;
+                                    inv.item &&
+                                    inv.quantity <= inv.item.minimal_quantity;
 
                                 return (
                                     <tr
@@ -138,7 +148,7 @@ export default function StockIndex({
                                         <td className="p-4 align-middle text-muted-foreground">
                                             {inv.warehouse?.name}
                                         </td>
-                                        <td className="p-4 align-middle text-right font-semibold">
+                                        <td className="p-4 text-right align-middle font-semibold">
                                             {inv.quantity} {inv.item?.unit}
                                         </td>
                                         <td className="p-4 align-middle">
@@ -148,11 +158,11 @@ export default function StockIndex({
                                                     className="flex w-fit items-center gap-1"
                                                 >
                                                     <AlertCircle className="h-3 w-3" />
-                                                    Low Stock
+                                                    {__('Low Stock')}
                                                 </Badge>
                                             ) : (
                                                 <Badge variant="outline">
-                                                    Healthy
+                                                    {__('Healthy')}
                                                 </Badge>
                                             )}
                                         </td>
@@ -165,7 +175,7 @@ export default function StockIndex({
                                         colSpan={5}
                                         className="p-8 text-center text-muted-foreground"
                                     >
-                                        No stock records found.
+                                        {__('No stock records found.')}
                                     </td>
                                 </tr>
                             )}
@@ -180,11 +190,11 @@ export default function StockIndex({
 StockIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Inventory',
+            title: __('Inventory'),
             href: '#',
         },
         {
-            title: 'Stock Overview',
+            title: __('Stock Overview'),
             href: inventoryStockIndex().url,
         },
     ],

@@ -14,13 +14,31 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+import { __ } from '@/lib/i18n';
 import { index as studentsIndex } from '@/routes/students';
 
 type PageProps = {
     departments: any[];
     advisors: any[];
 };
+
+const statusLabels: Record<string, string> = {
+    active: __('Active'),
+    inactive: __('Inactive'),
+    graduated: __('Graduated'),
+    withdrawn: __('Withdrawn'),
+    on_leave: __('On Leave'),
+};
+
+const religionOptions: { value: string; label: string }[] = [
+    { value: 'Islam', label: __('Islam') },
+    { value: 'Kristen', label: __('Protestant') },
+    { value: 'Katolik', label: __('Catholic') },
+    { value: 'Hindu', label: __('Hindu') },
+    { value: 'Budha', label: __('Buddhist') },
+    { value: 'Konghucu', label: __('Confucian') },
+    { value: 'Lainnya', label: __('Other') },
+];
 
 export default function StudentCreate({ departments, advisors }: PageProps) {
     const { data, setData, post, processing, errors } = useForm({
@@ -56,18 +74,21 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
 
     return (
         <>
-            <Head title="Add Student" />
+            <Head title={__('Add Student')} />
             <div className="mx-auto flex h-full max-w-5xl flex-1 flex-col gap-6 p-4">
                 <div className="flex flex-col gap-2">
                     <Link
                         href={studentsIndex()}
                         className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                     >
-                        <ArrowLeft className="size-4" /> Back to Students
+                        <ArrowLeft className="size-4" />{' '}
+                        {__('Back to Students')}
                     </Link>
                     <Heading
-                        title="Add Student"
-                        description="Onboard a new student and create academic profile"
+                        title={__('Add Student')}
+                        description={__(
+                            'Onboard a new student and create academic profile',
+                        )}
                     />
                 </div>
 
@@ -75,11 +96,11 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                     {/* Identification & Contact */}
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Identification & Contact
+                            {__('Identification & Contact')}
                         </h3>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Full Name</Label>
+                                <Label htmlFor="name">{__('Full Name')}</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
@@ -91,7 +112,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="reg_no">
-                                    Registration Number (NIM)
+                                    {__('Registration Number (NIM)')}
                                 </Label>
                                 <Input
                                     id="reg_no"
@@ -103,7 +124,9 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 <InputError message={errors.reg_no} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Personal Email</Label>
+                                <Label htmlFor="email">
+                                    {__('Personal Email')}
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -116,7 +139,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="campus_email">
-                                    Campus Email
+                                    {__('Campus Email')}
                                 </Label>
                                 <Input
                                     id="campus_email"
@@ -129,7 +152,9 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 <InputError message={errors.campus_email} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="phone_no">Phone Number</Label>
+                                <Label htmlFor="phone_no">
+                                    {__('Phone Number')}
+                                </Label>
                                 <Input
                                     id="phone_no"
                                     value={data.phone_no}
@@ -141,7 +166,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="reg_date">
-                                    Registration Date
+                                    {__('Registration Date')}
                                 </Label>
                                 <Input
                                     id="reg_date"
@@ -159,11 +184,11 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                     {/* Academic */}
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Academic Information
+                            {__('Academic Information')}
                         </h3>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="dept">Department</Label>
+                                <Label htmlFor="dept">{__('Department')}</Label>
                                 <Select
                                     value={data.department_id}
                                     onValueChange={(v) =>
@@ -171,7 +196,11 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                     }
                                 >
                                     <SelectTrigger id="dept">
-                                        <SelectValue placeholder="Select dept" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select department',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {departments.map((d) => (
@@ -185,7 +214,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="advisor">
-                                    Academic Advisor
+                                    {__('Academic Advisor')}
                                 </Label>
                                 <Select
                                     value={data.advisor_id || 'none'}
@@ -197,11 +226,13 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                     }
                                 >
                                     <SelectTrigger id="advisor">
-                                        <SelectValue placeholder="Select advisor" />
+                                        <SelectValue
+                                            placeholder={__('Select advisor')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="none">
-                                            None
+                                            {__('None')}
                                         </SelectItem>
                                         {advisors.map((a) => (
                                             <SelectItem key={a.id} value={a.id}>
@@ -213,7 +244,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 <InputError message={errors.advisor_id} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="year">Entry Year</Label>
+                                <Label htmlFor="year">{__('Entry Year')}</Label>
                                 <Input
                                     id="year"
                                     type="number"
@@ -228,7 +259,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 <InputError message={errors.year} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="status">Status</Label>
+                                <Label htmlFor="status">{__('Status')}</Label>
                                 <Select
                                     value={data.status}
                                     onValueChange={(v) => setData('status', v)}
@@ -249,7 +280,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                                 value={s}
                                                 className="capitalize"
                                             >
-                                                {s}
+                                                {statusLabels[s] ?? s}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -262,11 +293,11 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                     {/* Personal */}
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Personal Background
+                            {__('Personal Background')}
                         </h3>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="bp">Birth Place</Label>
+                                <Label htmlFor="bp">{__('Birth Place')}</Label>
                                 <Input
                                     id="bp"
                                     value={data.birth_place}
@@ -277,7 +308,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 <InputError message={errors.birth_place} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="bd">Birth Date</Label>
+                                <Label htmlFor="bd">{__('Birth Date')}</Label>
                                 <Input
                                     id="bd"
                                     type="date"
@@ -289,7 +320,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 <InputError message={errors.birth_date} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="gender">Gender</Label>
+                                <Label htmlFor="gender">{__('Gender')}</Label>
                                 <Select
                                     value={data.gender}
                                     onValueChange={(v) => setData('gender', v)}
@@ -299,17 +330,19 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="male">
-                                            Male
+                                            {__('Male')}
                                         </SelectItem>
                                         <SelectItem value="female">
-                                            Female
+                                            {__('Female')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.gender} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="religion">Religion</Label>
+                                <Label htmlFor="religion">
+                                    {__('Religion')}
+                                </Label>
                                 <Select
                                     value={data.religion}
                                     onValueChange={(v) =>
@@ -320,17 +353,12 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {[
-                                            'Islam',
-                                            'Kristen',
-                                            'Katolik',
-                                            'Hindu',
-                                            'Budha',
-                                            'Konghucu',
-                                            'Lainnya',
-                                        ].map((r) => (
-                                            <SelectItem key={r} value={r}>
-                                                {r}
+                                        {religionOptions.map((r) => (
+                                            <SelectItem
+                                                key={r.value}
+                                                value={r.value}
+                                            >
+                                                {r.label}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -343,12 +371,12 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                     {/* Home Address */}
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Home Address
+                            {__('Home Address')}
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="home_address">
-                                    Street Address
+                                    {__('Street Address')}
                                 </Label>
                                 <Input
                                     id="home_address"
@@ -361,7 +389,9 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                             </div>
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                                 <div className="space-y-2">
-                                    <Label htmlFor="home_town">Town/City</Label>
+                                    <Label htmlFor="home_town">
+                                        {__('Town/City')}
+                                    </Label>
                                     <Input
                                         id="home_town"
                                         value={data.home_town}
@@ -373,7 +403,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="home_province">
-                                        Province
+                                        {__('Province')}
                                     </Label>
                                     <Input
                                         id="home_province"
@@ -391,7 +421,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="home_postalcode">
-                                        Postal Code
+                                        {__('Postal Code')}
                                     </Label>
                                     <Input
                                         id="home_postalcode"
@@ -415,7 +445,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm">
                         <div className="flex items-center justify-between border-b pb-2">
                             <h3 className="text-lg font-semibold">
-                                Current Address
+                                {__('Current Address')}
                             </h3>
                             <Button
                                 type="button"
@@ -433,13 +463,13 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                     })
                                 }
                             >
-                                Copy from Home Address
+                                {__('Copy from Home Address')}
                             </Button>
                         </div>
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="current_address">
-                                    Street Address
+                                    {__('Street Address')}
                                 </Label>
                                 <Input
                                     id="current_address"
@@ -456,7 +486,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                                 <div className="space-y-2">
                                     <Label htmlFor="current_town">
-                                        Town/City
+                                        {__('Town/City')}
                                     </Label>
                                     <Input
                                         id="current_town"
@@ -472,7 +502,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="current_province">
-                                        Province
+                                        {__('Province')}
                                     </Label>
                                     <Input
                                         id="current_province"
@@ -490,7 +520,7 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="current_postalcode">
-                                        Postal Code
+                                        {__('Postal Code')}
                                     </Label>
                                     <Input
                                         id="current_postalcode"
@@ -513,10 +543,12 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
                     {/* Photo */}
                     <div className="space-y-4 rounded-lg border bg-card p-6 shadow-sm">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Photo
+                            {__('Photo')}
                         </h3>
                         <div className="grid gap-2">
-                            <Label htmlFor="st_photo">Student Photo</Label>
+                            <Label htmlFor="st_photo">
+                                {__('Student Photo')}
+                            </Label>
                             <Input
                                 id="st_photo"
                                 type="file"
@@ -533,10 +565,10 @@ export default function StudentCreate({ departments, advisors }: PageProps) {
 
                     <div className="flex justify-end gap-4 pt-6">
                         <Button type="button" variant="outline" asChild>
-                            <Link href={studentsIndex()}>Cancel</Link>
+                            <Link href={studentsIndex()}>{__('Cancel')}</Link>
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            Create Student Record
+                            {__('Create Student Record')}
                         </Button>
                     </div>
                 </form>

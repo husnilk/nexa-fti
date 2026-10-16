@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { __ } from '@/lib/i18n';
 import type { Auth, Employee, Item } from '@/types';
 
 interface PageProps {
@@ -27,16 +28,11 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         created_by: '',
-        items: [
-            { item_id: '', quantity: 1 },
-        ],
+        items: [{ item_id: '', quantity: 1 }],
     });
 
     const addItem = () => {
-        setData('items', [
-            ...data.items,
-            { item_id: '', quantity: 1 },
-        ]);
+        setData('items', [...data.items, { item_id: '', quantity: 1 }]);
     };
 
     const removeItem = (index: number) => {
@@ -58,7 +54,7 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
 
     return (
         <>
-            <Head title="New Procurement" />
+            <Head title={__('New Procurement')} />
 
             <div className="mx-auto flex max-w-4xl flex-col gap-6 p-4">
                 <div className="flex items-center gap-4">
@@ -66,33 +62,35 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
                         variant="ghost"
                         size="icon"
                         asChild
-                        title="Back to Procurements"
+                        title={__('Back to Procurements')}
                     >
                         <Link href={procurementIndex().url}>
                             <ChevronLeft className="h-4 w-4" />
                         </Link>
                     </Button>
                     <Heading
-                        title="New Procurement Request"
-                        description="Request new items for inventory."
+                        title={__('New Procurement Request')}
+                        description={__('Request new items for inventory.')}
                     />
                 </div>
 
                 <form onSubmit={handleSubmit} className="grid gap-8">
                     <div className="grid gap-6 rounded-lg border bg-card p-6">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Request Details
+                            {__('Request Details')}
                         </h3>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="title">Title</Label>
+                            <Label htmlFor="title">{__('Title')}</Label>
                             <Input
                                 id="title"
                                 value={data.title}
                                 onChange={(e) =>
                                     setData('title', e.target.value)
                                 }
-                                placeholder="e.g. Monthly Stationery Supply"
+                                placeholder={__(
+                                    'e.g. Monthly Stationery Supply',
+                                )}
                                 required
                             />
                             {errors.title && (
@@ -103,14 +101,18 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="created_by">Requested By</Label>
+                            <Label htmlFor="created_by">
+                                {__('Requested By')}
+                            </Label>
                             <Select
                                 onValueChange={(val) =>
                                     setData('created_by', val)
                                 }
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select employee" />
+                                    <SelectValue
+                                        placeholder={__('Select employee')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employees.map((emp) => (
@@ -130,14 +132,17 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
 
                     <div className="grid gap-6 rounded-lg border bg-card p-6">
                         <div className="flex items-center justify-between border-b pb-2">
-                            <h3 className="text-lg font-semibold">Items</h3>
+                            <h3 className="text-lg font-semibold">
+                                {__('Items')}
+                            </h3>
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
                                 onClick={addItem}
                             >
-                                <Plus className="mr-2 h-4 w-4" /> Add Item
+                                <Plus className="mr-2 h-4 w-4" />{' '}
+                                {__('Add Item')}
                             </Button>
                         </div>
 
@@ -147,18 +152,16 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
                                 className="grid grid-cols-12 items-end gap-4 border-b pb-4 last:border-0 last:pb-0"
                             >
                                 <div className="col-span-7 grid gap-2">
-                                    <Label>Item</Label>
+                                    <Label>{__('Item')}</Label>
                                     <Select
                                         onValueChange={(val) =>
-                                            updateItem(
-                                                index,
-                                                'item_id',
-                                                val,
-                                            )
+                                            updateItem(index, 'item_id', val)
                                         }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select item" />
+                                            <SelectValue
+                                                placeholder={__('Select item')}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {items.map((i) => (
@@ -173,7 +176,7 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
                                     </Select>
                                 </div>
                                 <div className="col-span-3 grid gap-2">
-                                    <Label>Quantity</Label>
+                                    <Label>{__('Quantity')}</Label>
                                     <Input
                                         type="number"
                                         min="1"
@@ -208,15 +211,13 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            asChild
-                        >
-                            <Link href={procurementIndex().url}>Cancel</Link>
+                        <Button type="button" variant="outline" asChild>
+                            <Link href={procurementIndex().url}>
+                                {__('Cancel')}
+                            </Link>
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            Submit Procurement Request
+                            {__('Submit Procurement Request')}
                         </Button>
                     </div>
                 </form>
@@ -228,15 +229,15 @@ export default function ProcurementCreate({ items, employees }: PageProps) {
 ProcurementCreate.layout = {
     breadcrumbs: [
         {
-            title: 'Inventory',
+            title: __('Inventory'),
             href: '#',
         },
         {
-            title: 'Procurements',
+            title: __('Procurements'),
             href: procurementIndex(),
         },
         {
-            title: 'New Request',
+            title: __('New Request'),
             href: '#',
         },
     ],

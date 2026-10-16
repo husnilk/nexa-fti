@@ -28,6 +28,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { __ } from '@/lib/i18n';
 import type { Auth, Warehouse, Organization } from '@/types';
 
 interface PageProps {
@@ -44,9 +45,8 @@ export default function WarehouseIndex({
     const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
         null,
     );
-    const [deletingWarehouse, setDeletingWarehouse] = useState<Warehouse | null>(
-        null,
-    );
+    const [deletingWarehouse, setDeletingWarehouse] =
+        useState<Warehouse | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const createForm = useForm({
@@ -79,8 +79,8 @@ export default function WarehouseIndex({
         e.preventDefault();
 
         if (!editingWarehouse) {
-return;
-}
+            return;
+        }
 
         editForm.patch(update.url(editingWarehouse.id), {
             onSuccess: () => {
@@ -92,8 +92,8 @@ return;
 
     const handleDelete = () => {
         if (!deletingWarehouse) {
-return;
-}
+            return;
+        }
 
         router.delete(destroy.url(deletingWarehouse.id), {
             onSuccess: () => setDeletingWarehouse(null),
@@ -119,17 +119,19 @@ return;
 
     return (
         <>
-            <Head title="Warehouses" />
+            <Head title={__('Warehouses')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title="Warehouses"
-                        description="Manage storage locations and organizational units."
+                        title={__('Warehouses')}
+                        description={__(
+                            'Manage storage locations and organizational units.',
+                        )}
                     />
                     <Button onClick={() => setIsCreating(true)}>
                         <Plus className="mr-2 h-4 w-4" />
-                        Add Warehouse
+                        {__('Add Warehouse')}
                     </Button>
                 </div>
 
@@ -137,7 +139,7 @@ return;
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search warehouses..."
+                            placeholder={__('Search warehouses...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -150,19 +152,19 @@ return;
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Code
+                                    {__('Code')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Name
+                                    {__('Name')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Organization
+                                    {__('Organization')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Status
+                                    {__('Status')}
                                 </th>
                                 <th className="h-12 px-4 text-left text-right align-middle font-medium text-muted-foreground">
-                                    Actions
+                                    {__('Actions')}
                                 </th>
                             </tr>
                         </thead>
@@ -190,8 +192,8 @@ return;
                                             }
                                         >
                                             {wh.is_active
-                                                ? 'Active'
-                                                : 'Inactive'}
+                                                ? __('Active')
+                                                : __('Inactive')}
                                         </Badge>
                                     </td>
                                     <td className="p-4 text-right align-middle">
@@ -222,7 +224,7 @@ return;
                                         colSpan={5}
                                         className="p-8 text-center text-muted-foreground"
                                     >
-                                        No warehouses found.
+                                        {__('No warehouses found.')}
                                     </td>
                                 </tr>
                             )}
@@ -235,26 +237,38 @@ return;
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Add New Warehouse</DialogTitle>
+                        <DialogTitle>{__('Add New Warehouse')}</DialogTitle>
                         <DialogDescription>
-                            Create a new storage location.
+                            {__('Create a new storage location.')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="org">Organization Unit</Label>
+                                <Label htmlFor="org">
+                                    {__('Organization Unit')}
+                                </Label>
                                 <Select
                                     onValueChange={(val) =>
-                                        createForm.setData('organization_id', val)
+                                        createForm.setData(
+                                            'organization_id',
+                                            val,
+                                        )
                                     }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select organization" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select organization',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {organizations.map((org) => (
-                                            <SelectItem key={org.id} value={org.id}>
+                                            <SelectItem
+                                                key={org.id}
+                                                value={org.id}
+                                            >
                                                 {org.name}
                                             </SelectItem>
                                         ))}
@@ -263,30 +277,38 @@ return;
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="code">Code</Label>
+                                    <Label htmlFor="code">{__('Code')}</Label>
                                     <Input
                                         id="code"
                                         value={createForm.data.code}
                                         onChange={(e) =>
-                                            createForm.setData('code', e.target.value)
+                                            createForm.setData(
+                                                'code',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">{__('Name')}</Label>
                                     <Input
                                         id="name"
                                         value={createForm.data.name}
                                         onChange={(e) =>
-                                            createForm.setData('name', e.target.value)
+                                            createForm.setData(
+                                                'name',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">
+                                    {__('Description')}
+                                </Label>
                                 <Input
                                     id="description"
                                     value={createForm.data.description}
@@ -306,7 +328,9 @@ return;
                                         createForm.setData('is_active', val)
                                     }
                                 />
-                                <Label htmlFor="is_active">Active</Label>
+                                <Label htmlFor="is_active">
+                                    {__('Active')}
+                                </Label>
                             </div>
                         </div>
                         <DialogFooter>
@@ -315,13 +339,13 @@ return;
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -335,15 +359,17 @@ return;
             >
                 <DialogContent className="max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Edit Warehouse</DialogTitle>
+                        <DialogTitle>{__('Edit Warehouse')}</DialogTitle>
                         <DialogDescription>
-                            Update the warehouse details.
+                            {__('Update the warehouse details.')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-org">Organization Unit</Label>
+                                <Label htmlFor="edit-org">
+                                    {__('Organization Unit')}
+                                </Label>
                                 <Select
                                     value={editForm.data.organization_id}
                                     onValueChange={(val) =>
@@ -351,11 +377,18 @@ return;
                                     }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select organization" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select organization',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {organizations.map((org) => (
-                                            <SelectItem key={org.id} value={org.id}>
+                                            <SelectItem
+                                                key={org.id}
+                                                value={org.id}
+                                            >
                                                 {org.name}
                                             </SelectItem>
                                         ))}
@@ -364,23 +397,33 @@ return;
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="edit-code">Code</Label>
+                                    <Label htmlFor="edit-code">
+                                        {__('Code')}
+                                    </Label>
                                     <Input
                                         id="edit-code"
                                         value={editForm.data.code}
                                         onChange={(e) =>
-                                            editForm.setData('code', e.target.value)
+                                            editForm.setData(
+                                                'code',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="edit-name">Name</Label>
+                                    <Label htmlFor="edit-name">
+                                        {__('Name')}
+                                    </Label>
                                     <Input
                                         id="edit-name"
                                         value={editForm.data.name}
                                         onChange={(e) =>
-                                            editForm.setData('name', e.target.value)
+                                            editForm.setData(
+                                                'name',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
@@ -388,7 +431,7 @@ return;
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="edit-description">
-                                    Description
+                                    {__('Description')}
                                 </Label>
                                 <Input
                                     id="edit-description"
@@ -409,7 +452,9 @@ return;
                                         editForm.setData('is_active', val)
                                     }
                                 />
-                                <Label htmlFor="edit-is_active">Active</Label>
+                                <Label htmlFor="edit-is_active">
+                                    {__('Active')}
+                                </Label>
                             </div>
                         </div>
                         <DialogFooter>
@@ -418,10 +463,13 @@ return;
                                 variant="outline"
                                 onClick={() => setEditingWarehouse(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={editForm.processing}>
-                                Update
+                            <Button
+                                type="submit"
+                                disabled={editForm.processing}
+                            >
+                                {__('Update')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -435,11 +483,12 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Warehouse</DialogTitle>
+                        <DialogTitle>{__('Delete Warehouse')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete "
-                            {deletingWarehouse?.name}"? This action cannot be
-                            undone.
+                            {__(
+                                'Are you sure you want to delete ":name"? This action cannot be undone.',
+                                { name: deletingWarehouse?.name },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -447,10 +496,10 @@ return;
                             variant="outline"
                             onClick={() => setDeletingWarehouse(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button variant="destructive" onClick={handleDelete}>
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -462,11 +511,11 @@ return;
 WarehouseIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Inventory',
+            title: __('Inventory'),
             href: '#',
         },
         {
-            title: 'Warehouses',
+            title: __('Warehouses'),
             href: warehouseIndex(),
         },
     ],

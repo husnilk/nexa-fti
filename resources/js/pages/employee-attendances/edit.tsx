@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import { index as attendanceIndex } from '@/routes/employee-attendances';
 
 type Employee = {
@@ -31,7 +32,10 @@ type PageProps = {
     employees: Employee[];
 };
 
-export default function AttendanceEdit({ attendance, employees = [] }: PageProps) {
+export default function AttendanceEdit({
+    attendance,
+    employees = [],
+}: PageProps) {
     const getTime = (dateTimeStr: string | null) => {
         if (!dateTimeStr) {
             return '';
@@ -76,49 +80,67 @@ export default function AttendanceEdit({ attendance, employees = [] }: PageProps
         });
     }
 
-    const selectClass = "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 bg-white dark:bg-zinc-900";
+    const selectClass =
+        'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 bg-white dark:bg-zinc-900';
 
     return (
-        <div className="container mx-auto py-8 px-4 max-w-2xl space-y-6">
-            <Head title="Edit Attendance Record" />
+        <div className="container mx-auto max-w-2xl space-y-6 px-4 py-8">
+            <Head title={__('Edit Attendance Record')} />
 
             <div className="flex items-center gap-3 border-b pb-5 dark:border-zinc-800">
                 <Link href={attendanceIndex()}>
-                    <Button variant="ghost" size="icon" className="cursor-pointer">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer"
+                    >
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent dark:from-violet-400 dark:to-indigo-400">
-                        Edit Attendance Record
+                    <h1 className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-3xl font-bold tracking-tight text-transparent dark:from-violet-400 dark:to-indigo-400">
+                        {__('Edit Attendance Record')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">Update daily attendance details for the employee.</p>
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Update daily attendance details for the employee.',
+                        )}
+                    </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-xs">
+            <form
+                onSubmit={handleSubmit}
+                className="space-y-6 rounded-2xl border bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900"
+            >
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="employee_id">Employee *</Label>
+                        <Label htmlFor="employee_id">{__('Employee *')}</Label>
                         <select
                             id="employee_id"
                             value={data.employee_id}
-                            onChange={(e) => setData('employee_id', e.target.value)}
+                            onChange={(e) =>
+                                setData('employee_id', e.target.value)
+                            }
                             required
                             className={selectClass}
                         >
-                            <option value="">Select Employee</option>
+                            <option value="">{__('Select Employee')}</option>
                             {employees.map((emp) => (
                                 <option key={emp.id} value={emp.id}>
                                     {emp.name} ({emp.emp_number})
                                 </option>
                             ))}
                         </select>
-                        {errors.employee_id && <p className="text-sm text-destructive">{errors.employee_id}</p>}
+                        {errors.employee_id && (
+                            <p className="text-sm text-destructive">
+                                {errors.employee_id}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="date">Date *</Label>
+                        <Label htmlFor="date">{__('Date *')}</Label>
                         <Input
                             id="date"
                             type="date"
@@ -126,108 +148,158 @@ export default function AttendanceEdit({ attendance, employees = [] }: PageProps
                             onChange={(e) => setData('date', e.target.value)}
                             required
                         />
-                        {errors.date && <p className="text-sm text-destructive">{errors.date}</p>}
+                        {errors.date && (
+                            <p className="text-sm text-destructive">
+                                {errors.date}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="status">Status *</Label>
+                        <Label htmlFor="status">{__('Status *')}</Label>
                         <select
                             id="status"
                             value={data.status}
-                            onChange={(e) => setData('status', e.target.value as any)}
+                            onChange={(e) =>
+                                setData('status', e.target.value as any)
+                            }
                             required
                             className={selectClass}
                         >
-                            <option value="present">Present</option>
-                            <option value="absent">Absent</option>
-                            <option value="leave">Leave</option>
-                            <option value="overtime">Overtime</option>
-                            <option value="holiday">Holiday</option>
+                            <option value="present">{__('Present')}</option>
+                            <option value="absent">{__('Absent')}</option>
+                            <option value="leave">{__('Leave')}</option>
+                            <option value="overtime">{__('Overtime')}</option>
+                            <option value="holiday">{__('Holiday')}</option>
                         </select>
-                        {errors.status && <p className="text-sm text-destructive">{errors.status}</p>}
+                        {errors.status && (
+                            <p className="text-sm text-destructive">
+                                {errors.status}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 border-t pt-4 dark:border-zinc-800">
                     <div className="grid gap-2">
-                        <Label htmlFor="check_in">Check In Time</Label>
+                        <Label htmlFor="check_in">{__('Check In Time')}</Label>
                         <Input
                             id="check_in"
                             type="time"
                             value={data.check_in}
-                            onChange={(e) => setData('check_in', e.target.value)}
+                            onChange={(e) =>
+                                setData('check_in', e.target.value)
+                            }
                             disabled={
                                 data.status !== 'present' &&
                                 data.status !== 'overtime'
                             }
                         />
-                        {errors.check_in && <p className="text-sm text-destructive">{errors.check_in}</p>}
+                        {errors.check_in && (
+                            <p className="text-sm text-destructive">
+                                {errors.check_in}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="check_out">Check Out Time</Label>
+                        <Label htmlFor="check_out">
+                            {__('Check Out Time')}
+                        </Label>
                         <Input
                             id="check_out"
                             type="time"
                             value={data.check_out}
-                            onChange={(e) => setData('check_out', e.target.value)}
+                            onChange={(e) =>
+                                setData('check_out', e.target.value)
+                            }
                             disabled={
                                 data.status !== 'present' &&
                                 data.status !== 'overtime'
                             }
                         />
-                        {errors.check_out && <p className="text-sm text-destructive">{errors.check_out}</p>}
+                        {errors.check_out && (
+                            <p className="text-sm text-destructive">
+                                {errors.check_out}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 border-t pt-4 dark:border-zinc-800">
                     <div className="grid gap-2">
-                        <Label htmlFor="break_in">Break Start</Label>
+                        <Label htmlFor="break_in">{__('Break Start')}</Label>
                         <Input
                             id="break_in"
                             type="time"
                             value={data.break_in}
-                            onChange={(e) => setData('break_in', e.target.value)}
+                            onChange={(e) =>
+                                setData('break_in', e.target.value)
+                            }
                             disabled={data.status !== 'present'}
                         />
-                        {errors.break_in && <p className="text-sm text-destructive">{errors.break_in}</p>}
+                        {errors.break_in && (
+                            <p className="text-sm text-destructive">
+                                {errors.break_in}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="break_out">Break End</Label>
+                        <Label htmlFor="break_out">{__('Break End')}</Label>
                         <Input
                             id="break_out"
                             type="time"
                             value={data.break_out}
-                            onChange={(e) => setData('break_out', e.target.value)}
+                            onChange={(e) =>
+                                setData('break_out', e.target.value)
+                            }
                             disabled={data.status !== 'present'}
                         />
-                        {errors.break_out && <p className="text-sm text-destructive">{errors.break_out}</p>}
+                        {errors.break_out && (
+                            <p className="text-sm text-destructive">
+                                {errors.break_out}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="grid gap-2 border-t pt-4 dark:border-zinc-800">
-                    <Label htmlFor="notes">Notes</Label>
+                    <Label htmlFor="notes">{__('Notes')}</Label>
                     <Textarea
                         id="notes"
-                        placeholder="Reason for absence, leave details, etc."
+                        placeholder={__(
+                            'Reason for absence, leave details, etc.',
+                        )}
                         value={data.notes}
                         onChange={(e) => setData('notes', e.target.value)}
                         rows={3}
                     />
-                    {errors.notes && <p className="text-sm text-destructive">{errors.notes}</p>}
+                    {errors.notes && (
+                        <p className="text-sm text-destructive">
+                            {errors.notes}
+                        </p>
+                    )}
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t dark:border-zinc-800">
+                <div className="flex justify-end gap-3 border-t pt-4 dark:border-zinc-800">
                     <Link href={attendanceIndex()}>
-                        <Button type="button" variant="outline" className="cursor-pointer">
-                            Cancel
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                        >
+                            {__('Cancel')}
                         </Button>
                     </Link>
-                    <Button type="submit" disabled={processing} className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-md">
-                        <Save className="h-4 w-4" /> Save Changes
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 font-medium text-white shadow-md hover:from-violet-700 hover:to-indigo-700"
+                    >
+                        <Save className="h-4 w-4" /> {__('Save Changes')}
                     </Button>
                 </div>
             </form>
@@ -237,8 +309,8 @@ export default function AttendanceEdit({ attendance, employees = [] }: PageProps
 
 AttendanceEdit.layout = {
     breadcrumbs: [
-        { title: 'HR', href: '#' },
-        { title: 'Attendance', href: attendanceIndex() },
-        { title: 'Edit Record', href: '#' },
+        { title: __('HR'), href: '#' },
+        { title: __('Attendance'), href: attendanceIndex() },
+        { title: __('Edit Record'), href: '#' },
     ],
 };

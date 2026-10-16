@@ -8,6 +8,7 @@ import {
     Network,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { __ } from '@/lib/i18n';
 import {
     index as organizationsIndex,
     show as organizationShow,
@@ -89,13 +90,13 @@ function OrganizationTreeBranch({
                                 {node.name}
                             </h3>
                             <span
-                                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase ${
                                     node.is_active
                                         ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400'
                                         : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
                                 }`}
                             >
-                                {node.is_active ? 'Active' : 'Inactive'}
+                                {node.is_active ? __('Active') : __('Inactive')}
                             </span>
                             <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                                 {node.organization_type?.name || '-'}
@@ -110,7 +111,7 @@ function OrganizationTreeBranch({
                     <div className="flex items-center gap-2">
                         <Button asChild variant="outline" size="sm">
                             <Link href={organizationShow(node.id)}>
-                                View
+                                {__('View')}
                             </Link>
                         </Button>
                         {mayManage && (
@@ -121,7 +122,7 @@ function OrganizationTreeBranch({
                                     })}
                                 >
                                     <Edit className="h-4 w-4" />
-                                    Edit
+                                    {__('Edit')}
                                 </Link>
                             </Button>
                         )}
@@ -152,9 +153,7 @@ function OrganizationTreeBranch({
     );
 }
 
-export default function OrganizationStructure({
-    organizations,
-}: PageProps) {
+export default function OrganizationStructure({ organizations }: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const mayManage =
         auth.roles.includes('super-admin') ||
@@ -168,7 +167,7 @@ export default function OrganizationStructure({
 
     return (
         <>
-            <Head title="Organization Structure" />
+            <Head title={__('Organization Structure')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
@@ -184,11 +183,12 @@ export default function OrganizationStructure({
                         </Link>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                                Organization Structure
+                                {__('Organization Structure')}
                             </h1>
                             <p className="mt-1 text-muted-foreground">
-                                Browse the institutional hierarchy in a tree
-                                view.
+                                {__(
+                                    'Browse the institutional hierarchy in a tree view.',
+                                )}
                             </p>
                         </div>
                     </div>
@@ -196,7 +196,7 @@ export default function OrganizationStructure({
                     <Button asChild variant="outline">
                         <Link href={organizationsIndex()}>
                             <ChevronRight className="h-4 w-4 rotate-180" />
-                            Back to List
+                            {__('Back to List')}
                         </Link>
                     </Button>
                 </div>
@@ -209,7 +209,7 @@ export default function OrganizationStructure({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total organizations
+                                    {__('Total organizations')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {organizations.length}
@@ -225,7 +225,7 @@ export default function OrganizationStructure({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Root organizations
+                                    {__('Root organizations')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {rootOrganizations}
@@ -241,7 +241,7 @@ export default function OrganizationStructure({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Active organizations
+                                    {__('Active organizations')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {activeOrganizations}
@@ -268,11 +268,11 @@ export default function OrganizationStructure({
 OrganizationStructure.layout = {
     breadcrumbs: [
         {
-            title: 'Organizations',
+            title: __('Organizations'),
             href: organizationsIndex(),
         },
         {
-            title: 'Structure',
+            title: __('Structure'),
             href: organizationsStructure(),
         },
     ],

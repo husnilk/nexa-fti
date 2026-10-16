@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import { index, store } from '@/routes/meetings';
 
 type Employee = {
@@ -28,7 +29,11 @@ type PageProps = {
     committees: Committee[];
 };
 
-export default function CreateMeeting({ employees = [], rooms = [], committees = [] }: PageProps) {
+export default function CreateMeeting({
+    employees = [],
+    rooms = [],
+    committees = [],
+}: PageProps) {
     const { data, setData, post, processing, errors } = useForm({
         committee_id: '',
         title: '',
@@ -53,7 +58,10 @@ export default function CreateMeeting({ employees = [], rooms = [], committees =
         post(store.url());
     };
 
-    const handleSelectEmployee = (field: 'organizer' | 'chairman', value: string) => {
+    const handleSelectEmployee = (
+        field: 'organizer' | 'chairman',
+        value: string,
+    ) => {
         if (field === 'organizer') {
             setData((prev) => ({
                 ...prev,
@@ -70,213 +78,323 @@ export default function CreateMeeting({ employees = [], rooms = [], committees =
     };
 
     return (
-        <div className="container mx-auto py-8 px-4 max-w-2xl space-y-6">
-            <Head title="Create Meeting" />
-            
+        <div className="container mx-auto max-w-2xl space-y-6 px-4 py-8">
+            <Head title={__('Create Meeting')} />
+
             <div className="flex items-center gap-3 border-b pb-5 dark:border-zinc-800">
                 <Link href={index.url()}>
-                    <Button variant="ghost" size="icon" className="cursor-pointer">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer"
+                    >
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent dark:from-violet-400 dark:to-indigo-400">
-                        Create Meeting
+                    <h1 className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-3xl font-bold tracking-tight text-transparent dark:from-violet-400 dark:to-indigo-400">
+                        {__('Create Meeting')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">Schedule a new meeting, select a room or setup online platforms.</p>
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Schedule a new meeting, select a room or setup online platforms.',
+                        )}
+                    </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-6 shadow-xs">
+            <form
+                onSubmit={handleSubmit}
+                className="space-y-6 rounded-2xl border bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900"
+            >
                 <div className="grid gap-2">
-                    <Label htmlFor="title">Title *</Label>
+                    <Label htmlFor="title">{__('Title *')}</Label>
                     <Input
                         id="title"
                         value={data.title}
                         onChange={(e) => setData('title', e.target.value)}
-                        placeholder="Meeting Title"
+                        placeholder={__('Meeting Title')}
                         required
                     />
-                    {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+                    {errors.title && (
+                        <p className="text-sm text-destructive">
+                            {errors.title}
+                        </p>
+                    )}
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="agenda">Agenda</Label>
+                    <Label htmlFor="agenda">{__('Agenda')}</Label>
                     <Textarea
                         id="agenda"
                         value={data.agenda}
                         onChange={(e) => setData('agenda', e.target.value)}
-                        placeholder="Topics to discuss..."
+                        placeholder={__('Topics to discuss...')}
                         rows={3}
                     />
-                    {errors.agenda && <p className="text-sm text-destructive">{errors.agenda}</p>}
+                    {errors.agenda && (
+                        <p className="text-sm text-destructive">
+                            {errors.agenda}
+                        </p>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="committee_id">Committee (Optional)</Label>
+                        <Label htmlFor="committee_id">
+                            {__('Committee (Optional)')}
+                        </Label>
                         <select
                             id="committee_id"
                             value={data.committee_id}
-                            onChange={(e) => setData('committee_id', e.target.value)}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
+                            onChange={(e) =>
+                                setData('committee_id', e.target.value)
+                            }
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
                         >
-                            <option value="">No Committee</option>
+                            <option value="">{__('No Committee')}</option>
                             {committees.map((c) => (
-                                <option key={c.id} value={c.id}>{c.title}</option>
+                                <option key={c.id} value={c.id}>
+                                    {c.title}
+                                </option>
                             ))}
                         </select>
-                        {errors.committee_id && <p className="text-sm text-destructive">{errors.committee_id}</p>}
+                        {errors.committee_id && (
+                            <p className="text-sm text-destructive">
+                                {errors.committee_id}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="meeting_type">Meeting Type *</Label>
+                        <Label htmlFor="meeting_type">
+                            {__('Meeting Type *')}
+                        </Label>
                         <select
                             id="meeting_type"
                             value={data.meeting_type}
-                            onChange={(e) => setData('meeting_type', e.target.value as any)}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
+                            onChange={(e) =>
+                                setData('meeting_type', e.target.value as any)
+                            }
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
                         >
-                            <option value="offline">Offline (In-Person)</option>
-                            <option value="online">Online</option>
-                            <option value="hybrid">Hybrid</option>
+                            <option value="offline">
+                                {__('Offline (In-Person)')}
+                            </option>
+                            <option value="online">{__('Online')}</option>
+                            <option value="hybrid">{__('Hybrid')}</option>
                         </select>
-                        {errors.meeting_type && <p className="text-sm text-destructive">{errors.meeting_type}</p>}
+                        {errors.meeting_type && (
+                            <p className="text-sm text-destructive">
+                                {errors.meeting_type}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="meeting_date">Date *</Label>
+                        <Label htmlFor="meeting_date">{__('Date *')}</Label>
                         <Input
                             id="meeting_date"
                             type="date"
                             value={data.meeting_date}
-                            onChange={(e) => setData('meeting_date', e.target.value)}
+                            onChange={(e) =>
+                                setData('meeting_date', e.target.value)
+                            }
                             required
                         />
-                        {errors.meeting_date && <p className="text-sm text-destructive">{errors.meeting_date}</p>}
+                        {errors.meeting_date && (
+                            <p className="text-sm text-destructive">
+                                {errors.meeting_date}
+                            </p>
+                        )}
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="start_time">Start Time *</Label>
+                        <Label htmlFor="start_time">{__('Start Time *')}</Label>
                         <Input
                             id="start_time"
                             type="time"
                             value={data.start_time}
-                            onChange={(e) => setData('start_time', e.target.value)}
+                            onChange={(e) =>
+                                setData('start_time', e.target.value)
+                            }
                             required
                         />
-                        {errors.start_time && <p className="text-sm text-destructive">{errors.start_time}</p>}
+                        {errors.start_time && (
+                            <p className="text-sm text-destructive">
+                                {errors.start_time}
+                            </p>
+                        )}
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="end_time">End Time *</Label>
+                        <Label htmlFor="end_time">{__('End Time *')}</Label>
                         <Input
                             id="end_time"
                             type="time"
                             value={data.end_time}
-                            onChange={(e) => setData('end_time', e.target.value)}
+                            onChange={(e) =>
+                                setData('end_time', e.target.value)
+                            }
                             required
                         />
-                        {errors.end_time && <p className="text-sm text-destructive">{errors.end_time}</p>}
+                        {errors.end_time && (
+                            <p className="text-sm text-destructive">
+                                {errors.end_time}
+                            </p>
+                        )}
                     </div>
                 </div>
 
-                {(data.meeting_type === 'offline' || data.meeting_type === 'hybrid') && (
+                {(data.meeting_type === 'offline' ||
+                    data.meeting_type === 'hybrid') && (
                     <div className="grid gap-2">
-                        <Label htmlFor="room_id">Room *</Label>
+                        <Label htmlFor="room_id">{__('Room *')}</Label>
                         <select
                             id="room_id"
                             value={data.room_id}
                             onChange={(e) => setData('room_id', e.target.value)}
                             required={data.meeting_type === 'offline'}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
                         >
-                            <option value="">Select Room</option>
+                            <option value="">{__('Select Room')}</option>
                             {rooms.map((r) => (
-                                <option key={r.id} value={r.id}>{r.name}</option>
+                                <option key={r.id} value={r.id}>
+                                    {r.name}
+                                </option>
                             ))}
                         </select>
-                        {errors.room_id && <p className="text-sm text-destructive">{errors.room_id}</p>}
+                        {errors.room_id && (
+                            <p className="text-sm text-destructive">
+                                {errors.room_id}
+                            </p>
+                        )}
                     </div>
                 )}
 
-                {(data.meeting_type === 'online' || data.meeting_type === 'hybrid') && (
+                {(data.meeting_type === 'online' ||
+                    data.meeting_type === 'hybrid') && (
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="online_platform">Online Platform</Label>
+                            <Label htmlFor="online_platform">
+                                {__('Online Platform')}
+                            </Label>
                             <Input
                                 id="online_platform"
                                 value={data.online_platform}
-                                onChange={(e) => setData('online_platform', e.target.value)}
-                                placeholder="e.g. Zoom, Google Meet"
+                                onChange={(e) =>
+                                    setData('online_platform', e.target.value)
+                                }
+                                placeholder={__('e.g. Zoom, Google Meet')}
                             />
-                            {errors.online_platform && <p className="text-sm text-destructive">{errors.online_platform}</p>}
+                            {errors.online_platform && (
+                                <p className="text-sm text-destructive">
+                                    {errors.online_platform}
+                                </p>
+                            )}
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="online_link">Online Link</Label>
+                            <Label htmlFor="online_link">
+                                {__('Online Link')}
+                            </Label>
                             <Input
                                 id="online_link"
                                 value={data.online_link}
-                                onChange={(e) => setData('online_link', e.target.value)}
+                                onChange={(e) =>
+                                    setData('online_link', e.target.value)
+                                }
                                 placeholder="https://..."
                             />
-                            {errors.online_link && <p className="text-sm text-destructive">{errors.online_link}</p>}
+                            {errors.online_link && (
+                                <p className="text-sm text-destructive">
+                                    {errors.online_link}
+                                </p>
+                            )}
                         </div>
                     </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="organizer_id_id">Organizer *</Label>
+                        <Label htmlFor="organizer_id_id">
+                            {__('Organizer *')}
+                        </Label>
                         <select
                             id="organizer_id_id"
                             value={data.organizer_id_id}
-                            onChange={(e) => handleSelectEmployee('organizer', e.target.value)}
+                            onChange={(e) =>
+                                handleSelectEmployee(
+                                    'organizer',
+                                    e.target.value,
+                                )
+                            }
                             required
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
                         >
-                            <option value="">Select Organizer</option>
+                            <option value="">{__('Select Organizer')}</option>
                             {employees.map((emp) => (
-                                <option key={emp.id} value={emp.id}>{emp.name}</option>
+                                <option key={emp.id} value={emp.id}>
+                                    {emp.name}
+                                </option>
                             ))}
                         </select>
-                        {errors.organizer_id_id && <p className="text-sm text-destructive">{errors.organizer_id_id}</p>}
+                        {errors.organizer_id_id && (
+                            <p className="text-sm text-destructive">
+                                {errors.organizer_id_id}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="chairman_id_id">Chairman *</Label>
+                        <Label htmlFor="chairman_id_id">
+                            {__('Chairman *')}
+                        </Label>
                         <select
                             id="chairman_id_id"
                             value={data.chairman_id_id}
-                            onChange={(e) => handleSelectEmployee('chairman', e.target.value)}
+                            onChange={(e) =>
+                                handleSelectEmployee('chairman', e.target.value)
+                            }
                             required
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
                         >
-                            <option value="">Select Chairman</option>
+                            <option value="">{__('Select Chairman')}</option>
                             {employees.map((emp) => (
-                                <option key={emp.id} value={emp.id}>{emp.name}</option>
+                                <option key={emp.id} value={emp.id}>
+                                    {emp.name}
+                                </option>
                             ))}
                         </select>
-                        {errors.chairman_id_id && <p className="text-sm text-destructive">{errors.chairman_id_id}</p>}
+                        {errors.chairman_id_id && (
+                            <p className="text-sm text-destructive">
+                                {errors.chairman_id_id}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="status">Status *</Label>
+                        <Label htmlFor="status">{__('Status *')}</Label>
                         <select
                             id="status"
                             value={data.status}
-                            onChange={(e) => setData('status', e.target.value as any)}
+                            onChange={(e) =>
+                                setData('status', e.target.value as any)
+                            }
                             required
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800"
                         >
-                            <option value="draft">Draft</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value="draft">{__('Draft')}</option>
+                            <option value="scheduled">{__('Scheduled')}</option>
+                            <option value="completed">{__('Completed')}</option>
+                            <option value="cancelled">{__('Cancelled')}</option>
                         </select>
-                        {errors.status && <p className="text-sm text-destructive">{errors.status}</p>}
+                        {errors.status && (
+                            <p className="text-sm text-destructive">
+                                {errors.status}
+                            </p>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-2 pt-8">
@@ -284,22 +402,41 @@ export default function CreateMeeting({ employees = [], rooms = [], committees =
                             id="is_confidential"
                             type="checkbox"
                             checked={data.is_confidential}
-                            onChange={(e) => setData('is_confidential', e.target.checked)}
+                            onChange={(e) =>
+                                setData('is_confidential', e.target.checked)
+                            }
                             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         />
-                        <Label htmlFor="is_confidential" className="cursor-pointer">This meeting is confidential</Label>
-                        {errors.is_confidential && <p className="text-sm text-destructive">{errors.is_confidential}</p>}
+                        <Label
+                            htmlFor="is_confidential"
+                            className="cursor-pointer"
+                        >
+                            {__('This meeting is confidential')}
+                        </Label>
+                        {errors.is_confidential && (
+                            <p className="text-sm text-destructive">
+                                {errors.is_confidential}
+                            </p>
+                        )}
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t dark:border-zinc-800">
+                <div className="flex justify-end gap-3 border-t pt-4 dark:border-zinc-800">
                     <Link href={index.url()}>
-                        <Button type="button" variant="outline" className="cursor-pointer">
-                            Cancel
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                        >
+                            {__('Cancel')}
                         </Button>
                     </Link>
-                    <Button type="submit" disabled={processing} className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-md">
-                        <Save className="h-4 w-4" /> Save Meeting
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 font-medium text-white shadow-md hover:from-violet-700 hover:to-indigo-700"
+                    >
+                        <Save className="h-4 w-4" /> {__('Save Meeting')}
                     </Button>
                 </div>
             </form>

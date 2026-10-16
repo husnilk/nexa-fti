@@ -21,10 +21,12 @@ use App\Http\Controllers\Acl\PositionNomenclatureResponsibilityController;
 use App\Http\Controllers\Acl\PositionResponsibilityController;
 use App\Http\Controllers\Acl\RoleController;
 use App\Http\Controllers\Acl\UserController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetGrantController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AssignmentProgressController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\CertificationController;
@@ -41,6 +43,7 @@ use App\Http\Controllers\CommitteeTaskProgressController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentRevisionController;
 use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\EptController;
 use App\Http\Controllers\EquipmentAuditController;
 use App\Http\Controllers\EquipmentCategoryController;
 use App\Http\Controllers\EquipmentController;
@@ -87,6 +90,7 @@ use App\Http\Controllers\Inventory\ItemCategoryController;
 use App\Http\Controllers\Inventory\ItemController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\LeaveApprovalController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MeetingActionItemController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingDocumentController;
@@ -96,6 +100,11 @@ use App\Http\Controllers\MeetingParticipantController;
 use App\Http\Controllers\MeetingRefreshmentItemController;
 use App\Http\Controllers\MeetingRefreshmentRequestController;
 use App\Http\Controllers\OvertimeApprovalController;
+use App\Http\Controllers\PerformanceController;
+use App\Http\Controllers\PerformanceVerificationController;
+use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\PeriodMonthController;
+use App\Http\Controllers\PeriodOrganizationController;
 use App\Http\Controllers\PersonalLeaveRequestController;
 use App\Http\Controllers\PersonalOvertimeRequestController;
 use App\Http\Controllers\RoomController;
@@ -104,6 +113,10 @@ use App\Http\Controllers\RoomMaintenanceRequestFileController;
 use App\Http\Controllers\RoomMaintenanceRequestLogController;
 use App\Http\Controllers\RoomMaintenanceRequestLogFileController;
 use App\Http\Controllers\RoomUsageController;
+use App\Http\Controllers\RubricCategoryController;
+use App\Http\Controllers\RubricController;
+use App\Http\Controllers\RubricRegulationController;
+use App\Http\Controllers\ValidatorController;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -113,6 +126,8 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
+
+Route::get('locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 if (config('app.debug')) {
     Route::post('/login-admin', function () {
@@ -503,6 +518,88 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('committee-expenses', CommitteeExpenseController::class)->only(['index', 'show']);
         Route::resource('committee-expense-items', CommitteeExpenseItemController::class)->only(['index', 'show']);
         Route::resource('committee-documents', CommitteeDocumentController::class)->only(['index', 'show']);
+    });
+
+    Route::middleware('permission:period.manage')->group(function () {
+        Route::patch('periods/{period}/toggle-status', [PeriodController::class, 'toggleStatus'])->name('periods.toggle-status');
+        Route::resource('periods', PeriodController::class)->except(['create', 'edit']);
+
+        Route::scopeBindings()->group(function () {
+            Route::post('periods/{period}/months', [PeriodMonthController::class, 'store'])->name('period-months.store');
+            Route::patch('periods/{period}/months/{month}', [PeriodMonthController::class, 'update'])->name('period-months.update');
+            Route::delete('periods/{period}/months/{month}', [PeriodMonthController::class, 'destroy'])->name('period-months.destroy');
+
+            Route::get('periods/{period}/organizations', [PeriodOrganizationController::class, 'index'])->name('period-organizations.index');
+            Route::post('periods/{period}/organizations/sync', [PeriodOrganizationController::class, 'sync'])->name('period-organizations.sync');
+            Route::patch('periods/{period}/organizations/{organization}', [PeriodOrganizationController::class, 'update'])->name('period-organizations.update');
+        });
+    });
+
+    // Manage routes are registered first so 'rubrics/create' is not captured by 'rubrics/{rubric}'.
+    Route::middleware('permission:rubric.manage')->group(function () {
+        Route::patch('rubrics/{rubric}/toggle-status', [RubricController::class, 'toggleStatus'])->name('rubrics.toggle-status');
+        Route::resource('rubrics', RubricController::class)->except(['index', 'show']);
+        Route::resource('rubric-categories', RubricCategoryController::class)->only(['store', 'update', 'destroy']);
+        Route::patch('rubric-regulations/{rubric_regulation}/toggle-status', [RubricRegulationController::class, 'toggleStatus'])->name('rubric-regulations.toggle-status');
+        Route::resource('rubric-regulations', RubricRegulationController::class)->only(['store', 'update', 'destroy']);
+    });
+
+    Route::middleware('permission:rubric.view|rubric.manage')->group(function () {
+        Route::resource('rubrics', RubricController::class)->only(['index', 'show']);
+        Route::get('rubric-categories', [RubricCategoryController::class, 'index'])->name('rubric-categories.index');
+        Route::get('rubric-regulations', [RubricRegulationController::class, 'index'])->name('rubric-regulations.index');
+    });
+
+    // Manage routes are registered first so 'attendances/create' is not captured by 'attendances/{attendance}'.
+    Route::middleware('permission:attendance.manage')->group(function () {
+        Route::resource('attendances', AttendanceController::class)->except(['index', 'show']);
+    });
+
+    Route::middleware('permission:attendance.view|attendance.manage')->group(function () {
+        Route::resource('attendances', AttendanceController::class)->only(['index', 'show']);
+    });
+
+    Route::middleware('permission:ept.manage')->group(function () {
+        Route::resource('epts', EptController::class)->only(['store', 'update', 'destroy']);
+    });
+
+    Route::middleware('permission:ept.view|ept.manage')->group(function () {
+        Route::resource('epts', EptController::class)->only(['index', 'show']);
+    });
+
+    // Access comes from being an activity's verifier (or a verifier's supervisor), checked in the controller.
+    Route::get('performance-verifications', [PerformanceVerificationController::class, 'index'])->name('performance-verifications.index');
+    Route::get('performance-verifications/{activity}', [PerformanceVerificationController::class, 'show'])->name('performance-verifications.show');
+    Route::post('performance-verifications/performances/{performance}', [PerformanceVerificationController::class, 'verify'])->name('performance-verifications.verify');
+    Route::get('performance-verifications/{activity}/evidence/{type}', [PerformanceVerificationController::class, 'activityEvidence'])
+        ->whereIn('type', ['document', 'performance'])
+        ->name('performance-verifications.activity-evidence');
+    Route::get('performance-verifications/performances/{performance}/evidence', [PerformanceVerificationController::class, 'performanceEvidence'])
+        ->name('performance-verifications.performance-evidence');
+
+    Route::middleware('permission:validator.manage')->group(function () {
+        Route::resource('validators', ValidatorController::class)->only(['index', 'store', 'update', 'destroy']);
+    });
+
+    // Manage routes are registered first so 'activities/create' is not captured by 'activities/{activity}'.
+    Route::middleware('permission:activity.manage')->group(function () {
+        Route::resource('activities', ActivityController::class)->except(['index', 'show']);
+
+        Route::scopeBindings()->group(function () {
+            Route::post('activities/{activity}/performances', [PerformanceController::class, 'store'])->name('performances.store');
+            Route::put('activities/{activity}/performances/{performance}', [PerformanceController::class, 'update'])->name('performances.update');
+            Route::delete('activities/{activity}/performances/{performance}', [PerformanceController::class, 'destroy'])->name('performances.destroy');
+        });
+    });
+
+    Route::middleware('permission:activity.view|activity.manage')->group(function () {
+        Route::resource('activities', ActivityController::class)->only(['index', 'show']);
+        Route::get('activities/{activity}/evidence/{type}', [ActivityController::class, 'evidence'])
+            ->whereIn('type', ['document', 'performance'])
+            ->name('activities.evidence');
+        Route::get('activities/{activity}/performances/{performance}/evidence', [PerformanceController::class, 'evidence'])
+            ->scopeBindings()
+            ->name('performances.evidence');
     });
 });
 

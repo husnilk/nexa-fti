@@ -56,7 +56,7 @@ class EquipmentProcurementController extends Controller
         });
 
         return redirect()->route('equipment-procurements.index')
-            ->with('success', 'Procurement request submitted successfully.');
+            ->with('success', __('Procurement request submitted successfully.'));
     }
 
     public function show(Request $request, EquipmentProcurement $equipmentProcurement): Response
@@ -75,7 +75,7 @@ class EquipmentProcurementController extends Controller
     {
         if (! in_array($equipmentProcurement->status, ['draft', 'pending'])) {
             return redirect()->route('equipment-procurements.index')
-                ->with('error', 'Only draft or pending procurements can be edited.');
+                ->with('error', __('Only draft or pending procurements can be edited.'));
         }
 
         return Inertia::render('equipment/procurements/edit', [
@@ -88,7 +88,7 @@ class EquipmentProcurementController extends Controller
     {
         if (! in_array($equipmentProcurement->status, ['draft', 'pending'])) {
             return redirect()->route('equipment-procurements.index')
-                ->with('error', 'Only draft or pending procurements can be updated.');
+                ->with('error', __('Only draft or pending procurements can be updated.'));
         }
 
         DB::transaction(function () use ($request, $equipmentProcurement) {
@@ -113,32 +113,32 @@ class EquipmentProcurementController extends Controller
         });
 
         return redirect()->route('equipment-procurements.index')
-            ->with('success', 'Procurement request updated successfully.');
+            ->with('success', __('Procurement request updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentProcurement $equipmentProcurement): RedirectResponse
     {
         if (! in_array($equipmentProcurement->status, ['draft', 'pending', 'cancelled'])) {
             return redirect()->route('equipment-procurements.index')
-                ->with('error', 'Only draft, pending, or cancelled procurements can be deleted.');
+                ->with('error', __('Only draft, pending, or cancelled procurements can be deleted.'));
         }
 
         $equipmentProcurement->delete();
 
         return redirect()->route('equipment-procurements.index')
-            ->with('success', 'Procurement request deleted successfully.');
+            ->with('success', __('Procurement request deleted successfully.'));
     }
 
     public function cancel(Request $request, EquipmentProcurement $equipmentProcurement): RedirectResponse
     {
         if (! in_array($equipmentProcurement->status, ['draft', 'pending'])) {
             return redirect()->back()
-                ->with('error', 'Only draft or pending procurements can be cancelled.');
+                ->with('error', __('Only draft or pending procurements can be cancelled.'));
         }
 
         $equipmentProcurement->update(['status' => 'cancelled']);
 
         return redirect()->back()
-            ->with('success', 'Procurement request cancelled successfully.');
+            ->with('success', __('Procurement request cancelled successfully.'));
     }
 }

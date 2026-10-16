@@ -32,7 +32,7 @@ class EmployeeFamilyMemberController extends Controller
 
         EmployeeFamilyMember::create($validated);
 
-        return redirect()->back()->with('success', 'Family member added successfully.');
+        return redirect()->back()->with('success', __('Family member added successfully.'));
     }
 
     public function update(Request $request, EmployeeFamilyMember $familyMember): RedirectResponse
@@ -52,13 +52,13 @@ class EmployeeFamilyMemberController extends Controller
 
         $familyMember->update($validated);
 
-        return redirect()->back()->with('success', 'Family member updated successfully.');
+        return redirect()->back()->with('success', __('Family member updated successfully.'));
     }
 
     public function destroy(EmployeeFamilyMember $familyMember): RedirectResponse
     {
         $familyMember->delete();
 
-        return redirect()->back()->with('success', 'Family member removed successfully.');
+        return redirect()->back()->with('success', __('Family member removed successfully.'));
     }
 }

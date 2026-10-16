@@ -39,10 +39,10 @@ class MeetingMinuteController extends Controller
         $request->session()->flash('meetingMinute.id', $meetingMinute->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Meeting minutes created successfully.');
+            return redirect()->back()->with('success', __('Meeting minutes created successfully.'));
         }
 
-        return redirect()->route('meeting-minutes.index')->with('success', 'Meeting minutes created successfully.');
+        return redirect()->route('meeting-minutes.index')->with('success', __('Meeting minutes created successfully.'));
     }
 
     public function show(Request $request, MeetingMinute $meetingMinute): Response
@@ -68,10 +68,10 @@ class MeetingMinuteController extends Controller
         $request->session()->flash('meetingMinute.id', $meetingMinute->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Meeting minutes updated successfully.');
+            return redirect()->back()->with('success', __('Meeting minutes updated successfully.'));
         }
 
-        return redirect()->route('meeting-minutes.index')->with('success', 'Meeting minutes updated successfully.');
+        return redirect()->route('meeting-minutes.index')->with('success', __('Meeting minutes updated successfully.'));
     }
 
     public function destroy(Request $request, MeetingMinute $meetingMinute): RedirectResponse
@@ -79,9 +79,9 @@ class MeetingMinuteController extends Controller
         $meetingMinute->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Meeting minutes deleted successfully.');
+            return redirect()->back()->with('success', __('Meeting minutes deleted successfully.'));
         }
 
-        return redirect()->route('meeting-minutes.index')->with('success', 'Meeting minutes deleted successfully.');
+        return redirect()->route('meeting-minutes.index')->with('success', __('Meeting minutes deleted successfully.'));
     }
 }

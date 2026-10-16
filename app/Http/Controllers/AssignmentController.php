@@ -62,7 +62,7 @@ class AssignmentController extends Controller
         Assignment::create($request->validated());
 
         return redirect()->route('assignments.index')
-            ->with('success', 'Assignment created successfully.');
+            ->with('success', __('Assignment created successfully.'));
     }
 
     public function show(Request $request, Assignment $assignment): Response
@@ -91,7 +91,7 @@ class AssignmentController extends Controller
         $assignment->update($request->validated());
 
         return redirect()->route('assignments.index')
-            ->with('success', 'Assignment updated successfully.');
+            ->with('success', __('Assignment updated successfully.'));
     }
 
     public function destroy(Request $request, Assignment $assignment): RedirectResponse
@@ -99,6 +99,6 @@ class AssignmentController extends Controller
         $assignment->delete();
 
         return redirect()->route('assignments.index')
-            ->with('success', 'Assignment deleted successfully.');
+            ->with('success', __('Assignment deleted successfully.'));
     }
 }

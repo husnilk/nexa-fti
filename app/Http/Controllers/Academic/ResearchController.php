@@ -40,7 +40,7 @@ class ResearchController extends Controller
     {
         $research = Research::create($request->validated());
 
-        return redirect()->route('research.index')->with('success', 'Research created successfully.');
+        return redirect()->route('research.index')->with('success', __('Research created successfully.'));
     }
 
     public function show(Request $request, Research $research): Response
@@ -67,13 +67,13 @@ class ResearchController extends Controller
     {
         $research->update($request->validated());
 
-        return redirect()->route('research.index')->with('success', 'Research updated successfully.');
+        return redirect()->route('research.index')->with('success', __('Research updated successfully.'));
     }
 
     public function destroy(Request $request, Research $research): RedirectResponse
     {
         $research->delete();
 
-        return redirect()->route('research.index')->with('success', 'Research deleted successfully.');
+        return redirect()->route('research.index')->with('success', __('Research deleted successfully.'));
     }
 }

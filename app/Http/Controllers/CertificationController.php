@@ -55,7 +55,7 @@ class CertificationController extends Controller
 
         EmployeeCertification::create($validated);
 
-        return redirect()->route('certifications.index')->with('success', 'Certification created successfully.');
+        return redirect()->route('certifications.index')->with('success', __('Certification created successfully.'));
     }
 
     /**
@@ -101,7 +101,7 @@ class CertificationController extends Controller
 
         $certification->update($validated);
 
-        return redirect()->route('certifications.index')->with('success', 'Certification updated successfully.');
+        return redirect()->route('certifications.index')->with('success', __('Certification updated successfully.'));
     }
 
     /**
@@ -117,6 +117,6 @@ class CertificationController extends Controller
 
         $certification->delete();
 
-        return redirect()->route('certifications.index')->with('success', 'Certification deleted successfully.');
+        return redirect()->route('certifications.index')->with('success', __('Certification deleted successfully.'));
     }
 }

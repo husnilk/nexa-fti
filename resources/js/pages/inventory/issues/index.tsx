@@ -1,11 +1,10 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import {
-    index as issueIndex,
-} from '@/actions/App/Http/Controllers/Inventory/InventoryIssueController';
+import { index as issueIndex } from '@/actions/App/Http/Controllers/Inventory/InventoryIssueController';
 import Heading from '@/components/heading';
 import { Input } from '@/components/ui/input';
+import { __ } from '@/lib/i18n';
 import type { Auth, InventoryIssue } from '@/types';
 
 interface PageProps {
@@ -23,24 +22,26 @@ export default function IssueIndex({ issues }: PageProps) {
     const filteredIssues = issues.data.filter(
         (iss) =>
             iss.issue_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            iss.issued_by?.name.toLowerCase().includes(searchTerm.toLowerCase()),
+            iss.issued_by?.name
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()),
     );
 
     return (
         <>
-            <Head title="Issues" />
+            <Head title={__('Issues')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <Heading
-                    title="Inventory Issues"
-                    description="History of items issued from warehouses."
+                    title={__('Inventory Issues')}
+                    description={__('History of items issued from warehouses.')}
                 />
 
                 <div className="flex items-center gap-2">
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search issues..."
+                            placeholder={__('Search issues...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -53,16 +54,16 @@ export default function IssueIndex({ issues }: PageProps) {
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Number
+                                    {__('Number')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Warehouse
+                                    {__('Warehouse')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Issued By
+                                    {__('Issued By')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Date
+                                    {__('Date')}
                                 </th>
                             </tr>
                         </thead>
@@ -92,7 +93,7 @@ export default function IssueIndex({ issues }: PageProps) {
                                         colSpan={4}
                                         className="p-8 text-center text-muted-foreground"
                                     >
-                                        No issues found.
+                                        {__('No issues found.')}
                                     </td>
                                 </tr>
                             )}
@@ -107,11 +108,11 @@ export default function IssueIndex({ issues }: PageProps) {
 IssueIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Inventory',
+            title: __('Inventory'),
             href: '#',
         },
         {
-            title: 'Issues',
+            title: __('Issues'),
             href: issueIndex(),
         },
     ],

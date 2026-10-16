@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Activity;
+use App\Models\Performance;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -50,7 +52,13 @@ class HandleInertiaRequests extends Middleware
                 ] : null,
                 'roles' => $user ? $user->getRoleNames()->values()->all() : [],
                 'permissions' => $user ? $user->getAllPermissions()->pluck('name')->values()->all() : [],
+                'is_verifier' => fn () => $user !== null && (
+                    Activity::inActivePeriod()->where('verifier_id', $user->id)->exists()
+                    || Performance::verifiableBy($user->id)->exists()
+                ),
             ],
+            'locale' => app()->getLocale(),
+            'locales' => config('app.available_locales'),
             'app_debug' => config('app.debug'),
             'debug_users' => config('app.debug')
                 ? User::where('is_active', true)

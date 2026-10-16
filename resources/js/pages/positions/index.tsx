@@ -45,12 +45,9 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useDebounce } from '@/hooks/use-debounce';
-import {
-    index as functionalPositionsIndex,
-} from '@/routes/functional-positions';
-import {
-    index as positionNomenclaturesIndex,
-} from '@/routes/position-nomenclatures';
+import { __, intlLocale } from '@/lib/i18n';
+import { index as functionalPositionsIndex } from '@/routes/functional-positions';
+import { index as positionNomenclaturesIndex } from '@/routes/position-nomenclatures';
 import {
     index as positionsIndex,
     organizationPositions as positionsOrganizationPositions,
@@ -108,7 +105,7 @@ function toPositionFormData(position?: Position | null): PositionForm {
     };
 }
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -135,8 +132,9 @@ export default function PositionsIndex({
         : null;
 
     const [isCreating, setIsCreating] = useState<boolean>(false);
-    const [editingPosition, setEditingPosition] =
-        useState<Position | null>(initialEditingPosition);
+    const [editingPosition, setEditingPosition] = useState<Position | null>(
+        initialEditingPosition,
+    );
     const [deletingPosition, setDeletingPosition] = useState<Position | null>(
         null,
     );
@@ -243,26 +241,30 @@ export default function PositionsIndex({
 
     return (
         <>
-            <Head title="Positions" />
+            <Head title={__('Positions')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                            Positions
+                            {__('Positions')}
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Manage structural positions, hierarchy, and scoring
-                            metrics.
+                            {__(
+                                'Manage structural positions, hierarchy, and scoring metrics.',
+                            )}
                         </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="cursor-pointer gap-2">
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer gap-2"
+                                >
                                     <Briefcase className="h-4 w-4" />
-                                    Position Modules
+                                    {__('Position Modules')}
                                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -270,28 +272,28 @@ export default function PositionsIndex({
                                 <DropdownMenuItem asChild>
                                     <Link
                                         href={positionsOrganizationPositions()}
-                                        className="cursor-pointer flex items-center gap-2 w-full"
+                                        className="flex w-full cursor-pointer items-center gap-2"
                                     >
                                         <Briefcase className="h-4 w-4" />
-                                        Organization Positions
+                                        {__('Organization Positions')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link
                                         href={positionNomenclaturesIndex()}
-                                        className="cursor-pointer flex items-center gap-2 w-full"
+                                        className="flex w-full cursor-pointer items-center gap-2"
                                     >
                                         <Library className="h-4 w-4" />
-                                        Nomenclatures
+                                        {__('Nomenclatures')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link
                                         href={functionalPositionsIndex()}
-                                        className="cursor-pointer flex items-center gap-2 w-full"
+                                        className="flex w-full cursor-pointer items-center gap-2"
                                     >
                                         <Award className="h-4 w-4" />
-                                        Functional Positions
+                                        {__('Functional Positions')}
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -304,7 +306,7 @@ export default function PositionsIndex({
                                 className="cursor-pointer gap-2"
                             >
                                 <Plus className="h-4 w-4" />
-                                Add Position
+                                {__('Add Position')}
                             </Button>
                         )}
                     </div>
@@ -318,7 +320,7 @@ export default function PositionsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total positions
+                                    {__('Total positions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {positions.length}
@@ -334,7 +336,7 @@ export default function PositionsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Active positions
+                                    {__('Active positions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {activePositionsCount}
@@ -350,7 +352,7 @@ export default function PositionsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Highest SKP point
+                                    {__('Highest SKP point')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {highestSkpPoint}
@@ -365,7 +367,7 @@ export default function PositionsIndex({
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search positions..."
+                            placeholder={__('Search positions...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
@@ -386,13 +388,13 @@ export default function PositionsIndex({
                             variant="outline"
                             className="h-10 rounded-full px-4 text-xs uppercase"
                         >
-                            {positions.length} records
+                            {__(':count records', { count: positions.length })}
                         </Badge>
                         <Badge
                             variant="outline"
                             className="h-10 rounded-full px-4 text-xs uppercase"
                         >
-                            {rootPositionsCount} roots
+                            {__(':count roots', { count: rootPositionsCount })}
                         </Badge>
                     </div>
                 </div>
@@ -402,18 +404,28 @@ export default function PositionsIndex({
                         <table className="w-full min-w-[1180px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">Position</th>
-                                    <th className="px-6 py-4">Grade</th>
-                                    <th className="px-6 py-4">Job Value</th>
-                                    <th className="px-6 py-4">CG</th>
-                                    <th className="px-6 py-4">SKP Point</th>
-                                    <th className="px-6 py-4">Parent</th>
-                                    <th className="px-6 py-4 text-center">
-                                        Status
+                                    <th className="px-6 py-4">
+                                        {__('Position')}
                                     </th>
-                                    <th className="px-6 py-4">Created</th>
+                                    <th className="px-6 py-4">{__('Grade')}</th>
+                                    <th className="px-6 py-4">
+                                        {__('Job Value')}
+                                    </th>
+                                    <th className="px-6 py-4">CG</th>
+                                    <th className="px-6 py-4">
+                                        {__('SKP Point')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Parent')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Status')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Created')}
+                                    </th>
                                     <th className="px-6 py-4 text-right">
-                                        Actions
+                                        {__('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -424,8 +436,9 @@ export default function PositionsIndex({
                                             colSpan={9}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No positions found matching your
-                                            search.
+                                            {__(
+                                                'No positions found matching your search.',
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -441,7 +454,9 @@ export default function PositionsIndex({
                                                     </span>
                                                     <span className="line-clamp-1 text-xs text-muted-foreground">
                                                         {position.description ||
-                                                            'No description provided.'}
+                                                            __(
+                                                                'No description provided.',
+                                                            )}
                                                     </span>
                                                 </div>
                                             </td>
@@ -469,8 +484,8 @@ export default function PositionsIndex({
                                                     }`}
                                                 >
                                                     {position.is_active
-                                                        ? 'Active'
-                                                        : 'Inactive'}
+                                                        ? __('Active')
+                                                        : __('Inactive')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
@@ -505,7 +520,12 @@ export default function PositionsIndex({
                                                                     position,
                                                                 )
                                                             }
-                                                            aria-label={`Edit ${position.name}`}
+                                                            aria-label={__(
+                                                                'Edit :name',
+                                                                {
+                                                                    name: position.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                         >
                                                             <Pencil className="h-4 w-4" />
@@ -521,7 +541,12 @@ export default function PositionsIndex({
                                                                     position,
                                                                 )
                                                             }
-                                                            aria-label={`Delete ${position.name}`}
+                                                            aria-label={__(
+                                                                'Delete :name',
+                                                                {
+                                                                    name: position.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -543,11 +568,12 @@ export default function PositionsIndex({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Create Position
+                                {__('Create Position')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Add a new position and place it in the structural
-                                hierarchy.
+                                {__(
+                                    'Add a new position and place it in the structural hierarchy.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -555,7 +581,9 @@ export default function PositionsIndex({
                     <form onSubmit={submitCreate} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_name">Name</Label>
+                                <Label htmlFor="create_name">
+                                    {__('Name')}
+                                </Label>
                                 <Input
                                     id="create_name"
                                     value={createForm.data.name}
@@ -571,7 +599,7 @@ export default function PositionsIndex({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="create_parent">
-                                    Parent Position
+                                    {__('Parent Position')}
                                 </Label>
                                 <Select
                                     value={createForm.data.parent_id || 'none'}
@@ -583,11 +611,13 @@ export default function PositionsIndex({
                                     }
                                 >
                                     <SelectTrigger id="create_parent">
-                                        <SelectValue placeholder="Select a parent" />
+                                        <SelectValue
+                                            placeholder={__('Select a parent')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="none">
-                                            None
+                                            {__('None')}
                                         </SelectItem>
                                         {parentPositions.map((position) => (
                                             <SelectItem
@@ -607,7 +637,9 @@ export default function PositionsIndex({
 
                         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_grade">Grade</Label>
+                                <Label htmlFor="create_grade">
+                                    {__('Grade')}
+                                </Label>
                                 <Input
                                     id="create_grade"
                                     type="number"
@@ -615,8 +647,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'grade',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -625,7 +658,7 @@ export default function PositionsIndex({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="create_job_value">
-                                    Job Value
+                                    {__('Job Value')}
                                 </Label>
                                 <Input
                                     id="create_job_value"
@@ -634,8 +667,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'job_value',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -653,8 +687,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'cg',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -663,7 +698,7 @@ export default function PositionsIndex({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="create_skp_point">
-                                    SKP Point
+                                    {__('SKP Point')}
                                 </Label>
                                 <Input
                                     id="create_skp_point"
@@ -672,8 +707,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'skp_point',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -696,11 +732,12 @@ export default function PositionsIndex({
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="create_is_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Inactive positions remain available for
-                                    historical records.
+                                    {__(
+                                        'Inactive positions remain available for historical records.',
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -708,7 +745,7 @@ export default function PositionsIndex({
 
                         <div className="grid gap-2">
                             <Label htmlFor="create_qualification">
-                                Qualification
+                                {__('Qualification')}
                             </Label>
                             <Textarea
                                 id="create_qualification"
@@ -728,7 +765,7 @@ export default function PositionsIndex({
 
                         <div className="grid gap-2">
                             <Label htmlFor="create_description">
-                                Description
+                                {__('Description')}
                             </Label>
                             <Textarea
                                 id="create_description"
@@ -752,13 +789,13 @@ export default function PositionsIndex({
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save Position
+                                {__('Save Position')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -773,11 +810,12 @@ export default function PositionsIndex({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Edit Position
+                                {__('Edit Position')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Update hierarchy, scoring metrics, and
-                                supporting details for this position.
+                                {__(
+                                    'Update hierarchy, scoring metrics, and supporting details for this position.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -785,7 +823,7 @@ export default function PositionsIndex({
                     <form onSubmit={submitEdit} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_name">Name</Label>
+                                <Label htmlFor="edit_name">{__('Name')}</Label>
                                 <Input
                                     id="edit_name"
                                     value={editForm.data.name}
@@ -801,7 +839,7 @@ export default function PositionsIndex({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="edit_parent">
-                                    Parent Position
+                                    {__('Parent Position')}
                                 </Label>
                                 <Select
                                     value={editForm.data.parent_id || 'none'}
@@ -813,11 +851,13 @@ export default function PositionsIndex({
                                     }
                                 >
                                     <SelectTrigger id="edit_parent">
-                                        <SelectValue placeholder="Select a parent" />
+                                        <SelectValue
+                                            placeholder={__('Select a parent')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="none">
-                                            None
+                                            {__('None')}
                                         </SelectItem>
                                         {parentPositions
                                             .filter(
@@ -843,7 +883,9 @@ export default function PositionsIndex({
 
                         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_grade">Grade</Label>
+                                <Label htmlFor="edit_grade">
+                                    {__('Grade')}
+                                </Label>
                                 <Input
                                     id="edit_grade"
                                     type="number"
@@ -851,8 +893,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'grade',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -861,7 +904,7 @@ export default function PositionsIndex({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="edit_job_value">
-                                    Job Value
+                                    {__('Job Value')}
                                 </Label>
                                 <Input
                                     id="edit_job_value"
@@ -870,8 +913,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'job_value',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -889,8 +933,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'cg',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -899,7 +944,7 @@ export default function PositionsIndex({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="edit_skp_point">
-                                    SKP Point
+                                    {__('SKP Point')}
                                 </Label>
                                 <Input
                                     id="edit_skp_point"
@@ -908,8 +953,9 @@ export default function PositionsIndex({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'skp_point',
-                                            Number.parseInt(event.target.value) ||
-                                                0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -932,11 +978,12 @@ export default function PositionsIndex({
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="edit_is_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Disable this when the position should not be
-                                    used for new assignments.
+                                    {__(
+                                        'Disable this when the position should not be used for new assignments.',
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -944,7 +991,7 @@ export default function PositionsIndex({
 
                         <div className="grid gap-2">
                             <Label htmlFor="edit_qualification">
-                                Qualification
+                                {__('Qualification')}
                             </Label>
                             <Textarea
                                 id="edit_qualification"
@@ -964,7 +1011,7 @@ export default function PositionsIndex({
 
                         <div className="grid gap-2">
                             <Label htmlFor="edit_description">
-                                Description
+                                {__('Description')}
                             </Label>
                             <Textarea
                                 id="edit_description"
@@ -986,13 +1033,13 @@ export default function PositionsIndex({
                                 variant="outline"
                                 onClick={() => setEditingPosition(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save Changes
+                                {__('Save changes')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -1005,11 +1052,12 @@ export default function PositionsIndex({
             >
                 <DialogContent className="rounded-2xl border bg-white sm:max-w-md dark:border-zinc-800 dark:bg-zinc-900">
                     <DialogHeader>
-                        <DialogTitle>Delete Position</DialogTitle>
+                        <DialogTitle>{__('Delete Position')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete{' '}
-                            {deletingPosition?.name}? This action cannot be
-                            undone.
+                            {__(
+                                'Are you sure you want to delete :name? This action cannot be undone.',
+                                { name: deletingPosition?.name ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -1018,14 +1066,14 @@ export default function PositionsIndex({
                             variant="outline"
                             onClick={() => setDeletingPosition(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyPosition}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -1037,7 +1085,7 @@ export default function PositionsIndex({
 PositionsIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Positions',
+            title: __('Positions'),
             href: positionsIndex(),
         },
     ],

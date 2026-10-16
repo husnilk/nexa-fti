@@ -19,7 +19,7 @@ class DocumentRevisionController extends Controller
     protected function authorizeAccess(Request $request): void
     {
         if (! $request->user()->can('document.manage') && ! $request->user()->hasRole('super-admin')) {
-            abort(403, 'Unauthorized. Only users with document.manage permission can manage documents.');
+            abort(403, __('Unauthorized. Only users with document.manage permission can manage documents.'));
         }
     }
 
@@ -57,7 +57,7 @@ class DocumentRevisionController extends Controller
             ]);
         });
 
-        return back()->with('success', 'Document revision uploaded successfully.');
+        return back()->with('success', __('Document revision uploaded successfully.'));
     }
 
     public function update(DocumentRevisionUpdateRequest $request, DocumentRevision $documentRevision): RedirectResponse
@@ -76,7 +76,7 @@ class DocumentRevisionController extends Controller
 
         $documentRevision->update($data);
 
-        return back()->with('success', 'Document revision updated successfully.');
+        return back()->with('success', __('Document revision updated successfully.'));
     }
 
     public function destroy(Request $request, DocumentRevision $documentRevision): RedirectResponse
@@ -106,6 +106,6 @@ class DocumentRevisionController extends Controller
             }
         });
 
-        return back()->with('success', 'Document revision deleted successfully.');
+        return back()->with('success', __('Document revision deleted successfully.'));
     }
 }

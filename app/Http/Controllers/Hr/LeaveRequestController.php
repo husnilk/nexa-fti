@@ -84,7 +84,7 @@ class LeaveRequestController extends Controller
         });
 
         return redirect()->route('leave-requests.index')
-            ->with('success', 'Leave request submitted successfully.');
+            ->with('success', __('Leave request submitted successfully.'));
     }
 
     public function show(LeaveRequest $leaveRequest): Response
@@ -111,7 +111,7 @@ class LeaveRequestController extends Controller
             ->first();
 
         if (! $currentApproval) {
-            return back()->with('error', 'No pending approval found.');
+            return back()->with('error', __('No pending approval found.'));
         }
 
         DB::transaction(function () use ($leaveRequest, $currentApproval, $validated) {
@@ -135,7 +135,7 @@ class LeaveRequestController extends Controller
             }
         });
 
-        return back()->with('success', 'Leave request approved for level '.$currentApproval->level);
+        return back()->with('success', __('Leave request approved for level :level', ['level' => $currentApproval->level]));
     }
 
     public function reject(Request $request, LeaveRequest $leaveRequest): RedirectResponse
@@ -150,7 +150,7 @@ class LeaveRequestController extends Controller
             ->first();
 
         if (! $currentApproval) {
-            return back()->with('error', 'No pending approval found.');
+            return back()->with('error', __('No pending approval found.'));
         }
 
         DB::transaction(function () use ($leaveRequest, $currentApproval, $validated) {
@@ -167,7 +167,7 @@ class LeaveRequestController extends Controller
             // Any remaining levels are also marked as rejected (implicit) or stayed pending
         });
 
-        return back()->with('success', 'Leave request rejected.');
+        return back()->with('success', __('Leave request rejected.'));
     }
 
     public function destroy(LeaveRequest $leaveRequest): RedirectResponse
@@ -175,6 +175,6 @@ class LeaveRequestController extends Controller
         $leaveRequest->delete();
 
         return redirect()->route('leave-requests.index')
-            ->with('success', 'Leave request deleted.');
+            ->with('success', __('Leave request deleted.'));
     }
 }

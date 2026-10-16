@@ -61,7 +61,7 @@ class TrainingController extends Controller
             $training->employees()->sync($request->employee_ids);
         }
 
-        return redirect()->route('trainings.index')->with('success', 'Training created successfully.');
+        return redirect()->route('trainings.index')->with('success', __('Training created successfully.'));
     }
 
     /**
@@ -110,7 +110,7 @@ class TrainingController extends Controller
             $training->employees()->sync($request->employee_ids);
         }
 
-        return redirect()->route('trainings.index')->with('success', 'Training updated successfully.');
+        return redirect()->route('trainings.index')->with('success', __('Training updated successfully.'));
     }
 
     /**
@@ -124,6 +124,6 @@ class TrainingController extends Controller
 
         $training->delete();
 
-        return redirect()->back()->with('success', 'Training deleted successfully.');
+        return redirect()->back()->with('success', __('Training deleted successfully.'));
     }
 }

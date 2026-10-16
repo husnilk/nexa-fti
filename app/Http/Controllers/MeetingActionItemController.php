@@ -39,10 +39,10 @@ class MeetingActionItemController extends Controller
         $request->session()->flash('meetingActionItem.id', $meetingActionItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Action item created successfully.');
+            return redirect()->back()->with('success', __('Action item created successfully.'));
         }
 
-        return redirect()->route('meeting-action-items.index')->with('success', 'Action item created successfully.');
+        return redirect()->route('meeting-action-items.index')->with('success', __('Action item created successfully.'));
     }
 
     public function show(Request $request, MeetingActionItem $meetingActionItem): Response
@@ -68,10 +68,10 @@ class MeetingActionItemController extends Controller
         $request->session()->flash('meetingActionItem.id', $meetingActionItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Action item updated successfully.');
+            return redirect()->back()->with('success', __('Action item updated successfully.'));
         }
 
-        return redirect()->route('meeting-action-items.index')->with('success', 'Action item updated successfully.');
+        return redirect()->route('meeting-action-items.index')->with('success', __('Action item updated successfully.'));
     }
 
     public function destroy(Request $request, MeetingActionItem $meetingActionItem): RedirectResponse
@@ -79,9 +79,9 @@ class MeetingActionItemController extends Controller
         $meetingActionItem->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Action item deleted successfully.');
+            return redirect()->back()->with('success', __('Action item deleted successfully.'));
         }
 
-        return redirect()->route('meeting-action-items.index')->with('success', 'Action item deleted successfully.');
+        return redirect()->route('meeting-action-items.index')->with('success', __('Action item deleted successfully.'));
     }
 }

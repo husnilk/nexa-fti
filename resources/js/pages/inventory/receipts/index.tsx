@@ -1,11 +1,10 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import {
-    index as receiptIndex,
-} from '@/actions/App/Http/Controllers/Inventory/InventoryReceiptController';
+import { index as receiptIndex } from '@/actions/App/Http/Controllers/Inventory/InventoryReceiptController';
 import Heading from '@/components/heading';
 import { Input } from '@/components/ui/input';
+import { __ } from '@/lib/i18n';
 import type { Auth, InventoryReceipt } from '@/types';
 
 interface PageProps {
@@ -22,25 +21,31 @@ export default function ReceiptIndex({ receipts }: PageProps) {
 
     const filteredReceipts = receipts.data.filter(
         (rec) =>
-            rec.receipt_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            rec.received_by?.name.toLowerCase().includes(searchTerm.toLowerCase()),
+            rec.receipt_number
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()) ||
+            rec.received_by?.name
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()),
     );
 
     return (
         <>
-            <Head title="Receipts" />
+            <Head title={__('Receipts')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <Heading
-                    title="Inventory Receipts"
-                    description="History of items received into warehouses."
+                    title={__('Inventory Receipts')}
+                    description={__(
+                        'History of items received into warehouses.',
+                    )}
                 />
 
                 <div className="flex items-center gap-2">
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search receipts..."
+                            placeholder={__('Search receipts...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -53,16 +58,16 @@ export default function ReceiptIndex({ receipts }: PageProps) {
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Number
+                                    {__('Number')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Warehouse
+                                    {__('Warehouse')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Received By
+                                    {__('Received By')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Date
+                                    {__('Date')}
                                 </th>
                             </tr>
                         </thead>
@@ -92,7 +97,7 @@ export default function ReceiptIndex({ receipts }: PageProps) {
                                         colSpan={4}
                                         className="p-8 text-center text-muted-foreground"
                                     >
-                                        No receipts found.
+                                        {__('No receipts found.')}
                                     </td>
                                 </tr>
                             )}
@@ -107,11 +112,11 @@ export default function ReceiptIndex({ receipts }: PageProps) {
 ReceiptIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Inventory',
+            title: __('Inventory'),
             href: '#',
         },
         {
-            title: 'Receipts',
+            title: __('Receipts'),
             href: receiptIndex(),
         },
     ],

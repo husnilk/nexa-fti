@@ -61,7 +61,7 @@ class EquipmentReceiptController extends Controller
         });
 
         return redirect()->route('equipment-receipts.index')
-            ->with('success', 'Receipt recorded successfully.');
+            ->with('success', __('Receipt recorded successfully.'));
     }
 
     public function show(Request $request, EquipmentReceipt $equipmentReceipt): Response
@@ -101,7 +101,7 @@ class EquipmentReceiptController extends Controller
         });
 
         return redirect()->route('equipment-receipts.index')
-            ->with('success', 'Receipt updated successfully.');
+            ->with('success', __('Receipt updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentReceipt $equipmentReceipt): RedirectResponse
@@ -109,6 +109,6 @@ class EquipmentReceiptController extends Controller
         $equipmentReceipt->delete();
 
         return redirect()->route('equipment-receipts.index')
-            ->with('success', 'Receipt deleted successfully.');
+            ->with('success', __('Receipt deleted successfully.'));
     }
 }

@@ -48,7 +48,7 @@ class HolidayController extends Controller
         Holiday::create($request->validated());
 
         return redirect()->route('holidays.index')
-            ->with('success', 'Holiday created successfully.');
+            ->with('success', __('Holiday created successfully.'));
     }
 
     public function show(Holiday $holiday): Response
@@ -63,7 +63,7 @@ class HolidayController extends Controller
         $holiday->update($request->validated());
 
         return redirect()->route('holidays.index')
-            ->with('success', 'Holiday updated successfully.');
+            ->with('success', __('Holiday updated successfully.'));
     }
 
     public function destroy(Holiday $holiday): RedirectResponse
@@ -71,6 +71,6 @@ class HolidayController extends Controller
         $holiday->delete();
 
         return redirect()->route('holidays.index')
-            ->with('success', 'Holiday deleted successfully.');
+            ->with('success', __('Holiday deleted successfully.'));
     }
 }

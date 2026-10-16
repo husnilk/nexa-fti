@@ -29,6 +29,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import {
     index as functionalPositionsIndex,
     show as functionalPositionShow,
@@ -65,7 +66,7 @@ type PageProps = {
     };
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -131,8 +132,8 @@ export default function FunctionalPositionsIndex({
 
     const activePositionsCount = useMemo(
         () =>
-            functionalPositions.filter((functionalPosition) =>
-                functionalPosition.is_active,
+            functionalPositions.filter(
+                (functionalPosition) => functionalPosition.is_active,
             ).length,
         [functionalPositions],
     );
@@ -200,17 +201,18 @@ export default function FunctionalPositionsIndex({
 
     return (
         <>
-            <Head title="Functional Positions" />
+            <Head title={__('Functional Positions')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                            Functional Positions
+                            {__('Functional Positions')}
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Manage standardized functional job levels, grades,
-                            job values, and active status.
+                            {__(
+                                'Manage standardized functional job levels, grades, job values, and active status.',
+                            )}
                         </p>
                     </div>
 
@@ -221,7 +223,7 @@ export default function FunctionalPositionsIndex({
                             className="cursor-pointer gap-2"
                         >
                             <Plus className="h-4 w-4" />
-                            Add Functional Position
+                            {__('Add Functional Position')}
                         </Button>
                     )}
                 </div>
@@ -234,7 +236,7 @@ export default function FunctionalPositionsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total positions
+                                    {__('Total positions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {functionalPositions.length}
@@ -250,7 +252,7 @@ export default function FunctionalPositionsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Active positions
+                                    {__('Active positions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {activePositionsCount}
@@ -266,7 +268,7 @@ export default function FunctionalPositionsIndex({
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Highest job value
+                                    {__('Highest job value')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {highestJobValue}
@@ -281,7 +283,7 @@ export default function FunctionalPositionsIndex({
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search functional positions..."
+                            placeholder={__('Search functional positions...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
@@ -301,7 +303,9 @@ export default function FunctionalPositionsIndex({
                         variant="outline"
                         className="h-10 rounded-full px-4 text-xs uppercase"
                     >
-                        {functionalPositions.length} records
+                        {__(':count records', {
+                            count: functionalPositions.length,
+                        })}
                     </Badge>
                 </div>
 
@@ -310,17 +314,23 @@ export default function FunctionalPositionsIndex({
                         <table className="w-full min-w-[1040px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">Position</th>
-                                    <th className="px-6 py-4">Code</th>
-                                    <th className="px-6 py-4">Level</th>
-                                    <th className="px-6 py-4">Grade</th>
-                                    <th className="px-6 py-4">Job Value</th>
-                                    <th className="px-6 py-4 text-center">
-                                        Status
+                                    <th className="px-6 py-4">
+                                        {__('Position')}
                                     </th>
-                                    <th className="px-6 py-4">Created</th>
+                                    <th className="px-6 py-4">{__('Code')}</th>
+                                    <th className="px-6 py-4">{__('Level')}</th>
+                                    <th className="px-6 py-4">{__('Grade')}</th>
+                                    <th className="px-6 py-4">
+                                        {__('Job Value')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Status')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Created')}
+                                    </th>
                                     <th className="px-6 py-4 text-right">
-                                        Actions
+                                        {__('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -331,8 +341,9 @@ export default function FunctionalPositionsIndex({
                                             colSpan={8}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No functional positions found matching
-                                            your search.
+                                            {__(
+                                                'No functional positions found matching your search.',
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -348,7 +359,9 @@ export default function FunctionalPositionsIndex({
                                                     </span>
                                                     <span className="line-clamp-1 text-xs text-muted-foreground">
                                                         {fp.description ||
-                                                            'No description provided.'}
+                                                            __(
+                                                                'No description provided.',
+                                                            )}
                                                     </span>
                                                 </div>
                                             </td>
@@ -362,7 +375,9 @@ export default function FunctionalPositionsIndex({
                                                     variant="outline"
                                                     className="rounded-full px-3 py-1"
                                                 >
-                                                    Level {fp.level}
+                                                    {__('Level :level', {
+                                                        level: fp.level,
+                                                    })}
                                                 </Badge>
                                             </td>
                                             <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
@@ -380,8 +395,8 @@ export default function FunctionalPositionsIndex({
                                                     }`}
                                                 >
                                                     {fp.is_active
-                                                        ? 'Active'
-                                                        : 'Inactive'}
+                                                        ? __('Active')
+                                                        : __('Inactive')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
@@ -414,7 +429,12 @@ export default function FunctionalPositionsIndex({
                                                                     fp,
                                                                 )
                                                             }
-                                                            aria-label={`Edit ${fp.name}`}
+                                                            aria-label={__(
+                                                                'Edit :name',
+                                                                {
+                                                                    name: fp.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                         >
                                                             <Pencil className="h-4 w-4" />
@@ -430,7 +450,12 @@ export default function FunctionalPositionsIndex({
                                                                     fp,
                                                                 )
                                                             }
-                                                            aria-label={`Delete ${fp.name}`}
+                                                            aria-label={__(
+                                                                'Delete :name',
+                                                                {
+                                                                    name: fp.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -452,11 +477,12 @@ export default function FunctionalPositionsIndex({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Create Functional Position
+                                {__('Create Functional Position')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Add a new standardized functional position
-                                record.
+                                {__(
+                                    'Add a new standardized functional position record.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -464,7 +490,9 @@ export default function FunctionalPositionsIndex({
                     <form onSubmit={submitCreate} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_name">Name</Label>
+                                <Label htmlFor="create_name">
+                                    {__('Name')}
+                                </Label>
                                 <Input
                                     id="create_name"
                                     value={createForm.data.name}
@@ -479,7 +507,9 @@ export default function FunctionalPositionsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="create_code">Code</Label>
+                                <Label htmlFor="create_code">
+                                    {__('Code')}
+                                </Label>
                                 <Input
                                     id="create_code"
                                     value={createForm.data.code}
@@ -496,7 +526,9 @@ export default function FunctionalPositionsIndex({
 
                         <div className="grid gap-5 md:grid-cols-3">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_level">Level</Label>
+                                <Label htmlFor="create_level">
+                                    {__('Level')}
+                                </Label>
                                 <Input
                                     id="create_level"
                                     type="number"
@@ -504,7 +536,9 @@ export default function FunctionalPositionsIndex({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'level',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -512,7 +546,9 @@ export default function FunctionalPositionsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="create_grade">Grade</Label>
+                                <Label htmlFor="create_grade">
+                                    {__('Grade')}
+                                </Label>
                                 <Input
                                     id="create_grade"
                                     type="number"
@@ -520,7 +556,9 @@ export default function FunctionalPositionsIndex({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'grade',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -528,7 +566,9 @@ export default function FunctionalPositionsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="create_job_value">Job Value</Label>
+                                <Label htmlFor="create_job_value">
+                                    {__('Job Value')}
+                                </Label>
                                 <Input
                                     id="create_job_value"
                                     type="number"
@@ -536,7 +576,9 @@ export default function FunctionalPositionsIndex({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'job_value',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -556,18 +598,21 @@ export default function FunctionalPositionsIndex({
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="create_is_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Inactive positions remain stored but are
-                                    visually marked in the list.
+                                    {__(
+                                        'Inactive positions remain stored but are visually marked in the list.',
+                                    )}
                                 </p>
                             </div>
                         </div>
                         <InputError message={createForm.errors.is_active} />
 
                         <div className="grid gap-2">
-                            <Label htmlFor="create_description">Description</Label>
+                            <Label htmlFor="create_description">
+                                {__('Description')}
+                            </Label>
                             <Textarea
                                 id="create_description"
                                 value={createForm.data.description || ''}
@@ -590,13 +635,13 @@ export default function FunctionalPositionsIndex({
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save Functional Position
+                                {__('Save Functional Position')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -611,11 +656,12 @@ export default function FunctionalPositionsIndex({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Edit Functional Position
+                                {__('Edit Functional Position')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Update the level, grade, job value, and status
-                                for this functional position.
+                                {__(
+                                    'Update the level, grade, job value, and status for this functional position.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -623,7 +669,7 @@ export default function FunctionalPositionsIndex({
                     <form onSubmit={submitEdit} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_name">Name</Label>
+                                <Label htmlFor="edit_name">{__('Name')}</Label>
                                 <Input
                                     id="edit_name"
                                     value={editForm.data.name}
@@ -638,7 +684,7 @@ export default function FunctionalPositionsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_code">Code</Label>
+                                <Label htmlFor="edit_code">{__('Code')}</Label>
                                 <Input
                                     id="edit_code"
                                     value={editForm.data.code}
@@ -655,7 +701,9 @@ export default function FunctionalPositionsIndex({
 
                         <div className="grid gap-5 md:grid-cols-3">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_level">Level</Label>
+                                <Label htmlFor="edit_level">
+                                    {__('Level')}
+                                </Label>
                                 <Input
                                     id="edit_level"
                                     type="number"
@@ -663,7 +711,9 @@ export default function FunctionalPositionsIndex({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'level',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -671,7 +721,9 @@ export default function FunctionalPositionsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_grade">Grade</Label>
+                                <Label htmlFor="edit_grade">
+                                    {__('Grade')}
+                                </Label>
                                 <Input
                                     id="edit_grade"
                                     type="number"
@@ -679,7 +731,9 @@ export default function FunctionalPositionsIndex({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'grade',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -687,7 +741,9 @@ export default function FunctionalPositionsIndex({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_job_value">Job Value</Label>
+                                <Label htmlFor="edit_job_value">
+                                    {__('Job Value')}
+                                </Label>
                                 <Input
                                     id="edit_job_value"
                                     type="number"
@@ -695,7 +751,9 @@ export default function FunctionalPositionsIndex({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'job_value',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -715,18 +773,21 @@ export default function FunctionalPositionsIndex({
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="edit_is_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Disable this when the functional position
-                                    should no longer be used.
+                                    {__(
+                                        'Disable this when the functional position should no longer be used.',
+                                    )}
                                 </p>
                             </div>
                         </div>
                         <InputError message={editForm.errors.is_active} />
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_description">Description</Label>
+                            <Label htmlFor="edit_description">
+                                {__('Description')}
+                            </Label>
                             <Textarea
                                 id="edit_description"
                                 value={editForm.data.description || ''}
@@ -747,13 +808,13 @@ export default function FunctionalPositionsIndex({
                                 variant="outline"
                                 onClick={() => setEditingFP(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save Changes
+                                {__('Save Changes')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -766,10 +827,14 @@ export default function FunctionalPositionsIndex({
             >
                 <DialogContent className="rounded-2xl border bg-white sm:max-w-md dark:border-zinc-800 dark:bg-zinc-900">
                     <DialogHeader>
-                        <DialogTitle>Delete Functional Position</DialogTitle>
+                        <DialogTitle>
+                            {__('Delete Functional Position')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete {deletingFP?.name}?
-                            This action cannot be undone.
+                            {__(
+                                'Are you sure you want to delete :name? This action cannot be undone.',
+                                { name: deletingFP?.name ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -778,14 +843,14 @@ export default function FunctionalPositionsIndex({
                             variant="outline"
                             onClick={() => setDeletingFP(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyFP}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -797,7 +862,7 @@ export default function FunctionalPositionsIndex({
 FunctionalPositionsIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Functional Positions',
+            title: __('Functional Positions'),
             href: functionalPositionsIndex(),
         },
     ],

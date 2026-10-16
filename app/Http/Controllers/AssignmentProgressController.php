@@ -64,7 +64,7 @@ class AssignmentProgressController extends Controller
         }
 
         return redirect()->route('assignment-progresses.index', ['assignment_id' => $assignmentProgress->assignment_id])
-            ->with('success', 'Assignment progress updated successfully.');
+            ->with('success', __('Assignment progress updated successfully.'));
     }
 
     public function show(Request $request, AssignmentProgress $assignmentProgress): Response
@@ -93,7 +93,7 @@ class AssignmentProgressController extends Controller
         $assignmentProgress->update($request->validated());
 
         return redirect()->route('assignment-progresses.index', ['assignment_id' => $assignmentProgress->assignment_id])
-            ->with('success', 'Assignment progress updated successfully.');
+            ->with('success', __('Assignment progress updated successfully.'));
     }
 
     public function destroy(Request $request, AssignmentProgress $assignmentProgress): RedirectResponse
@@ -102,6 +102,6 @@ class AssignmentProgressController extends Controller
         $assignmentProgress->delete();
 
         return redirect()->route('assignment-progresses.index', ['assignment_id' => $assignmentId])
-            ->with('success', 'Assignment progress removed.');
+            ->with('success', __('Assignment progress removed.'));
     }
 }

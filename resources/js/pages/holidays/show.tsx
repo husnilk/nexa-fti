@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Calendar as CalendarIcon, Info } from 'lucide-react';
 import Heading from '@/components/heading';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as holidaysIndex } from '@/routes/holidays';
 
 type Holiday = {
@@ -16,18 +17,19 @@ type PageProps = {
 export default function HolidayShow({ holiday }: PageProps) {
     return (
         <>
-            <Head title="Holiday Detail" />
+            <Head title={__('Holiday Detail')} />
             <div className="mx-auto flex h-full max-w-3xl flex-1 flex-col gap-6 p-4">
                 <div className="flex flex-col gap-2">
                     <Link
                         href={holidaysIndex()}
                         className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                     >
-                        <ArrowLeft className="size-4" /> Back to Holidays
+                        <ArrowLeft className="size-4" />{' '}
+                        {__('Back to Holidays')}
                     </Link>
                     <Heading
-                        title="Holiday Detail"
-                        description="View holiday information"
+                        title={__('Holiday Detail')}
+                        description={__('View holiday information')}
                     />
                 </div>
 
@@ -43,7 +45,7 @@ export default function HolidayShow({ holiday }: PageProps) {
                                         {holiday.name}
                                     </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Public Holiday / Non-Working Day
+                                        {__('Public Holiday / Non-Working Day')}
                                     </p>
                                 </div>
                             </div>
@@ -53,11 +55,11 @@ export default function HolidayShow({ holiday }: PageProps) {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <CalendarIcon className="size-4" />
-                                    <span>Date</span>
+                                    <span>{__('Date')}</span>
                                 </div>
                                 <p className="text-lg font-medium">
                                     {new Date(holiday.date).toLocaleDateString(
-                                        'en-GB',
+                                        intlLocale(),
                                         {
                                             weekday: 'long',
                                             day: 'numeric',
@@ -71,7 +73,7 @@ export default function HolidayShow({ holiday }: PageProps) {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Info className="size-4" />
-                                    <span>Name / Description</span>
+                                    <span>{__('Name / Description')}</span>
                                 </div>
                                 <p className="font-medium">{holiday.name}</p>
                             </div>
@@ -85,8 +87,8 @@ export default function HolidayShow({ holiday }: PageProps) {
 
 HolidayShow.layout = {
     breadcrumbs: [
-        { title: 'HR', href: '#' },
-        { title: 'Holidays', href: holidaysIndex() },
-        { title: 'Detail', href: '' },
+        { title: __('HR'), href: '#' },
+        { title: __('Holidays'), href: holidaysIndex() },
+        { title: __('Detail'), href: '' },
     ],
 };

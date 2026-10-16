@@ -1,5 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { __ } from '@/lib/i18n';
 import { dashboard, login, loginAdmin, loginAs, register } from '@/routes';
 import type { Auth } from '@/types';
 
@@ -12,11 +13,13 @@ interface PageProps {
 export default function Welcome() {
     const { auth, app_debug, debug_users } = usePage<PageProps>().props;
     const user = auth?.user;
-    const [selectedUserId, setSelectedUserId] = useState<string>(debug_users?.[0]?.id || '');
+    const [selectedUserId, setSelectedUserId] = useState<string>(
+        debug_users?.[0]?.id || '',
+    );
 
     return (
         <>
-            <Head title="Welcome" />
+            <Head title={__('Welcome')} />
             <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
                 <header className="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
                     <nav className="flex flex-wrap items-center justify-end gap-4">
@@ -25,7 +28,7 @@ export default function Welcome() {
                                 href={dashboard.url()}
                                 className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                             >
-                                Dashboard
+                                {__('Dashboard')}
                             </Link>
                         ) : (
                             <>
@@ -34,22 +37,31 @@ export default function Welcome() {
                                         <div className="flex items-center gap-2">
                                             <select
                                                 value={selectedUserId}
-                                                onChange={(e) => setSelectedUserId(e.target.value)}
+                                                onChange={(e) =>
+                                                    setSelectedUserId(
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 className="rounded-sm border border-[#19140035] bg-white px-2 py-1.5 text-xs text-[#1b1b18] focus:border-[#1915014a] focus:outline-none dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC] dark:focus:border-[#62605b]"
                                             >
                                                 {debug_users.map((u) => (
-                                                    <option key={u.id} value={u.id}>
+                                                    <option
+                                                        key={u.id}
+                                                        value={u.id}
+                                                    >
                                                         {u.name} ({u.email})
                                                     </option>
                                                 ))}
                                             </select>
                                             <Link
-                                                href={loginAs.url({ user: selectedUserId })}
+                                                href={loginAs.url({
+                                                    user: selectedUserId,
+                                                })}
                                                 method="post"
                                                 as="button"
                                                 className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                             >
-                                                Login As
+                                                {__('Login As')}
                                             </Link>
                                         </div>
                                         <Link
@@ -58,7 +70,7 @@ export default function Welcome() {
                                             as="button"
                                             className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                         >
-                                            Login Admin
+                                            {__('Login Admin')}
                                         </Link>
                                     </>
                                 )}
@@ -66,13 +78,13 @@ export default function Welcome() {
                                     href={login.url()}
                                     className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                                 >
-                                    Log in
+                                    {__('Log in')}
                                 </Link>
                                 <Link
                                     href={register.url()}
                                     className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                 >
-                                    Register
+                                    {__('Register')}
                                 </Link>
                             </>
                         )}
@@ -82,12 +94,14 @@ export default function Welcome() {
                     <main className="flex w-full max-w-[335px] flex-col-reverse lg:max-w-4xl lg:flex-row">
                         <div className="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
                             <h1 className="mb-1 font-medium">
-                                Let's get started
+                                {__("Let's get started")}
                             </h1>
                             <p className="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
-                                Laravel has an incredibly rich ecosystem.
+                                {__(
+                                    'Laravel has an incredibly rich ecosystem.',
+                                )}
                                 <br />
-                                We suggest starting with the following.
+                                {__('We suggest starting with the following.')}
                             </p>
                             <ul className="mb-4 flex flex-col lg:mb-6">
                                 <li className="relative flex items-center gap-4 py-2 before:absolute before:top-1/2 before:bottom-0 before:left-[0.4rem] before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A]">
@@ -97,13 +111,13 @@ export default function Welcome() {
                                         </span>
                                     </span>
                                     <span>
-                                        Read the
+                                        {__('Read the')}
                                         <a
                                             href="https://laravel.com/docs"
                                             target="_blank"
                                             className="ml-1 inline-flex items-center space-x-1 font-medium text-[#f53003] underline underline-offset-4 dark:text-[#FF4433]"
                                         >
-                                            <span>Documentation</span>
+                                            <span>{__('Documentation')}</span>
                                             <svg
                                                 width={10}
                                                 height={11}
@@ -128,7 +142,7 @@ export default function Welcome() {
                                         </span>
                                     </span>
                                     <span>
-                                        Watch video tutorials at
+                                        {__('Watch video tutorials at')}
                                         <a
                                             href="https://laracasts.com"
                                             target="_blank"
@@ -160,7 +174,7 @@ export default function Welcome() {
                                         target="_blank"
                                         className="inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                                     >
-                                        Deploy now
+                                        {__('Deploy now')}
                                     </a>
                                 </li>
                             </ul>

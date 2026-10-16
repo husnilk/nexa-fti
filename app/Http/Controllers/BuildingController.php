@@ -27,7 +27,7 @@ class BuildingController extends Controller
     {
         Building::create($request->validated());
 
-        return redirect()->route('buildings.index')->with('success', 'Building created successfully.');
+        return redirect()->route('buildings.index')->with('success', __('Building created successfully.'));
     }
 
     public function show(Building $building): Response
@@ -43,7 +43,7 @@ class BuildingController extends Controller
     {
         $building->update($request->validated());
 
-        return redirect()->route('buildings.index')->with('success', 'Building updated successfully.');
+        return redirect()->route('buildings.index')->with('success', __('Building updated successfully.'));
     }
 
     public function destroy(Building $building): RedirectResponse
@@ -52,6 +52,6 @@ class BuildingController extends Controller
 
         $building->delete();
 
-        return redirect()->route('buildings.index')->with('success', 'Building deleted successfully.');
+        return redirect()->route('buildings.index')->with('success', __('Building deleted successfully.'));
     }
 }

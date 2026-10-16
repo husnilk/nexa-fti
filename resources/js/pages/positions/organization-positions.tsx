@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { __ } from '@/lib/i18n';
 import {
     index as positionsIndex,
     organizationPositions as positionsOrganizationPositions,
@@ -45,7 +46,9 @@ type PageProps = {
     positions: Position[];
 };
 
-export default function PositionOrganizationPositions({ positions }: PageProps) {
+export default function PositionOrganizationPositions({
+    positions,
+}: PageProps) {
     const assignedPositionsCount = positions.filter(
         (position) => position.organization_positions_count > 0,
     ).length;
@@ -56,7 +59,7 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
 
     return (
         <>
-            <Head title="Organization Positions" />
+            <Head title={__('Organization Positions')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex items-center gap-3 border-b pb-5 dark:border-zinc-800">
@@ -71,11 +74,12 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                     </Link>
                     <div className="min-w-0 flex-1">
                         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                            Organization Positions
+                            {__('Organization Positions')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Review each position and the organizations currently
-                            using it.
+                            {__(
+                                'Review each position and the organizations currently using it.',
+                            )}
                         </p>
                     </div>
                 </div>
@@ -88,7 +92,7 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total positions
+                                    {__('Total positions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {positions.length}
@@ -104,7 +108,7 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Assigned positions
+                                    {__('Assigned positions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {assignedPositionsCount}
@@ -120,7 +124,7 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total assignments
+                                    {__('Total assignments')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {totalAssignments}
@@ -135,15 +139,23 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                         <table className="w-full min-w-[1200px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">Position</th>
-                                    <th className="px-6 py-4">Grade</th>
-                                    <th className="px-6 py-4">Job Value</th>
-                                    <th className="px-6 py-4">CG</th>
-                                    <th className="px-6 py-4">SKP Point</th>
-                                    <th className="px-6 py-4 text-center">
-                                        Assignments
+                                    <th className="px-6 py-4">
+                                        {__('Position')}
                                     </th>
-                                    <th className="px-6 py-4">Organizations</th>
+                                    <th className="px-6 py-4">{__('Grade')}</th>
+                                    <th className="px-6 py-4">
+                                        {__('Job Value')}
+                                    </th>
+                                    <th className="px-6 py-4">CG</th>
+                                    <th className="px-6 py-4">
+                                        {__('SKP Point')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Assignments')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Organizations')}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
@@ -153,7 +165,7 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                                             colSpan={7}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No positions available yet.
+                                            {__('No positions available yet.')}
                                         </td>
                                     </tr>
                                 ) : (
@@ -169,7 +181,9 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                                                     </span>
                                                     <span className="line-clamp-2 text-xs text-muted-foreground">
                                                         {position.description ||
-                                                            'No description provided.'}
+                                                            __(
+                                                                'No description provided.',
+                                                            )}
                                                     </span>
                                                 </div>
                                             </td>
@@ -190,7 +204,9 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                                                     variant="outline"
                                                     className="rounded-full px-3 py-1 text-xs uppercase"
                                                 >
-                                                    {position.organization_positions_count}
+                                                    {
+                                                        position.organization_positions_count
+                                                    }
                                                 </Badge>
                                             </td>
                                             <td className="px-6 py-4">
@@ -232,32 +248,41 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                                                                             className="rounded-full px-2.5 py-0.5 text-[10px] uppercase"
                                                                         >
                                                                             {organizationPosition.is_active
-                                                                                ? 'Active'
-                                                                                : 'Inactive'}
+                                                                                ? __(
+                                                                                      'Active',
+                                                                                  )
+                                                                                : __(
+                                                                                      'Inactive',
+                                                                                  )}
                                                                         </Badge>
                                                                     </div>
                                                                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                                                                         <span className="inline-flex items-center gap-1">
                                                                             <Building2 className="h-3.5 w-3.5" />
-                                                                            Grade:{' '}
-                                                                            {
-                                                                                organizationPosition.grade
-                                                                            }
+                                                                            {__(
+                                                                                'Grade: :value',
+                                                                                {
+                                                                                    value: organizationPosition.grade,
+                                                                                },
+                                                                            )}
                                                                         </span>
                                                                         <span className="inline-flex items-center gap-1">
                                                                             <TrendingUp className="h-3.5 w-3.5" />
-                                                                            Job
-                                                                            Value:{' '}
-                                                                            {
-                                                                                organizationPosition.job_value
-                                                                            }
+                                                                            {__(
+                                                                                'Job Value: :value',
+                                                                                {
+                                                                                    value: organizationPosition.job_value,
+                                                                                },
+                                                                            )}
                                                                         </span>
                                                                         <span className="inline-flex items-center gap-1">
                                                                             <Network className="h-3.5 w-3.5" />
-                                                                            CG:{' '}
-                                                                            {
-                                                                                organizationPosition.cg
-                                                                            }
+                                                                            {__(
+                                                                                'CG: :value',
+                                                                                {
+                                                                                    value: organizationPosition.cg,
+                                                                                },
+                                                                            )}
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -266,8 +291,9 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
                                                     </div>
                                                 ) : (
                                                     <span className="text-muted-foreground">
-                                                        Not assigned to any
-                                                        organization.
+                                                        {__(
+                                                            'Not assigned to any organization.',
+                                                        )}
                                                     </span>
                                                 )}
                                             </td>
@@ -286,11 +312,11 @@ export default function PositionOrganizationPositions({ positions }: PageProps) 
 PositionOrganizationPositions.layout = {
     breadcrumbs: [
         {
-            title: 'Positions',
+            title: __('Positions'),
             href: positionsIndex(),
         },
         {
-            title: 'Organization Positions',
+            title: __('Organization Positions'),
             href: positionsOrganizationPositions(),
         },
     ],

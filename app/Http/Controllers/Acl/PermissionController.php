@@ -31,7 +31,7 @@ class PermissionController extends Controller
 
         return to_route('permissions.index')->with('toast', [
             'type' => 'success',
-            'message' => 'Permission created.',
+            'message' => __('Permission created.'),
         ]);
     }
 
@@ -43,7 +43,7 @@ class PermissionController extends Controller
 
         return to_route('permissions.index')->with('toast', [
             'type' => 'success',
-            'message' => 'Permission updated.',
+            'message' => __('Permission updated.'),
         ]);
     }
 
@@ -57,7 +57,7 @@ class PermissionController extends Controller
 
         return to_route('permissions.index')->with('toast', [
             'type' => 'success',
-            'message' => 'Permission removed.',
+            'message' => __('Permission removed.'),
         ]);
     }
 }

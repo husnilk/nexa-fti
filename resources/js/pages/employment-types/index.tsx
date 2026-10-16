@@ -1,16 +1,22 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { ArrowLeft, Briefcase, ChevronDown, Pencil, Plus, Search, Settings, Trash2, X } from 'lucide-react';
+import {
+    ArrowLeft,
+    ChevronDown,
+    Pencil,
+    Plus,
+    Search,
+    Settings,
+    Trash2,
+} from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import EmploymentTypeController from '@/actions/App/Http/Controllers/Acl/EmploymentTypeController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -33,6 +39,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as employeeRanksIndex } from '@/routes/employee-ranks';
 import { index as employeeTypesIndex } from '@/routes/employee-types';
 import { index as employeesIndex } from '@/routes/employees';
@@ -76,7 +83,7 @@ type PageProps = {
     };
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -130,8 +137,6 @@ export default function EmploymentTypeIndex({
     });
 
     const mayCreate = can(auth, 'employment.manage');
-    const mayUpdate = can(auth, 'employment.manage');
-    const mayDelete = can(auth, 'employment.manage');
 
     function submitCreate(event: FormEvent<HTMLFormElement>): void {
         event.preventDefault();
@@ -158,8 +163,8 @@ export default function EmploymentTypeIndex({
         event.preventDefault();
 
         if (!editingType) {
-return;
-}
+            return;
+        }
 
         editForm.patch(EmploymentTypeController.update.url(editingType.id), {
             preserveScroll: true,
@@ -169,8 +174,8 @@ return;
 
     function destroyType(): void {
         if (!deletingType) {
-return;
-}
+            return;
+        }
 
         router.delete(EmploymentTypeController.destroy.url(deletingType.id), {
             preserveScroll: true,
@@ -180,45 +185,66 @@ return;
 
     return (
         <>
-            <Head title="Employment Types" />
+            <Head title={__('Employment Types')} />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-3">
                         <Link href={employeesIndex()}>
-                            <Button variant="ghost" size="icon" className="cursor-pointer" title="Back to Employees">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer"
+                                title={__('Back to Employees')}
+                            >
                                 <ArrowLeft className="h-4 w-4" />
                             </Button>
                         </Link>
                         <Heading
-                            title="Employment Types"
-                            description="Standardized combinations of employee types and contracts"
+                            title={__('Employment Types')}
+                            description={__(
+                                'Standardized combinations of employee types and contracts',
+                            )}
                         />
                     </div>
                     <div className="flex items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="cursor-pointer gap-2">
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer gap-2"
+                                >
                                     <Settings className="h-4 w-4" />
-                                    Settings
+                                    {__('Settings')}
                                     <ChevronDown className="h-4 w-4 opacity-50" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-52">
-                                <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">HR Configuration</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                                    {__('HR Configuration')}
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link href={employeeTypesIndex()} className="w-full cursor-pointer">
-                                        Employee Types
+                                    <Link
+                                        href={employeeTypesIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employee Types')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href={employmentContractsIndex()} className="w-full cursor-pointer">
-                                        Employment Contracts
+                                    <Link
+                                        href={employmentContractsIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employment Contracts')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href={employeeRanksIndex()} className="w-full cursor-pointer">
-                                        Employee Ranks
+                                    <Link
+                                        href={employeeRanksIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employee Ranks')}
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -228,7 +254,7 @@ return;
                             <Search className="absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
                             <Input
                                 type="search"
-                                placeholder="Search..."
+                                placeholder={__('Search...')}
                                 className="pr-10 pl-8"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -239,7 +265,7 @@ return;
                                 type="button"
                                 onClick={() => setIsCreating(true)}
                             >
-                                <Plus /> Add Combination
+                                <Plus /> {__('Add Combination')}
                             </Button>
                         )}
                     </div>
@@ -247,15 +273,15 @@ return;
 
                 <div className="overflow-hidden rounded-lg border border-sidebar-border/70 dark:border-sidebar-border">
                     <div className="grid min-w-[700px] grid-cols-[1fr_1fr_1fr_140px_100px] gap-4 border-b bg-muted/40 px-4 py-3 text-sm font-medium text-muted-foreground">
-                        <span>Employee Type</span>
-                        <span>Contract</span>
-                        <span>Remun Status</span>
-                        <span>Created</span>
-                        <span className="text-right">Actions</span>
+                        <span>{__('Employee Type')}</span>
+                        <span>{__('Contract')}</span>
+                        <span>{__('Remun Status')}</span>
+                        <span>{__('Created')}</span>
+                        <span className="text-right">{__('Actions')}</span>
                     </div>
                     {employmentTypes.length === 0 ? (
                         <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                            No employment types defined.
+                            {__('No employment types defined.')}
                         </div>
                     ) : (
                         <div className="min-w-[700px] divide-y">
@@ -265,11 +291,12 @@ return;
                                     className="grid grid-cols-[1fr_1fr_1fr_140px_100px] items-center gap-4 px-4 py-3"
                                 >
                                     <span className="font-medium">
-                                        {type.employee_type?.name || 'Unknown'}
+                                        {type.employee_type?.name ||
+                                            __('Unknown')}
                                     </span>
                                     <span className="text-sm">
                                         {type.employment_contract?.name ||
-                                            'Unknown'}
+                                            __('Unknown')}
                                     </span>
                                     <span className="text-sm italic">
                                         {type.remun_status}
@@ -309,11 +336,15 @@ return;
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Create Employment Type</DialogTitle>
+                        <DialogTitle>
+                            {__('Create Employment Type')}
+                        </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitCreate} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="employee_type">Employee Type</Label>
+                            <Label htmlFor="employee_type">
+                                {__('Employee Type')}
+                            </Label>
                             <Select
                                 value={createForm.data.employee_type_id}
                                 onValueChange={(val) =>
@@ -321,7 +352,9 @@ return;
                                 }
                             >
                                 <SelectTrigger id="employee_type">
-                                    <SelectValue placeholder="Select type" />
+                                    <SelectValue
+                                        placeholder={__('Select type')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employeeTypes.map((t) => (
@@ -336,7 +369,7 @@ return;
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="contract">Contract</Label>
+                            <Label htmlFor="contract">{__('Contract')}</Label>
                             <Select
                                 value={createForm.data.employment_contract_id}
                                 onValueChange={(val) =>
@@ -347,7 +380,9 @@ return;
                                 }
                             >
                                 <SelectTrigger id="contract">
-                                    <SelectValue placeholder="Select contract" />
+                                    <SelectValue
+                                        placeholder={__('Select contract')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employmentContracts.map((c) => (
@@ -367,7 +402,7 @@ return;
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="remun">Remun Status</Label>
+                            <Label htmlFor="remun">{__('Remun Status')}</Label>
                             <Input
                                 id="remun"
                                 value={createForm.data.remun_status}
@@ -388,13 +423,13 @@ return;
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -407,12 +442,12 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Employment Type</DialogTitle>
+                        <DialogTitle>{__('Edit Employment Type')}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitEdit} className="grid gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="edit_employee_type">
-                                Employee Type
+                                {__('Employee Type')}
                             </Label>
                             <Select
                                 value={editForm.data.employee_type_id}
@@ -421,7 +456,9 @@ return;
                                 }
                             >
                                 <SelectTrigger id="edit_employee_type">
-                                    <SelectValue placeholder="Select type" />
+                                    <SelectValue
+                                        placeholder={__('Select type')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employeeTypes.map((t) => (
@@ -436,7 +473,9 @@ return;
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_contract">Contract</Label>
+                            <Label htmlFor="edit_contract">
+                                {__('Contract')}
+                            </Label>
                             <Select
                                 value={editForm.data.employment_contract_id}
                                 onValueChange={(val) =>
@@ -447,7 +486,9 @@ return;
                                 }
                             >
                                 <SelectTrigger id="edit_contract">
-                                    <SelectValue placeholder="Select contract" />
+                                    <SelectValue
+                                        placeholder={__('Select contract')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employmentContracts.map((c) => (
@@ -465,7 +506,9 @@ return;
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_remun">Remun Status</Label>
+                            <Label htmlFor="edit_remun">
+                                {__('Remun Status')}
+                            </Label>
                             <Input
                                 id="edit_remun"
                                 value={editForm.data.remun_status}
@@ -486,13 +529,13 @@ return;
                                 variant="outline"
                                 onClick={() => setEditingType(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -505,10 +548,14 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Employment Type</DialogTitle>
+                        <DialogTitle>
+                            {__('Delete Employment Type')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to delete this combination?
+                        {__(
+                            'Are you sure you want to delete this combination?',
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -516,14 +563,14 @@ return;
                             variant="outline"
                             onClick={() => setDeletingType(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyType}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

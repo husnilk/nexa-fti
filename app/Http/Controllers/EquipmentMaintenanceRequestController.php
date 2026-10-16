@@ -58,7 +58,7 @@ class EquipmentMaintenanceRequestController extends Controller
             $maintenanceRequest->update(['photo' => $path]);
         }
 
-        return redirect()->route('equipment-maintenance-requests.index')->with('success', 'Maintenance request created successfully.');
+        return redirect()->route('equipment-maintenance-requests.index')->with('success', __('Maintenance request created successfully.'));
     }
 
     public function show(Request $request, EquipmentMaintenanceRequest $equipment_maintenance_request): Response
@@ -82,7 +82,7 @@ class EquipmentMaintenanceRequestController extends Controller
             'status' => $request->status,
         ]);
 
-        return back()->with('success', 'Request status updated to '.str_replace('_', ' ', $request->status).'.');
+        return back()->with('success', __('Request status updated to :status.', ['status' => str_replace('_', ' ', $request->status)]));
     }
 
     public function addActivity(Request $request, EquipmentMaintenanceRequest $equipment_maintenance_request): RedirectResponse
@@ -108,7 +108,7 @@ class EquipmentMaintenanceRequestController extends Controller
             'status' => $request->status,
         ]);
 
-        return back()->with('success', 'Activity added and status updated.');
+        return back()->with('success', __('Activity added and status updated.'));
     }
 
     public function verify(Request $request, EquipmentMaintenanceRequest $equipment_maintenance_request): RedirectResponse
@@ -119,7 +119,7 @@ class EquipmentMaintenanceRequestController extends Controller
             'status' => 'closed',
         ]);
 
-        return back()->with('success', 'Maintenance verified and closed.');
+        return back()->with('success', __('Maintenance verified and closed.'));
     }
 
     public function edit(Request $request, EquipmentMaintenanceRequest $equipment_maintenance_request): Response
@@ -138,7 +138,7 @@ class EquipmentMaintenanceRequestController extends Controller
 
         $equipment_maintenance_request->update($request->validated());
 
-        return redirect()->route('equipment-maintenance-requests.index')->with('success', 'Maintenance request updated successfully.');
+        return redirect()->route('equipment-maintenance-requests.index')->with('success', __('Maintenance request updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentMaintenanceRequest $equipment_maintenance_request): RedirectResponse
@@ -147,6 +147,6 @@ class EquipmentMaintenanceRequestController extends Controller
 
         $equipment_maintenance_request->delete();
 
-        return redirect()->route('equipment-maintenance-requests.index')->with('success', 'Maintenance request deleted successfully.');
+        return redirect()->route('equipment-maintenance-requests.index')->with('success', __('Maintenance request deleted successfully.'));
     }
 }

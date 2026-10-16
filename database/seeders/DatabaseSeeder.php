@@ -44,17 +44,20 @@ class DatabaseSeeder extends Seeder
             PublicationSeeder::class,
             LeaveTypeSeeder::class,
             InventorySeeder::class,
-            InventoryItemSeeder::class,
             EquipmentCategorySeeder::class,
             BookSeeder::class,
             RoomSeeder::class,
+            PeriodSeeder::class,
+            RubricSeeder::class,
+            ActivitySeeder::class,
         ]);
 
         $viewDashboard = Permission::findOrCreate('dashboard.view', 'web');
         $userRole = Role::findOrCreate('user', 'web');
         $userRole->givePermissionTo($viewDashboard);
 
-        $superAdminRole = Role::findOrCreate('super-admin', 'web');
+        // $superAdminRole = Role::findOrCreate('super-admin', 'web');
+        $superAdminRole = Role::findOrCreate('administrator', 'web');
         $superAdminRole->givePermissionTo(Permission::all());
 
         $user = User::factory()->create([

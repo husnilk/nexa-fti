@@ -24,6 +24,8 @@ export type Auth = {
     user: User;
     roles: string[];
     permissions: string[];
+    /** True when the user verifies at least one activity or a supervised verifier's own performance. */
+    is_verifier?: boolean;
 };
 
 /* @chisel-passkeys */

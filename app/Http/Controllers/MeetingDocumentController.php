@@ -39,10 +39,10 @@ class MeetingDocumentController extends Controller
         $request->session()->flash('meetingDocument.id', $meetingDocument->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Document uploaded successfully.');
+            return redirect()->back()->with('success', __('Document uploaded successfully.'));
         }
 
-        return redirect()->route('meeting-documents.index')->with('success', 'Document uploaded successfully.');
+        return redirect()->route('meeting-documents.index')->with('success', __('Document uploaded successfully.'));
     }
 
     public function show(Request $request, MeetingDocument $meetingDocument): Response
@@ -68,10 +68,10 @@ class MeetingDocumentController extends Controller
         $request->session()->flash('meetingDocument.id', $meetingDocument->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Document updated successfully.');
+            return redirect()->back()->with('success', __('Document updated successfully.'));
         }
 
-        return redirect()->route('meeting-documents.index')->with('success', 'Document updated successfully.');
+        return redirect()->route('meeting-documents.index')->with('success', __('Document updated successfully.'));
     }
 
     public function destroy(Request $request, MeetingDocument $meetingDocument): RedirectResponse
@@ -79,9 +79,9 @@ class MeetingDocumentController extends Controller
         $meetingDocument->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Document deleted successfully.');
+            return redirect()->back()->with('success', __('Document deleted successfully.'));
         }
 
-        return redirect()->route('meeting-documents.index')->with('success', 'Document deleted successfully.');
+        return redirect()->route('meeting-documents.index')->with('success', __('Document deleted successfully.'));
     }
 }

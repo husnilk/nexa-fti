@@ -75,7 +75,7 @@ class EventRegistrationController extends Controller
         $request->session()->push('eventRegistration.id', $eventRegistration->id);
 
         return redirect()->route('event-registrations.index', ['event_id' => $eventRegistration->event_id])
-            ->with('success', 'Participant registered successfully.');
+            ->with('success', __('Participant registered successfully.'));
     }
 
     public function show(Request $request, EventRegistration $eventRegistration): Response
@@ -108,7 +108,7 @@ class EventRegistrationController extends Controller
         $request->session()->push('eventRegistration.id', $eventRegistration->id);
 
         return redirect()->route('event-registrations.index', ['event_id' => $eventRegistration->event_id])
-            ->with('success', 'Participant registration updated successfully.');
+            ->with('success', __('Participant registration updated successfully.'));
     }
 
     public function destroy(Request $request, EventRegistration $eventRegistration): RedirectResponse
@@ -117,6 +117,6 @@ class EventRegistrationController extends Controller
         $eventRegistration->delete();
 
         return redirect()->route('event-registrations.index', ['event_id' => $eventId])
-            ->with('success', 'Participant removed successfully.');
+            ->with('success', __('Participant removed successfully.'));
     }
 }

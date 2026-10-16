@@ -84,7 +84,7 @@ class PublicationController extends Controller
             }
         });
 
-        return redirect()->route('publications.index')->with('success', 'Publication created successfully.');
+        return redirect()->route('publications.index')->with('success', __('Publication created successfully.'));
     }
 
     public function show(Request $request, Publication $publication): Response
@@ -155,13 +155,13 @@ class PublicationController extends Controller
             }
         });
 
-        return redirect()->route('publications.index')->with('success', 'Publication updated successfully.');
+        return redirect()->route('publications.index')->with('success', __('Publication updated successfully.'));
     }
 
     public function destroy(Request $request, Publication $publication): RedirectResponse
     {
         $publication->delete();
 
-        return redirect()->route('publications.index')->with('success', 'Publication deleted successfully.');
+        return redirect()->route('publications.index')->with('success', __('Publication deleted successfully.'));
     }
 }

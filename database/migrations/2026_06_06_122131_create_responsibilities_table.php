@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('responsibilities', function (Blueprint $table) {
+        Schema::create('position_responsibilities', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('position_id');
             $table->string('title');
             $table->text('description')->nullable();
-            $table->integer('type')->default(1);
+            $table->enum('type', ['primary', 'secondary'])->default('primary');
             $table->integer('order')->default(0);
             $table->timestamps();
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('responsibilities');
+        Schema::dropIfExists('position_responsibilities');
     }
 };

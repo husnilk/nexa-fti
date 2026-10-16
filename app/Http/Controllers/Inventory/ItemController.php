@@ -62,7 +62,7 @@ class ItemController extends Controller
             }
         });
 
-        return back()->with('success', 'Item created successfully.');
+        return back()->with('success', __('Item created successfully.'));
     }
 
     public function update(Request $request, Item $item): RedirectResponse
@@ -116,7 +116,7 @@ class ItemController extends Controller
             }
         });
 
-        return back()->with('success', 'Item updated successfully.');
+        return back()->with('success', __('Item updated successfully.'));
     }
 
     public function destroy(Item $item): RedirectResponse
@@ -127,6 +127,6 @@ class ItemController extends Controller
 
         $item->delete();
 
-        return back()->with('success', 'Item deleted successfully.');
+        return back()->with('success', __('Item deleted successfully.'));
     }
 }

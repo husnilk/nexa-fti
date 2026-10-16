@@ -26,6 +26,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { __, intlLocale } from '@/lib/i18n';
 import type { Auth, Publication, Research } from '@/types';
 
 interface PageProps {
@@ -41,7 +42,13 @@ const typeColors: Record<string, string> = {
         'bg-amber-50 text-amber-700 dark:bg-amber-950/35 dark:text-amber-400',
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const typeLabels: Record<string, string> = {
+    journal: __('Journal'),
+    conference: __('Conference'),
+    unknown: __('Unknown'),
+};
+
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
 });
 
@@ -236,35 +243,37 @@ export default function PublicationIndex({
     });
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title="Publications" />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('Publications')} />
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        Publications
+                        {__('Publications')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Manage academic publications, journals, and conference proceedings.
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Manage academic publications, journals, and conference proceedings.',
+                        )}
                     </p>
                 </div>
                 {mayCreate && (
                     <Button
                         onClick={() => setIsCreating(true)}
-                        className="cursor-pointer gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-md"
+                        className="cursor-pointer gap-2 bg-primary font-medium text-primary-foreground shadow-md hover:bg-primary/90"
                     >
-                        <Plus className="h-4 w-4" /> Add Publication
+                        <Plus className="h-4 w-4" /> {__('Add Publication')}
                     </Button>
                 )}
             </div>
 
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border dark:border-zinc-800">
+            <div className="flex flex-col items-center justify-between gap-4 rounded-xl border bg-zinc-50 p-4 md:flex-row dark:border-zinc-800 dark:bg-zinc-900/50">
                 <div className="relative w-full md:max-w-xs">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="search"
-                        placeholder="Search publications..."
-                        className="pl-9 pr-9 bg-white dark:bg-zinc-900"
+                        placeholder={__('Search publications...')}
+                        className="bg-white pr-9 pl-9 dark:bg-zinc-900"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -272,76 +281,85 @@ export default function PublicationIndex({
                         <button
                             type="button"
                             onClick={() => setSearch('')}
-                            className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
                         >
                             <X className="h-4 w-4" />
                         </button>
                     )}
                 </div>
 
-                <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <div className="flex w-full flex-wrap gap-3 md:w-auto">
                     <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value)}
-                        className="h-10 rounded-md border border-input bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800"
+                        className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                     >
-                        <option value="all">All Types</option>
-                        <option value="journal">Journal</option>
-                        <option value="conference">Conference</option>
+                        <option value="all">{__('All Types')}</option>
+                        <option value="journal">{__('Journal')}</option>
+                        <option value="conference">{__('Conference')}</option>
                     </select>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+            <div className="overflow-hidden rounded-2xl border bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse text-left">
                         <thead>
-                            <tr className="bg-zinc-50 dark:bg-zinc-900 border-b dark:border-zinc-800 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                <th className="py-4 px-6">Title</th>
-                                <th className="py-4 px-6">Type</th>
-                                <th className="py-4 px-6">Date</th>
-                                <th className="py-4 px-6 text-center">Authors</th>
-                                <th className="py-4 px-6 text-right w-[150px]">Actions</th>
+                            <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                                <th className="px-6 py-4">{__('Title')}</th>
+                                <th className="px-6 py-4">{__('Type')}</th>
+                                <th className="px-6 py-4">{__('Date')}</th>
+                                <th className="px-6 py-4 text-center">
+                                    {__('Authors')}
+                                </th>
+                                <th className="w-[150px] px-6 py-4 text-right">
+                                    {__('Actions')}
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
+                        <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
                             {filteredPublications.length > 0 ? (
                                 filteredPublications.map((pub) => (
                                     <tr
                                         key={pub.id}
-                                        className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors"
+                                        className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50"
                                     >
-                                        <td className="py-4 px-6 font-semibold text-zinc-900 dark:text-zinc-50">
+                                        <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-50">
                                             {pub.title}
                                         </td>
-                                        <td className="py-4 px-6">
+                                        <td className="px-6 py-4">
                                             <Badge
                                                 variant="outline"
-                                                className={`capitalize font-semibold ${typeColors[pub.type] || ''}`}
+                                                className={`font-semibold capitalize ${typeColors[pub.type] || ''}`}
                                             >
-                                                {pub.type}
+                                                {typeLabels[pub.type] ??
+                                                    pub.type}
                                             </Badge>
                                         </td>
-                                        <td className="py-4 px-6 text-zinc-600 dark:text-zinc-400">
+                                        <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
                                             {pub.publication_date
                                                 ? dateFormatter.format(
-                                                      new Date(pub.publication_date),
+                                                      new Date(
+                                                          pub.publication_date,
+                                                      ),
                                                   )
                                                 : '-'}
                                         </td>
-                                        <td className="py-4 px-6 text-center text-zinc-700 dark:text-zinc-300">
+                                        <td className="px-6 py-4 text-center text-zinc-700 dark:text-zinc-300">
                                             {pub.publication_authors_count}
                                         </td>
-                                        <td className="py-4 px-6 text-right">
+                                        <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     asChild
-                                                    title="View Details"
-                                                    className="cursor-pointer h-8 w-8 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                                                    title={__('View Details')}
+                                                    className="h-8 w-8 cursor-pointer text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
                                                 >
-                                                    <Link href={`/publications/${pub.id}`}>
+                                                    <Link
+                                                        href={`/publications/${pub.id}`}
+                                                    >
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
@@ -349,9 +367,11 @@ export default function PublicationIndex({
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        onClick={() => openEdit(pub)}
-                                                        title="Edit"
-                                                        className="cursor-pointer h-8 w-8 text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                        onClick={() =>
+                                                            openEdit(pub)
+                                                        }
+                                                        title={__('Edit')}
+                                                        className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
@@ -360,9 +380,13 @@ export default function PublicationIndex({
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        onClick={() => setDeletingPublication(pub)}
-                                                        title="Delete"
-                                                        className="cursor-pointer h-8 w-8 text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
+                                                        onClick={() =>
+                                                            setDeletingPublication(
+                                                                pub,
+                                                            )
+                                                        }
+                                                        title={__('Delete')}
+                                                        className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -377,7 +401,9 @@ export default function PublicationIndex({
                                         colSpan={5}
                                         className="py-8 text-center text-muted-foreground"
                                     >
-                                        No publications found matching the filters.
+                                        {__(
+                                            'No publications found matching the filters.',
+                                        )}
                                     </td>
                                 </tr>
                             )}
@@ -390,15 +416,17 @@ export default function PublicationIndex({
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Add New Publication</DialogTitle>
+                        <DialogTitle>{__('Add New Publication')}</DialogTitle>
                         <DialogDescription>
-                            Enter the details of the new publication.
+                            {__('Enter the details of the new publication.')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="type">Publication Type</Label>
+                                <Label htmlFor="type">
+                                    {__('Publication Type')}
+                                </Label>
                                 <Select
                                     value={createForm.data.type}
                                     onValueChange={(val) =>
@@ -413,22 +441,25 @@ export default function PublicationIndex({
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="journal">
-                                            Journal Publication
+                                            {__('Journal Publication')}
                                         </SelectItem>
                                         <SelectItem value="conference">
-                                            Conference Proceeding
+                                            {__('Conference Proceeding')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="title">Title</Label>
+                                <Label htmlFor="title">{__('Title')}</Label>
                                 <Input
                                     id="title"
                                     value={createForm.data.title}
                                     onChange={(e) =>
-                                        createForm.setData('title', e.target.value)
+                                        createForm.setData(
+                                            'title',
+                                            e.target.value,
+                                        )
                                     }
                                     required
                                 />
@@ -437,7 +468,7 @@ export default function PublicationIndex({
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="publication_date">
-                                        Publication Date
+                                        {__('Publication Date')}
                                     </Label>
                                     <Input
                                         id="publication_date"
@@ -457,35 +488,50 @@ export default function PublicationIndex({
                                     <Input
                                         id="doi"
                                         value={createForm.data.doi}
-                                        onChange={(e) => createForm.setData('doi', e.target.value)}
+                                        onChange={(e) =>
+                                            createForm.setData(
+                                                'doi',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </div>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="url">URL</Label>
+                                <Label htmlFor="url">{__('URL')}</Label>
                                 <Input
                                     id="url"
                                     type="url"
                                     value={createForm.data.url}
-                                    onChange={(e) => createForm.setData('url', e.target.value)}
+                                    onChange={(e) =>
+                                        createForm.setData(
+                                            'url',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="abstract">Abstract</Label>
+                                <Label htmlFor="abstract">
+                                    {__('Abstract')}
+                                </Label>
                                 <Input
                                     id="abstract"
                                     value={createForm.data.abstract}
                                     onChange={(e) =>
-                                        createForm.setData('abstract', e.target.value)
+                                        createForm.setData(
+                                            'abstract',
+                                            e.target.value,
+                                        )
                                     }
                                 />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="research_id">
-                                    Related Research Project
+                                    {__('Related Research Project')}
                                 </Label>
                                 <Select
                                     value={createForm.data.research_id}
@@ -494,12 +540,21 @@ export default function PublicationIndex({
                                     }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select research project (optional)" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select research project (optional)',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value="none">
+                                            {__('None')}
+                                        </SelectItem>
                                         {researchProjects.map((research) => (
-                                            <SelectItem key={research.id} value={research.id}>
+                                            <SelectItem
+                                                key={research.id}
+                                                value={research.id}
+                                            >
                                                 {research.title}
                                             </SelectItem>
                                         ))}
@@ -509,20 +564,29 @@ export default function PublicationIndex({
 
                             {createForm.data.type === 'journal' && (
                                 <div className="mt-4 grid gap-4 border-t pt-4">
-                                    <h4 className="font-medium">Journal Information</h4>
+                                    <h4 className="font-medium">
+                                        {__('Journal Information')}
+                                    </h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="journal_name">Journal Name *</Label>
+                                            <Label htmlFor="journal_name">
+                                                {__('Journal Name *')}
+                                            </Label>
                                             <Input
                                                 id="journal_name"
-                                                value={createForm.data.journal_name}
+                                                value={
+                                                    createForm.data.journal_name
+                                                }
                                                 onChange={(e) =>
                                                     createForm.setData(
                                                         'journal_name',
                                                         e.target.value,
                                                     )
                                                 }
-                                                required={createForm.data.type === 'journal'}
+                                                required={
+                                                    createForm.data.type ===
+                                                    'journal'
+                                                }
                                             />
                                         </div>
                                         <div className="grid gap-2">
@@ -531,17 +595,24 @@ export default function PublicationIndex({
                                                 id="issn"
                                                 value={createForm.data.issn}
                                                 onChange={(e) =>
-                                                    createForm.setData('issn', e.target.value)
+                                                    createForm.setData(
+                                                        'issn',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="publisher">Publisher</Label>
+                                            <Label htmlFor="publisher">
+                                                {__('Publisher')}
+                                            </Label>
                                             <Input
                                                 id="publisher"
-                                                value={createForm.data.publisher}
+                                                value={
+                                                    createForm.data.publisher
+                                                }
                                                 onChange={(e) =>
                                                     createForm.setData(
                                                         'publisher',
@@ -551,55 +622,82 @@ export default function PublicationIndex({
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="indexing">Indexing</Label>
+                                            <Label htmlFor="indexing">
+                                                {__('Indexing')}
+                                            </Label>
                                             <Input
                                                 id="indexing"
                                                 value={createForm.data.indexing}
                                                 onChange={(e) =>
-                                                    createForm.setData('indexing', e.target.value)
+                                                    createForm.setData(
+                                                        'indexing',
+                                                        e.target.value,
+                                                    )
                                                 }
-                                                placeholder="e.g. Scopus, Web of Science"
+                                                placeholder={__(
+                                                    'e.g. Scopus, Web of Science',
+                                                )}
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-4 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="volume">Volume</Label>
+                                            <Label htmlFor="volume">
+                                                {__('Volume')}
+                                            </Label>
                                             <Input
                                                 id="volume"
                                                 value={createForm.data.volume}
                                                 onChange={(e) =>
-                                                    createForm.setData('volume', e.target.value)
+                                                    createForm.setData(
+                                                        'volume',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="issue">Issue</Label>
+                                            <Label htmlFor="issue">
+                                                {__('Issue')}
+                                            </Label>
                                             <Input
                                                 id="issue"
                                                 value={createForm.data.issue}
                                                 onChange={(e) =>
-                                                    createForm.setData('issue', e.target.value)
+                                                    createForm.setData(
+                                                        'issue',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="pages">Pages</Label>
+                                            <Label htmlFor="pages">
+                                                {__('Pages')}
+                                            </Label>
                                             <Input
                                                 id="pages"
                                                 value={createForm.data.pages}
                                                 onChange={(e) =>
-                                                    createForm.setData('pages', e.target.value)
+                                                    createForm.setData(
+                                                        'pages',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="quartile">Quartile</Label>
+                                            <Label htmlFor="quartile">
+                                                {__('Quartile')}
+                                            </Label>
                                             <Input
                                                 id="quartile"
                                                 value={createForm.data.quartile}
                                                 onChange={(e) =>
-                                                    createForm.setData('quartile', e.target.value)
+                                                    createForm.setData(
+                                                        'quartile',
+                                                        e.target.value,
+                                                    )
                                                 }
                                                 placeholder="Q1, Q2..."
                                             />
@@ -610,29 +708,41 @@ export default function PublicationIndex({
 
                             {createForm.data.type === 'conference' && (
                                 <div className="mt-4 grid gap-4 border-t pt-4">
-                                    <h4 className="font-medium">Conference Information</h4>
+                                    <h4 className="font-medium">
+                                        {__('Conference Information')}
+                                    </h4>
                                     <div className="grid gap-2">
                                         <Label htmlFor="conference_name">
-                                            Conference Name *
+                                            {__('Conference Name *')}
                                         </Label>
                                         <Input
                                             id="conference_name"
-                                            value={createForm.data.conference_name}
+                                            value={
+                                                createForm.data.conference_name
+                                            }
                                             onChange={(e) =>
                                                 createForm.setData(
                                                     'conference_name',
                                                     e.target.value,
                                                 )
                                             }
-                                            required={createForm.data.type === 'conference'}
+                                            required={
+                                                createForm.data.type ===
+                                                'conference'
+                                            }
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="conference_location">Location</Label>
+                                            <Label htmlFor="conference_location">
+                                                {__('Location')}
+                                            </Label>
                                             <Input
                                                 id="conference_location"
-                                                value={createForm.data.conference_location}
+                                                value={
+                                                    createForm.data
+                                                        .conference_location
+                                                }
                                                 onChange={(e) =>
                                                     createForm.setData(
                                                         'conference_location',
@@ -643,12 +753,15 @@ export default function PublicationIndex({
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="conference_date">
-                                                Conference Date
+                                                {__('Conference Date')}
                                             </Label>
                                             <Input
                                                 id="conference_date"
                                                 type="date"
-                                                value={createForm.data.conference_date}
+                                                value={
+                                                    createForm.data
+                                                        .conference_date
+                                                }
                                                 onChange={(e) =>
                                                     createForm.setData(
                                                         'conference_date',
@@ -660,10 +773,14 @@ export default function PublicationIndex({
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="conf_publisher">Publisher</Label>
+                                            <Label htmlFor="conf_publisher">
+                                                {__('Publisher')}
+                                            </Label>
                                             <Input
                                                 id="conf_publisher"
-                                                value={createForm.data.publisher}
+                                                value={
+                                                    createForm.data.publisher
+                                                }
                                                 onChange={(e) =>
                                                     createForm.setData(
                                                         'publisher',
@@ -678,29 +795,42 @@ export default function PublicationIndex({
                                                 id="isbn"
                                                 value={createForm.data.isbn}
                                                 onChange={(e) =>
-                                                    createForm.setData('isbn', e.target.value)
+                                                    createForm.setData(
+                                                        'isbn',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="conf_pages">Pages</Label>
+                                            <Label htmlFor="conf_pages">
+                                                {__('Pages')}
+                                            </Label>
                                             <Input
                                                 id="conf_pages"
                                                 value={createForm.data.pages}
                                                 onChange={(e) =>
-                                                    createForm.setData('pages', e.target.value)
+                                                    createForm.setData(
+                                                        'pages',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="conf_indexing">Indexing</Label>
+                                            <Label htmlFor="conf_indexing">
+                                                {__('Indexing')}
+                                            </Label>
                                             <Input
                                                 id="conf_indexing"
                                                 value={createForm.data.indexing}
                                                 onChange={(e) =>
-                                                    createForm.setData('indexing', e.target.value)
+                                                    createForm.setData(
+                                                        'indexing',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
@@ -714,10 +844,13 @@ export default function PublicationIndex({
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={createForm.processing}>
-                                Save
+                            <Button
+                                type="submit"
+                                disabled={createForm.processing}
+                            >
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -731,15 +864,17 @@ export default function PublicationIndex({
             >
                 <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Edit Publication</DialogTitle>
+                        <DialogTitle>{__('Edit Publication')}</DialogTitle>
                         <DialogDescription>
-                            Update the publication details.
+                            {__('Update the publication details.')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-type">Publication Type</Label>
+                                <Label htmlFor="edit-type">
+                                    {__('Publication Type')}
+                                </Label>
                                 <Select
                                     value={editForm.data.type}
                                     onValueChange={(val) =>
@@ -754,22 +889,27 @@ export default function PublicationIndex({
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="journal">
-                                            Journal Publication
+                                            {__('Journal Publication')}
                                         </SelectItem>
                                         <SelectItem value="conference">
-                                            Conference Proceeding
+                                            {__('Conference Proceeding')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-title">Title</Label>
+                                <Label htmlFor="edit-title">
+                                    {__('Title')}
+                                </Label>
                                 <Input
                                     id="edit-title"
                                     value={editForm.data.title}
                                     onChange={(e) =>
-                                        editForm.setData('title', e.target.value)
+                                        editForm.setData(
+                                            'title',
+                                            e.target.value,
+                                        )
                                     }
                                     required
                                 />
@@ -778,7 +918,7 @@ export default function PublicationIndex({
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="edit-publication_date">
-                                        Publication Date
+                                        {__('Publication Date')}
                                     </Label>
                                     <Input
                                         id="edit-publication_date"
@@ -798,35 +938,47 @@ export default function PublicationIndex({
                                     <Input
                                         id="edit-doi"
                                         value={editForm.data.doi}
-                                        onChange={(e) => editForm.setData('doi', e.target.value)}
+                                        onChange={(e) =>
+                                            editForm.setData(
+                                                'doi',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </div>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-url">URL</Label>
+                                <Label htmlFor="edit-url">{__('URL')}</Label>
                                 <Input
                                     id="edit-url"
                                     type="url"
                                     value={editForm.data.url}
-                                    onChange={(e) => editForm.setData('url', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData('url', e.target.value)
+                                    }
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-abstract">Abstract</Label>
+                                <Label htmlFor="edit-abstract">
+                                    {__('Abstract')}
+                                </Label>
                                 <Input
                                     id="edit-abstract"
                                     value={editForm.data.abstract}
                                     onChange={(e) =>
-                                        editForm.setData('abstract', e.target.value)
+                                        editForm.setData(
+                                            'abstract',
+                                            e.target.value,
+                                        )
                                     }
                                 />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="edit-research_id">
-                                    Related Research Project
+                                    {__('Related Research Project')}
                                 </Label>
                                 <Select
                                     value={editForm.data.research_id}
@@ -835,12 +987,21 @@ export default function PublicationIndex({
                                     }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select research project (optional)" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select research project (optional)',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value="none">
+                                            {__('None')}
+                                        </SelectItem>
                                         {researchProjects.map((research) => (
-                                            <SelectItem key={research.id} value={research.id}>
+                                            <SelectItem
+                                                key={research.id}
+                                                value={research.id}
+                                            >
                                                 {research.title}
                                             </SelectItem>
                                         ))}
@@ -850,36 +1011,52 @@ export default function PublicationIndex({
 
                             {editForm.data.type === 'journal' && (
                                 <div className="mt-4 grid gap-4 border-t pt-4">
-                                    <h4 className="font-medium">Journal Information</h4>
+                                    <h4 className="font-medium">
+                                        {__('Journal Information')}
+                                    </h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-journal_name">Journal Name *</Label>
+                                            <Label htmlFor="edit-journal_name">
+                                                {__('Journal Name *')}
+                                            </Label>
                                             <Input
                                                 id="edit-journal_name"
-                                                value={editForm.data.journal_name}
+                                                value={
+                                                    editForm.data.journal_name
+                                                }
                                                 onChange={(e) =>
                                                     editForm.setData(
                                                         'journal_name',
                                                         e.target.value,
                                                     )
                                                 }
-                                                required={editForm.data.type === 'journal'}
+                                                required={
+                                                    editForm.data.type ===
+                                                    'journal'
+                                                }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-issn">ISSN</Label>
+                                            <Label htmlFor="edit-issn">
+                                                ISSN
+                                            </Label>
                                             <Input
                                                 id="edit-issn"
                                                 value={editForm.data.issn}
                                                 onChange={(e) =>
-                                                    editForm.setData('issn', e.target.value)
+                                                    editForm.setData(
+                                                        'issn',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-publisher">Publisher</Label>
+                                            <Label htmlFor="edit-publisher">
+                                                {__('Publisher')}
+                                            </Label>
                                             <Input
                                                 id="edit-publisher"
                                                 value={editForm.data.publisher}
@@ -892,54 +1069,79 @@ export default function PublicationIndex({
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-indexing">Indexing</Label>
+                                            <Label htmlFor="edit-indexing">
+                                                {__('Indexing')}
+                                            </Label>
                                             <Input
                                                 id="edit-indexing"
                                                 value={editForm.data.indexing}
                                                 onChange={(e) =>
-                                                    editForm.setData('indexing', e.target.value)
+                                                    editForm.setData(
+                                                        'indexing',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-4 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-volume">Volume</Label>
+                                            <Label htmlFor="edit-volume">
+                                                {__('Volume')}
+                                            </Label>
                                             <Input
                                                 id="edit-volume"
                                                 value={editForm.data.volume}
                                                 onChange={(e) =>
-                                                    editForm.setData('volume', e.target.value)
+                                                    editForm.setData(
+                                                        'volume',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-issue">Issue</Label>
+                                            <Label htmlFor="edit-issue">
+                                                {__('Issue')}
+                                            </Label>
                                             <Input
                                                 id="edit-issue"
                                                 value={editForm.data.issue}
                                                 onChange={(e) =>
-                                                    editForm.setData('issue', e.target.value)
+                                                    editForm.setData(
+                                                        'issue',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-pages">Pages</Label>
+                                            <Label htmlFor="edit-pages">
+                                                {__('Pages')}
+                                            </Label>
                                             <Input
                                                 id="edit-pages"
                                                 value={editForm.data.pages}
                                                 onChange={(e) =>
-                                                    editForm.setData('pages', e.target.value)
+                                                    editForm.setData(
+                                                        'pages',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-quartile">Quartile</Label>
+                                            <Label htmlFor="edit-quartile">
+                                                {__('Quartile')}
+                                            </Label>
                                             <Input
                                                 id="edit-quartile"
                                                 value={editForm.data.quartile}
                                                 onChange={(e) =>
-                                                    editForm.setData('quartile', e.target.value)
+                                                    editForm.setData(
+                                                        'quartile',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
@@ -949,29 +1151,41 @@ export default function PublicationIndex({
 
                             {editForm.data.type === 'conference' && (
                                 <div className="mt-4 grid gap-4 border-t pt-4">
-                                    <h4 className="font-medium">Conference Information</h4>
+                                    <h4 className="font-medium">
+                                        {__('Conference Information')}
+                                    </h4>
                                     <div className="grid gap-2">
                                         <Label htmlFor="edit-conference_name">
-                                            Conference Name *
+                                            {__('Conference Name *')}
                                         </Label>
                                         <Input
                                             id="edit-conference_name"
-                                            value={editForm.data.conference_name}
+                                            value={
+                                                editForm.data.conference_name
+                                            }
                                             onChange={(e) =>
                                                 editForm.setData(
                                                     'conference_name',
                                                     e.target.value,
                                                 )
                                             }
-                                            required={editForm.data.type === 'conference'}
+                                            required={
+                                                editForm.data.type ===
+                                                'conference'
+                                            }
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-conference_location">Location</Label>
+                                            <Label htmlFor="edit-conference_location">
+                                                {__('Location')}
+                                            </Label>
                                             <Input
                                                 id="edit-conference_location"
-                                                value={editForm.data.conference_location}
+                                                value={
+                                                    editForm.data
+                                                        .conference_location
+                                                }
                                                 onChange={(e) =>
                                                     editForm.setData(
                                                         'conference_location',
@@ -982,12 +1196,15 @@ export default function PublicationIndex({
                                         </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="edit-conference_date">
-                                                Conference Date
+                                                {__('Conference Date')}
                                             </Label>
                                             <Input
                                                 id="edit-conference_date"
                                                 type="date"
-                                                value={editForm.data.conference_date}
+                                                value={
+                                                    editForm.data
+                                                        .conference_date
+                                                }
                                                 onChange={(e) =>
                                                     editForm.setData(
                                                         'conference_date',
@@ -999,7 +1216,9 @@ export default function PublicationIndex({
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-conf_publisher">Publisher</Label>
+                                            <Label htmlFor="edit-conf_publisher">
+                                                {__('Publisher')}
+                                            </Label>
                                             <Input
                                                 id="edit-conf_publisher"
                                                 value={editForm.data.publisher}
@@ -1012,34 +1231,49 @@ export default function PublicationIndex({
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-isbn">ISBN</Label>
+                                            <Label htmlFor="edit-isbn">
+                                                ISBN
+                                            </Label>
                                             <Input
                                                 id="edit-isbn"
                                                 value={editForm.data.isbn}
                                                 onChange={(e) =>
-                                                    editForm.setData('isbn', e.target.value)
+                                                    editForm.setData(
+                                                        'isbn',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-conf_pages">Pages</Label>
+                                            <Label htmlFor="edit-conf_pages">
+                                                {__('Pages')}
+                                            </Label>
                                             <Input
                                                 id="edit-conf_pages"
                                                 value={editForm.data.pages}
                                                 onChange={(e) =>
-                                                    editForm.setData('pages', e.target.value)
+                                                    editForm.setData(
+                                                        'pages',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="edit-conf_indexing">Indexing</Label>
+                                            <Label htmlFor="edit-conf_indexing">
+                                                {__('Indexing')}
+                                            </Label>
                                             <Input
                                                 id="edit-conf_indexing"
                                                 value={editForm.data.indexing}
                                                 onChange={(e) =>
-                                                    editForm.setData('indexing', e.target.value)
+                                                    editForm.setData(
+                                                        'indexing',
+                                                        e.target.value,
+                                                    )
                                                 }
                                             />
                                         </div>
@@ -1053,10 +1287,13 @@ export default function PublicationIndex({
                                 variant="outline"
                                 onClick={() => setEditingPublication(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={editForm.processing}>
-                                Update
+                            <Button
+                                type="submit"
+                                disabled={editForm.processing}
+                            >
+                                {__('Update')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -1070,10 +1307,12 @@ export default function PublicationIndex({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Publication</DialogTitle>
+                        <DialogTitle>{__('Delete Publication')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete "{deletingPublication?.title}"? This
-                            action cannot be undone.
+                            {__(
+                                'Are you sure you want to delete ":title"? This action cannot be undone.',
+                                { title: deletingPublication?.title ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -1081,10 +1320,10 @@ export default function PublicationIndex({
                             variant="outline"
                             onClick={() => setDeletingPublication(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button variant="destructive" onClick={handleDelete}>
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -1096,7 +1335,7 @@ export default function PublicationIndex({
 PublicationIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Publications',
+            title: __('Publications'),
             href: publicationIndex(),
         },
     ],

@@ -33,7 +33,7 @@ class EquipmentModelController extends Controller
     {
         EquipmentModel::create($request->validated());
 
-        return redirect()->route('equipment-models.index')->with('success', 'Equipment model created successfully.');
+        return redirect()->route('equipment-models.index')->with('success', __('Equipment model created successfully.'));
     }
 
     public function show(Request $request, EquipmentModel $equipmentModel): Response
@@ -55,13 +55,13 @@ class EquipmentModelController extends Controller
     {
         $equipmentModel->update($request->validated());
 
-        return redirect()->route('equipment-models.index')->with('success', 'Equipment model updated successfully.');
+        return redirect()->route('equipment-models.index')->with('success', __('Equipment model updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentModel $equipmentModel): RedirectResponse
     {
         $equipmentModel->delete();
 
-        return redirect()->route('equipment-models.index')->with('success', 'Equipment model deleted successfully.');
+        return redirect()->route('equipment-models.index')->with('success', __('Equipment model deleted successfully.'));
     }
 }

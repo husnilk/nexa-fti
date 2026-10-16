@@ -39,10 +39,10 @@ class MeetingRefreshmentItemController extends Controller
         $request->session()->flash('meetingRefreshmentItem.id', $meetingRefreshmentItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Refreshment item added successfully.');
+            return redirect()->back()->with('success', __('Refreshment item added successfully.'));
         }
 
-        return redirect()->route('meeting-refreshment-items.index')->with('success', 'Refreshment item added successfully.');
+        return redirect()->route('meeting-refreshment-items.index')->with('success', __('Refreshment item added successfully.'));
     }
 
     public function show(Request $request, MeetingRefreshmentItem $meetingRefreshmentItem): Response
@@ -68,10 +68,10 @@ class MeetingRefreshmentItemController extends Controller
         $request->session()->flash('meetingRefreshmentItem.id', $meetingRefreshmentItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Refreshment item updated successfully.');
+            return redirect()->back()->with('success', __('Refreshment item updated successfully.'));
         }
 
-        return redirect()->route('meeting-refreshment-items.index')->with('success', 'Refreshment item updated successfully.');
+        return redirect()->route('meeting-refreshment-items.index')->with('success', __('Refreshment item updated successfully.'));
     }
 
     public function destroy(Request $request, MeetingRefreshmentItem $meetingRefreshmentItem): RedirectResponse
@@ -79,9 +79,9 @@ class MeetingRefreshmentItemController extends Controller
         $meetingRefreshmentItem->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Refreshment item deleted successfully.');
+            return redirect()->back()->with('success', __('Refreshment item deleted successfully.'));
         }
 
-        return redirect()->route('meeting-refreshment-items.index')->with('success', 'Refreshment item deleted successfully.');
+        return redirect()->route('meeting-refreshment-items.index')->with('success', __('Refreshment item deleted successfully.'));
     }
 }
