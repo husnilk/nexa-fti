@@ -30,8 +30,8 @@ class Inventory extends Model
     protected function casts(): array
     {
         return [
-            'warehouse_id' => 'integer',
-            'item_id' => 'integer',
+            'warehouse_id' => 'string',
+            'item_id' => 'string',
         ];
     }
 

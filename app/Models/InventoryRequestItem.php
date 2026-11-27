@@ -32,8 +32,8 @@ class InventoryRequestItem extends Model
     protected function casts(): array
     {
         return [
-            'inventory_request_id' => 'integer',
-            'item_id' => 'integer',
+            'inventory_request_id' => 'string',
+            'item_id' => 'string',
         ];
     }
 

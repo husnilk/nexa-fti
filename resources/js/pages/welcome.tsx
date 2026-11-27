@@ -1,32 +1,78 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { __ } from '@/lib/i18n';
-import { dashboard, login, loginAdmin, loginAs, register } from '@/routes';
 import type { Auth } from '@/types';
+import { dashboard, login, loginAdmin, loginAs, register } from '@/routes';
 
 interface PageProps {
     auth: Auth;
     app_debug: boolean;
     debug_users: { id: string; name: string; email: string }[];
+    errors?: Record<string, string>;
+    [key: string]: unknown;
 }
 
 export default function Welcome() {
-    const { auth, app_debug, debug_users } = usePage<PageProps>().props;
+    const {
+        auth,
+        app_debug,
+        debug_users = [],
+        errors,
+    } = usePage<PageProps>().props;
     const user = auth?.user;
     const [selectedUserId, setSelectedUserId] = useState<string>(
         debug_users?.[0]?.id || '',
     );
+    const effectiveSelectedUserId = selectedUserId || debug_users[0]?.id || '';
+    const [processingAction, setProcessingAction] = useState<
+        'admin' | 'as' | null
+    >(null);
+
+    const handleLoginAdmin = () => {
+        if (processingAction) {
+            return;
+        }
+
+        setProcessingAction('admin');
+        router.post(
+            loginAdmin.url(),
+            {},
+            {
+                onFinish: () => setProcessingAction(null),
+            },
+        );
+    };
+
+    const handleLoginAs = () => {
+        if (processingAction || !effectiveSelectedUserId) {
+            return;
+        }
+
+        setProcessingAction('as');
+        router.post(
+            loginAs.url({ user: effectiveSelectedUserId }),
+            {},
+            {
+                onFinish: () => setProcessingAction(null),
+            },
+        );
+    };
 
     return (
         <>
             <Head title={__('Welcome')} />
             <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
                 <header className="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
+                    {errors?.message && (
+                        <div className="mb-4 rounded border border-red-200 bg-red-50 p-2 text-center text-xs text-red-600 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-400">
+                            {errors.message}
+                        </div>
+                    )}
                     <nav className="flex flex-wrap items-center justify-end gap-4">
                         {user ? (
                             <Link
                                 href={dashboard.url()}
-                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                className="inline-block cursor-pointer rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                             >
                                 {__('Dashboard')}
                             </Link>
@@ -36,13 +82,13 @@ export default function Welcome() {
                                     <>
                                         <div className="flex items-center gap-2">
                                             <select
-                                                value={selectedUserId}
+                                                value={effectiveSelectedUserId}
                                                 onChange={(e) =>
                                                     setSelectedUserId(
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="rounded-sm border border-[#19140035] bg-white px-2 py-1.5 text-xs text-[#1b1b18] focus:border-[#1915014a] focus:outline-none dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC] dark:focus:border-[#62605b]"
+                                                className="cursor-pointer rounded-sm border border-[#19140035] bg-white px-2 py-1.5 text-xs text-[#1b1b18] focus:border-[#1915014a] focus:outline-none dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC] dark:focus:border-[#62605b]"
                                             >
                                                 {debug_users.map((u) => (
                                                     <option
@@ -53,36 +99,41 @@ export default function Welcome() {
                                                     </option>
                                                 ))}
                                             </select>
-                                            <Link
-                                                href={loginAs.url({
-                                                    user: selectedUserId,
-                                                })}
-                                                method="post"
-                                                as="button"
-                                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                            <button
+                                                type="button"
+                                                onClick={handleLoginAs}
+                                                disabled={
+                                                    Boolean(processingAction) ||
+                                                    !effectiveSelectedUserId
+                                                }
+                                                className="inline-block cursor-pointer rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] disabled:cursor-not-allowed disabled:opacity-60 dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                             >
-                                                {__('Login As')}
-                                            </Link>
+                                                {processingAction === 'as'
+                                                    ? __('Logging in...')
+                                                    : __('Login As')}
+                                            </button>
                                         </div>
-                                        <Link
-                                            href={loginAdmin.url()}
-                                            method="post"
-                                            as="button"
-                                            className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        <button
+                                            type="button"
+                                            onClick={handleLoginAdmin}
+                                            disabled={Boolean(processingAction)}
+                                            className="inline-block cursor-pointer rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] disabled:cursor-not-allowed disabled:opacity-60 dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                         >
-                                            {__('Login Admin')}
-                                        </Link>
+                                            {processingAction === 'admin'
+                                                ? __('Logging in...')
+                                                : __('Login Admin')}
+                                        </button>
                                     </>
                                 )}
                                 <Link
                                     href={login.url()}
-                                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                    className="inline-block cursor-pointer rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                                 >
                                     {__('Log in')}
                                 </Link>
                                 <Link
                                     href={register.url()}
-                                    className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                    className="inline-block cursor-pointer rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                 >
                                     {__('Register')}
                                 </Link>
@@ -148,7 +199,7 @@ export default function Welcome() {
                                             target="_blank"
                                             className="ml-1 inline-flex items-center space-x-1 font-medium text-[#f53003] underline underline-offset-4 dark:text-[#FF4433]"
                                         >
-                                            <span>Laracasts</span>
+                                            <span>{__('Laracasts')}</span>
                                             <svg
                                                 width={10}
                                                 height={11}
@@ -172,7 +223,7 @@ export default function Welcome() {
                                     <a
                                         href="https://cloud.laravel.com"
                                         target="_blank"
-                                        className="inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                        className="inline-block cursor-pointer rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                                     >
                                         {__('Deploy now')}
                                     </a>

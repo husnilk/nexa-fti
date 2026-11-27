@@ -43,12 +43,12 @@ test('login as route logs in a specific user and redirects to dashboard', functi
     $this->assertAuthenticatedAs($user);
 });
 
-test('welcome page shares app_debug and debug_users props', function () {
+test('login page shares app_debug and debug_users props', function () {
     Config::set('app.debug', true);
 
     $user = User::factory()->create();
 
-    $response = $this->get('/');
+    $response = $this->get(route('login'));
 
     $response->assertInertia(fn ($page) => $page
         ->where('app_debug', true)
@@ -57,7 +57,7 @@ test('welcome page shares app_debug and debug_users props', function () {
 
     Config::set('app.debug', false);
 
-    $response = $this->get('/');
+    $response = $this->get(route('login'));
 
     $response->assertInertia(fn ($page) => $page
         ->where('app_debug', false)
@@ -85,3 +85,33 @@ test('login admin route is not available when debug mode is off', function () {
     // If APP_DEBUG=true in .env, this will still work because web.php was loaded with true.
     // So this test might be flaky depending on .env.
 });
+
+test('login page lists active users for quick login in local debug mode', function () {
+    app()->detectEnvironment(fn (): string => 'local');
+    Config::set('app.debug', true);
+
+    $bob = User::factory()->create(['name' => 'Bob']);
+    $alice = User::factory()->create(['name' => 'Alice']);
+    User::factory()->create(['name' => 'Inactive', 'is_active' => false]);
+
+    $this->get(route('login'))
+        ->assertInertia(fn ($page) => $page
+            ->has('quickLoginUsers', 2)
+            ->where('quickLoginUsers.0.id', $alice->id)
+            ->where('quickLoginUsers.1.id', $bob->id)
+            ->missing('quickLoginUsers.0.password')
+        );
+});
+
+test('login page hides quick login outside local debug mode', function (string $environment, bool $debug) {
+    app()->detectEnvironment(fn (): string => $environment);
+    Config::set('app.debug', $debug);
+
+    User::factory()->create();
+
+    $this->get(route('login'))
+        ->assertInertia(fn ($page) => $page->where('quickLoginUsers', null));
+})->with([
+    'production with debug' => ['production', true],
+    'local without debug' => ['local', false],
+]);

@@ -118,35 +118,60 @@ use App\Http\Controllers\RubricController;
 use App\Http\Controllers\RubricRegulationController;
 use App\Http\Controllers\ValidatorController;
 use App\Models\Organization;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+Route::get('/', fn () => Auth::check()
+    ? redirect()->route('dashboard')
+    : redirect()->route('login'))->name('home');
 
 Route::get('locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 if (config('app.debug')) {
     Route::post('/login-admin', function () {
-        $user = User::role('super-admin')->first();
+        $user = User::role('super-admin')->first() ?? User::first();
 
         if ($user) {
-            Auth::login($user);
+            if (! $user->hasRole('super-admin')) {
+                $user->assignRole('super-admin');
+            }
 
-            return redirect()->intended(route('dashboard'));
+            Auth::login($user);
+            if (request()->hasSession()) {
+                request()->session()->regenerate();
+            }
+
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors(['message' => 'Super Admin not found.']);
     })->name('login-admin');
 
-    Route::post('/login-as/{user}', function ($userId) {
-        $user = User::findOrFail($userId);
+    Route::post('/login-as/{user}', function ($user) {
+        $user = $user instanceof User ? $user : User::findOrFail($user);
         Auth::login($user);
+        if (request()->hasSession()) {
+            request()->session()->regenerate();
+        }
 
-        return redirect()->intended(route('dashboard'));
+        if (! $user->can('dashboard.view')) {
+            $userRole = Role::firstOrCreate([
+                'name' => 'user',
+                'guard_name' => 'web',
+            ]);
+            $dashboardView = Permission::firstOrCreate([
+                'name' => 'dashboard.view',
+                'guard_name' => 'web',
+            ]);
+            $userRole->givePermissionTo($dashboardView);
+            $user->assignRole($userRole);
+        }
+
+        return redirect()->route('dashboard');
     })->name('login-as');
 }
 

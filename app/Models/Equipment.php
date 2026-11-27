@@ -39,7 +39,6 @@ class Equipment extends Model
     protected function casts(): array
     {
         return [
-            'equipment_model_id' => 'integer',
             'acquisition_date' => 'date',
             'acquisition_cost' => 'decimal:2',
             'residual_value' => 'decimal:2',

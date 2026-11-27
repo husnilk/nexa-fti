@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Employee;
 use App\Models\InventoryProcurement;
+use App\Models\InventoryProcurementItem;
 use App\Models\InventoryRequest;
+use App\Models\InventoryRequestItem;
 use App\Models\Item;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -16,246 +18,192 @@ class InventorySeeder extends Seeder
      */
     public function run(): void
     {
-        // Warehouses, categories, items, and initial stock.
+        // 1. Seed real office categories, items, variants, warehouses, and inventory stock
         $this->call(InventoryItemSeeder::class);
 
-        $items = Item::all()->keyBy('code');
-
-        $employees = Employee::query()->take(5)->get();
-        if ($employees->count() < 2) {
-            $employees = $employees->merge(Employee::factory(2)->create());
+        // 2. Ensure Employees exist for procurement & request workflows
+        $employees = Employee::all();
+        if ($employees->isEmpty()) {
+            $employees = Employee::factory(5)->create();
         }
 
-        $this->seedProcurements($items, $employees);
-        $this->seedRequests($items, $employees);
+        // 3. Create realistic Procurements (Inbound workflow demo) using real office items
+        $this->seedProcurements($employees);
+
+        // 4. Create realistic Requests (Outbound workflow demo) using real office items
+        $this->seedRequests($employees);
     }
 
     /**
-     * Inbound workflow demo: purchase requests for office supplies.
+     * Seed realistic procurements using existing real office items.
      *
-     * @param  Collection<string, Item>  $items
      * @param  Collection<int, Employee>  $employees
      */
-    private function seedProcurements(Collection $items, Collection $employees): void
+    protected function seedProcurements($employees): void
     {
-        $procurements = [
+        $procurementSpecs = [
             [
-                'request_number' => 'PROC-2026-0001',
-                'title' => 'Pengadaan ATK Semester Ganjil 2026/2027',
+                'request_number' => 'PROC-2026-001',
+                'title' => 'Pengadaan Rutin Kebutuhan ATK dan Kertas Kantor Triwulan I',
                 'status' => 'approved',
-                'days_ago' => 45,
+                'approved_at' => now()->subDays(14),
                 'items' => [
-                    'ATK-HVS-A4-80' => 100,
-                    'ATK-HVS-F4-75' => 50,
-                    'ATK-PEN-BLK-DZ' => 20,
-                    'ATK-WB-BLK-DZ' => 30,
-                    'ATK-WB-BLU-DZ' => 15,
-                    'ATK-MAP-A4-PACK' => 25,
-                    'ATK-STP-REFILL-10' => 20,
+                    ['code' => 'ATK-HVS-A4-80', 'quantity' => 40],
+                    ['code' => 'ATK-PEN-BLK-DZ', 'quantity' => 20],
+                    ['code' => 'ATK-WB-BLK-DZ', 'quantity' => 15],
+                    ['code' => 'ATK-MAP-A4-PACK', 'quantity' => 25],
+                    ['code' => 'ATK-STP-HD10-SET', 'quantity' => 10],
                 ],
             ],
             [
-                'request_number' => 'PROC-2026-0002',
-                'title' => 'Pengadaan Tinta & Toner Printer Triwulan IV',
-                'status' => 'submitted',
-                'days_ago' => 10,
-                'items' => [
-                    'PRN-EPS-003-BK' => 24,
-                    'PRN-EPS-003-C' => 12,
-                    'PRN-EPS-003-M' => 12,
-                    'PRN-EPS-003-Y' => 12,
-                    'PRN-TNR-HP-85A' => 8,
-                ],
-            ],
-            [
-                'request_number' => 'PROC-2026-0003',
-                'title' => 'Pengadaan Konsumsi Rapat & Pantry Oktober 2026',
+                'request_number' => 'PROC-2026-002',
+                'title' => 'Pengadaan Tinta Printer dan Periferal IT Ruang Rapat Dekanat',
                 'status' => 'approved',
-                'days_ago' => 7,
+                'approved_at' => now()->subDays(5),
                 'items' => [
-                    'PTR-AQUA-GALON' => 40,
-                    'PTR-AQUA-600-DUS' => 20,
-                    'PTR-KOPI-KAPAL-380' => 10,
-                    'PTR-TEH-SARIWANGI' => 15,
-                    'PTR-GULA-1KG' => 12,
-                    'PTR-TISSUE-PASEO' => 36,
+                    ['code' => 'PRN-EPS-003-BK', 'quantity' => 12],
+                    ['code' => 'IT-CBL-HDMI-3M', 'quantity' => 5],
+                    ['code' => 'IT-MOU-LOGI-B100', 'quantity' => 8],
+                    ['code' => 'IT-PWR-STRIP-5L', 'quantity' => 6],
                 ],
             ],
             [
-                'request_number' => 'PROC-2026-0004',
-                'title' => 'Pengadaan Bahan Kebersihan Gedung Kuliah',
-                'status' => 'draft',
-                'days_ago' => 2,
-                'items' => [
-                    'CLN-SOAP-HAND-450' => 30,
-                    'CLN-FLOOR-16L' => 20,
-                    'CLN-TISSUE-ROLL' => 25,
-                    'CLN-BAG-TRASH-L' => 40,
-                ],
-            ],
-            [
-                'request_number' => 'PROC-2026-0005',
-                'title' => 'Pengadaan Bahan Praktikum Sistem Tertanam',
+                'request_number' => 'PROC-2026-003',
+                'title' => 'Pengadaan Perlengkapan Kebersihan, Sanitasi dan Pantry Kantor',
                 'status' => 'submitted',
-                'days_ago' => 14,
+                'approved_at' => null,
                 'items' => [
-                    'IOT-MCU-ESP32-30P' => 30,
-                    'IOT-BBD-830-MB102' => 30,
-                    'IOT-JMP-MF-20CM' => 20,
-                    'IOT-SNS-DHT11' => 25,
-                    'IOT-SNS-HCSR04' => 25,
+                    ['code' => 'CLN-TSU-PAS-250S', 'quantity' => 30],
+                    ['code' => 'CLN-SOAP-LB-500ML', 'quantity' => 15],
+                    ['code' => 'CLN-TRH-BAG-60100', 'quantity' => 20],
+                    ['code' => 'CLN-CUP-PAPER-8OZ', 'quantity' => 15],
                 ],
             ],
             [
-                'request_number' => 'PROC-2026-0006',
-                'title' => 'Pengadaan Bahan Instalasi Jaringan Lab Komputer 2',
-                'status' => 'rejected',
-                'days_ago' => 30,
-                'items' => [
-                    'NET-CBL-CAT6-305M' => 3,
-                    'NET-RJ45-CAT6-BOX' => 4,
-                    'NET-PTC-CAT6-15M' => 40,
-                ],
-            ],
-            [
-                'request_number' => 'PROC-2026-0007',
-                'title' => 'Pengadaan Perlengkapan Seminar Nasional & Wisuda',
+                'request_number' => 'PROC-2026-004',
+                'title' => 'Pengadaan Suku Cadang Jaringan dan Pemeliharaan Lab Komputer',
                 'status' => 'draft',
-                'days_ago' => 1,
+                'approved_at' => null,
                 'items' => [
-                    'FIL-PPR-LINEN-A4' => 10,
-                    'FIL-ENV-CKL-F4' => 5,
-                    // Not yet in the catalog: recorded by name only.
-                    'Map Ijazah Bludru Logo Universitas' => 300,
+                    ['code' => 'NET-CBL-CAT6-305M', 'quantity' => 2],
+                    ['code' => 'NET-RJ45-CAT6-BOX', 'quantity' => 5],
+                    ['code' => 'MNT-BAT-AA-4PK', 'quantity' => 20],
+                    ['code' => 'MNT-TIE-NYL-20CM', 'quantity' => 10],
                 ],
             ],
         ];
 
-        foreach ($procurements as $index => $data) {
-            $createdAt = now()->subDays($data['days_ago']);
-            $creator = $employees[$index % $employees->count()];
-
-            $procurement = InventoryProcurement::updateOrCreate(
-                ['request_number' => $data['request_number']],
+        foreach ($procurementSpecs as $spec) {
+            $procurement = InventoryProcurement::firstOrCreate(
+                ['request_number' => $spec['request_number']],
                 [
-                    'title' => $data['title'],
-                    'status' => $data['status'],
-                    'created_by' => $creator->id,
-                    'created_by_id' => $creator->id,
-                    'approved_at' => $data['status'] === 'approved' ? $createdAt->copy()->addDays(2) : null,
+                    'title' => $spec['title'],
+                    'status' => $spec['status'],
+                    'created_by' => $employees->random()->id,
+                    'approved_at' => $spec['approved_at'],
                 ]
             );
 
-            $procurement->inventoryProcurementItems()->delete();
-
-            foreach ($data['items'] as $key => $quantity) {
-                $item = $items->get($key);
-
-                $procurement->inventoryProcurementItems()->create([
-                    'item_id' => $item?->id,
-                    'item_name' => $item?->name ?? $key,
-                    'quantity' => $quantity,
-                ]);
+            foreach ($spec['items'] as $itemData) {
+                $item = Item::where('code', $itemData['code'])->first();
+                if ($item) {
+                    InventoryProcurementItem::firstOrCreate(
+                        [
+                            'inventory_procurement_id' => $procurement->id,
+                            'item_id' => $item->id,
+                        ],
+                        [
+                            'item_name' => $item->name,
+                            'quantity' => $itemData['quantity'],
+                        ]
+                    );
+                }
             }
         }
     }
 
     /**
-     * Outbound workflow demo: staff and lecturers requesting supplies.
+     * Seed realistic requests using existing real office items.
      *
-     * @param  Collection<string, Item>  $items
      * @param  Collection<int, Employee>  $employees
      */
-    private function seedRequests(Collection $items, Collection $employees): void
+    protected function seedRequests($employees): void
     {
-        $requests = [
+        $requestSpecs = [
             [
-                'request_number' => 'REQ-2026-0001',
+                'request_number' => 'REQ-2026-001',
+                'request_date' => now()->subDays(10)->toDateString(),
                 'status' => 'fulfilled',
-                'days_ago' => 30,
+                'approved_at' => now()->subDays(9),
                 'items' => [
-                    'ATK-HVS-A4-80' => [10, 'Untuk cetak berkas akreditasi program studi.'],
-                    'FIL-ORD-BTX-F4' => [6, 'Ordner biru untuk arsip borang akreditasi.'],
+                    ['code' => 'ATK-HVS-A4-80', 'quantity' => 15, 'spec' => 'Kebutuhan cetak berkas naskah soal ujian akhir semester'],
+                    ['code' => 'ATK-PEN-BLK-DZ', 'quantity' => 5, 'spec' => 'Perlengkapan alat tulis staf pengawas ujian'],
+                    ['code' => 'ATK-BCLP-155-BOX', 'quantity' => 6, 'spec' => 'Penjepit bendel berkas lembar jawaban ujian'],
                 ],
             ],
             [
-                'request_number' => 'REQ-2026-0002',
+                'request_number' => 'REQ-2026-002',
+                'request_date' => now()->subDays(4)->toDateString(),
                 'status' => 'approved',
-                'days_ago' => 6,
+                'approved_at' => now()->subDays(3),
                 'items' => [
-                    'ATK-WB-BLK-DZ' => [2, 'Ruang kuliah H 1.1 dan H 1.2.'],
-                    'ATK-WB-ERS-MAG' => [2, 'Pengganti penghapus yang hilang di kelas.'],
-                    'IT-CBL-HDMI-3M' => [1, 'Kabel proyektor ruang H 1.2 rusak.'],
+                    ['code' => 'IT-CBL-HDMI-3M', 'quantity' => 2, 'spec' => 'Pengganti kabel HDMI proyektor ruang seminar 1 yang rusak'],
+                    ['code' => 'IT-PWR-STRIP-5L', 'quantity' => 2, 'spec' => 'Colokan tambahan meja penguji sidang skripsi'],
+                    ['code' => 'MNT-BAT-AAA-4PK', 'quantity' => 4, 'spec' => 'Baterai pointer laser presenter ruang sidang'],
                 ],
             ],
             [
-                'request_number' => 'REQ-2026-0003',
+                'request_number' => 'REQ-2026-003',
+                'request_date' => now()->subDays(1)->toDateString(),
                 'status' => 'pending',
-                'days_ago' => 2,
+                'approved_at' => null,
                 'items' => [
-                    'PTR-AQUA-600-DUS' => [3, 'Konsumsi rapat senat fakultas.'],
-                    'PTR-TISSUE-PASEO' => [4, 'Ruang rapat dekanat.'],
+                    ['code' => 'PRN-EPS-003-BK', 'quantity' => 4, 'spec' => 'Tinta hitam printer bagian kepegawaian habis'],
+                    ['code' => 'ATK-HVS-F4-75', 'quantity' => 5, 'spec' => 'Pencetakan surat keputusan yudisium dan ijazah'],
                 ],
             ],
             [
-                'request_number' => 'REQ-2026-0004',
+                'request_number' => 'REQ-2026-004',
+                'request_date' => now()->toDateString(),
                 'status' => 'pending',
-                'days_ago' => 1,
+                'approved_at' => null,
                 'items' => [
-                    'IT-MOU-LOGI-B100' => [5, 'Mengganti mouse rusak di Lab Komputer 1.'],
-                    'IT-KEY-LOGI-K120' => [3, 'Mengganti keyboard rusak di Lab Komputer 1.'],
-                ],
-            ],
-            [
-                'request_number' => 'REQ-2026-0005',
-                'status' => 'rejected',
-                'days_ago' => 12,
-                'items' => [
-                    'IT-FD-64GB-USB3' => [10, 'Untuk dibagikan ke peserta pelatihan.'],
-                ],
-            ],
-            [
-                'request_number' => 'REQ-2026-0006',
-                'status' => 'fulfilled',
-                'days_ago' => 20,
-                'items' => [
-                    'ATK-PCL-2B-BOX' => [4, 'Ujian tengah semester mata kuliah umum.'],
-                    'FIL-ENV-CKL-F4' => [1, 'Amplop soal dan lembar jawaban UTS.'],
-                    'ATK-TAPE-MSK-24' => [3, 'Label nomor kursi ruang ujian.'],
+                    ['code' => 'CLN-TSU-PAS-250S', 'quantity' => 4, 'spec' => 'Meja ruang dekan dan ruang rapat pimpinan'],
+                    ['code' => 'CLN-SOAP-LB-500ML', 'quantity' => 2, 'spec' => 'Wastafel toilet pimpinan dan dosen'],
+                    ['code' => 'CLN-CUP-PAPER-8OZ', 'quantity' => 2, 'spec' => 'Konsumsi rapat senat fakultas'],
                 ],
             ],
         ];
 
-        $approver = $employees->first();
+        foreach ($requestSpecs as $spec) {
+            $approver = in_array($spec['status'], ['approved', 'fulfilled']) ? $employees->random()->id : null;
 
-        foreach ($requests as $index => $data) {
-            $requestDate = now()->subDays($data['days_ago']);
-            $requester = $employees[($index + 1) % $employees->count()];
-            $isDecided = in_array($data['status'], ['approved', 'rejected', 'fulfilled']);
-
-            $request = InventoryRequest::updateOrCreate(
-                ['request_number' => $data['request_number']],
+            $request = InventoryRequest::firstOrCreate(
+                ['request_number' => $spec['request_number']],
                 [
-                    'employee_id' => $requester->id,
-                    'request_date' => $requestDate->toDateString(),
-                    'status' => $data['status'],
-                    'approved_by' => $isDecided ? $approver->id : null,
-                    'approved_by_id' => $isDecided ? $approver->id : null,
-                    'approved_at' => $isDecided ? $requestDate->copy()->addDay() : null,
+                    'employee_id' => $employees->random()->id,
+                    'request_date' => $spec['request_date'],
+                    'status' => $spec['status'],
+                    'approved_by' => $approver,
+                    'approved_at' => $spec['approved_at'],
                 ]
             );
 
-            $request->inventoryRequestItems()->delete();
-
-            foreach ($data['items'] as $code => [$quantity, $specification]) {
-                $item = $items->get($code);
-
-                $request->inventoryRequestItems()->create([
-                    'item_id' => $item?->id,
-                    'item_name' => $item?->name ?? $code,
-                    'specification' => $specification,
-                    'quantity' => $quantity,
-                ]);
+            foreach ($spec['items'] as $itemData) {
+                $item = Item::where('code', $itemData['code'])->first();
+                if ($item) {
+                    InventoryRequestItem::firstOrCreate(
+                        [
+                            'inventory_request_id' => $request->id,
+                            'item_id' => $item->id,
+                        ],
+                        [
+                            'item_name' => $item->name,
+                            'specification' => $itemData['spec'],
+                            'quantity' => $itemData['quantity'],
+                        ]
+                    );
+                }
             }
         }
     }

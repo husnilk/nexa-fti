@@ -33,7 +33,7 @@ class Warehouse extends Model
     protected function casts(): array
     {
         return [
-            'organization_id' => 'integer',
+            'organization_id' => 'string',
             'is_active' => 'boolean',
         ];
     }

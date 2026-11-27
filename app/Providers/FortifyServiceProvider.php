@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Actions\GetChangelog;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -72,6 +74,8 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'status' => $request->session()->get('status'),
+            'changelog' => app(GetChangelog::class)->handle(),
+            'quickLoginUsers' => $this->quickLoginUsers(),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
@@ -93,6 +97,23 @@ class FortifyServiceProvider extends ServiceProvider
         ]));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
+    }
+
+    /**
+     * Get the users available for quick login, which is only offered in local development.
+     *
+     * @return Collection<int, User>|null
+     */
+    private function quickLoginUsers(): ?Collection
+    {
+        if (! app()->isLocal() || ! config('app.debug')) {
+            return null;
+        }
+
+        return User::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
     }
 
     /**

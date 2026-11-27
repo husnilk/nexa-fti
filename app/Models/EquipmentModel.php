@@ -35,7 +35,6 @@ class EquipmentModel extends Model
     protected function casts(): array
     {
         return [
-            'equipment_category_id' => 'integer',
         ];
     }
 
