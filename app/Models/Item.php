@@ -44,7 +44,7 @@ class Item extends Model
     protected function casts(): array
     {
         return [
-            'item_category_id' => 'integer',
+            'item_category_id' => 'string',
         ];
     }
 
