@@ -26,6 +26,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { __, intlLocale } from '@/lib/i18n';
 import { EmployeeFormModal } from '@/pages/employees/components/employee-form-modal';
 import { index as employeeRanksIndex } from '@/routes/employee-ranks';
 import { index as employeeTypesIndex } from '@/routes/employee-types';
@@ -56,7 +57,7 @@ function can(auth: Auth, ability: string): boolean {
     );
 }
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
 });
 
@@ -74,7 +75,9 @@ export default function EmployeesIndex({
     const [statusFilter, setStatusFilter] = useState('all');
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+    const [editingEmployee, setEditingEmployee] = useState<Employee | null>(
+        null,
+    );
 
     const filteredEmployees = employees.filter((emp) => {
         const matchesSearch =
@@ -98,7 +101,14 @@ export default function EmployeesIndex({
     const mayDelete = can(auth, 'hr.manage');
 
     const handleDelete = (emp: Employee) => {
-        if (confirm(`Are you sure you want to delete ${emp.name}? This will also delete the associated user account.`)) {
+        if (
+            confirm(
+                __(
+                    'Are you sure you want to delete :name? This will also delete the associated user account.',
+                    { name: emp.name },
+                ),
+            )
+        ) {
             router.delete(employeeShow.url(emp.id));
         }
     };
@@ -109,49 +119,68 @@ export default function EmployeesIndex({
 
     return (
         <>
-            <Head title="Employees" />
+            <Head title={__('Employees')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 {/* Header */}
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent dark:from-violet-400 dark:to-indigo-400">
-                            Employees
+                        <h1 className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-3xl font-bold tracking-tight text-transparent dark:from-violet-400 dark:to-indigo-400">
+                            {__('Employees')}
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Manage all university employees — Lecturers &amp; Staff.
+                            {__(
+                                'Manage all university employees — Lecturers & Staff.',
+                            )}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="cursor-pointer gap-2">
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer gap-2"
+                                >
                                     <Settings className="h-4 w-4" />
-                                    Settings
+                                    {__('Settings')}
                                     <ChevronDown className="h-4 w-4 opacity-50" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-52">
-                                <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">HR Configuration</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                                    {__('HR Configuration')}
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link href={employeeTypesIndex()} className="w-full cursor-pointer">
-                                        Employee Types
+                                    <Link
+                                        href={employeeTypesIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employee Types')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href={employmentContractsIndex()} className="w-full cursor-pointer">
-                                        Employment Contracts
+                                    <Link
+                                        href={employmentContractsIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employment Contracts')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href={employmentTypesIndex()} className="w-full cursor-pointer">
-                                        Employment Types
+                                    <Link
+                                        href={employmentTypesIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employment Types')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href={employeeRanksIndex()} className="w-full cursor-pointer">
-                                        Employee Ranks
+                                    <Link
+                                        href={employeeRanksIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employee Ranks')}
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -161,10 +190,10 @@ export default function EmployeesIndex({
                             <Button
                                 type="button"
                                 onClick={() => setIsCreateOpen(true)}
-                                className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-md"
+                                className="cursor-pointer gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 font-medium text-white shadow-md hover:from-violet-700 hover:to-indigo-700"
                             >
                                 <Plus className="h-4 w-4" />
-                                Add Employee
+                                {__('Add Employee')}
                             </Button>
                         )}
                     </div>
@@ -178,7 +207,9 @@ export default function EmployeesIndex({
                                 <Users className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Total Employees</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {__('Total Employees')}
+                                </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {employees.length}
                                 </p>
@@ -192,7 +223,9 @@ export default function EmployeesIndex({
                                 <BookOpen className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Lecturers</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {__('Lecturers')}
+                                </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {totalLecturers}
                                 </p>
@@ -206,7 +239,9 @@ export default function EmployeesIndex({
                                 <Briefcase className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Staff</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {__('Staff')}
+                                </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {totalStaff}
                                 </p>
@@ -220,7 +255,9 @@ export default function EmployeesIndex({
                                 <UserCheck className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Active</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {__('Active')}
+                                </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {totalActive}
                                 </p>
@@ -235,7 +272,7 @@ export default function EmployeesIndex({
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search employees..."
+                            placeholder={__('Search employees...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -251,29 +288,31 @@ export default function EmployeesIndex({
                         )}
                     </div>
 
-                    <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                    <div className="flex w-full flex-wrap gap-3 md:w-auto">
                         <select
                             value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value)}
-                            className="h-10 rounded-md border border-input bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800"
+                            className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                         >
-                            <option value="all">All Types</option>
-                            <option value="lecturer">Lecturer</option>
-                            <option value="staff">Staff</option>
+                            <option value="all">{__('All Types')}</option>
+                            <option value="lecturer">{__('Lecturer')}</option>
+                            <option value="staff">{__('Staff')}</option>
                         </select>
 
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="h-10 rounded-md border border-input bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800"
+                            className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                         >
-                            <option value="all">All Statuses</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="all">{__('All Statuses')}</option>
+                            <option value="active">{__('Active')}</option>
+                            <option value="inactive">{__('Inactive')}</option>
                         </select>
 
-                        <span className="inline-flex items-center h-10 rounded-full border border-input bg-white dark:bg-zinc-900 dark:border-zinc-800 px-4 text-xs font-medium tracking-wide uppercase text-muted-foreground">
-                            {filteredEmployees.length} records
+                        <span className="inline-flex h-10 items-center rounded-full border border-input bg-white px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                            {__(':count records', {
+                                count: filteredEmployees.length,
+                            })}
                         </span>
                     </div>
                 </div>
@@ -284,11 +323,21 @@ export default function EmployeesIndex({
                         <table className="w-full min-w-[900px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">Employee</th>
-                                    <th className="px-6 py-4">Type / Category</th>
-                                    <th className="px-6 py-4">Join Date</th>
-                                    <th className="px-6 py-4 text-center">Status</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
+                                    <th className="px-6 py-4">
+                                        {__('Employee')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Type / Category')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Join Date')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Status')}
+                                    </th>
+                                    <th className="px-6 py-4 text-right">
+                                        {__('Actions')}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
@@ -298,7 +347,9 @@ export default function EmployeesIndex({
                                             colSpan={5}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No employees found matching the filters.
+                                            {__(
+                                                'No employees found matching the filters.',
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -326,24 +377,36 @@ export default function EmployeesIndex({
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col gap-1">
                                                     <span
-                                                        className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide
-                                                            ${emp.lecturer
+                                                        className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide ${
+                                                            emp.lecturer
                                                                 ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/35 dark:text-indigo-400'
                                                                 : 'bg-amber-50 text-amber-700 dark:bg-amber-950/35 dark:text-amber-400'
-                                                            }`}
+                                                        }`}
                                                     >
                                                         {emp.lecturer ? (
                                                             <BookOpen className="h-3 w-3" />
                                                         ) : (
                                                             <Briefcase className="h-3 w-3" />
                                                         )}
-                                                        {emp.lecturer ? 'Lecturer' : 'Staff'}
+                                                        {emp.lecturer
+                                                            ? __('Lecturer')
+                                                            : __('Staff')}
                                                     </span>
                                                     {emp.employment_type && (
                                                         <span className="text-xs text-muted-foreground">
-                                                            {emp.employment_type.employee_type.name}
+                                                            {
+                                                                emp
+                                                                    .employment_type
+                                                                    .employee_type
+                                                                    .name
+                                                            }
                                                             {' / '}
-                                                            {emp.employment_type.employment_contract.name}
+                                                            {
+                                                                emp
+                                                                    .employment_type
+                                                                    .employment_contract
+                                                                    .name
+                                                            }
                                                         </span>
                                                     )}
                                                 </div>
@@ -351,32 +414,40 @@ export default function EmployeesIndex({
 
                                             {/* Join Date */}
                                             <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
-                                                {dateFormatter.format(new Date(emp.join_date))}
+                                                {dateFormatter.format(
+                                                    new Date(emp.join_date),
+                                                )}
                                             </td>
 
                                             {/* Status */}
                                             <td className="px-6 py-4 text-center">
                                                 <span
-                                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide capitalize
-                                                        ${emp.status === 1
+                                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide capitalize ${
+                                                        emp.status === 1
                                                             ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400'
                                                             : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     <BadgeCheck className="h-3 w-3" />
-                                                    {emp.status === 1 ? 'Active' : 'Inactive'}
+                                                    {emp.status === 1
+                                                        ? __('Active')
+                                                        : __('Inactive')}
                                                 </span>
                                             </td>
 
                                             {/* Actions */}
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Link href={employeeShow.url(emp.id)}>
+                                                    <Link
+                                                        href={employeeShow.url(
+                                                            emp.id,
+                                                        )}
+                                                    >
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 cursor-pointer text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-                                                            title="View"
+                                                            title={__('View')}
                                                         >
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
@@ -387,8 +458,12 @@ export default function EmployeesIndex({
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                                            title="Edit"
-                                                            onClick={() => setEditingEmployee(emp)}
+                                                            title={__('Edit')}
+                                                            onClick={() =>
+                                                                setEditingEmployee(
+                                                                    emp,
+                                                                )
+                                                            }
                                                         >
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
@@ -399,8 +474,12 @@ export default function EmployeesIndex({
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
-                                                            title="Delete"
-                                                            onClick={() => handleDelete(emp)}
+                                                            title={__('Delete')}
+                                                            onClick={() =>
+                                                                handleDelete(
+                                                                    emp,
+                                                                )
+                                                            }
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
@@ -453,7 +532,7 @@ export default function EmployeesIndex({
 
 EmployeesIndex.layout = {
     breadcrumbs: [
-        { title: 'HR', href: '#' },
-        { title: 'Employees', href: employeesIndex() },
+        { title: __('HR'), href: '#' },
+        { title: __('Employees'), href: employeesIndex() },
     ],
 };

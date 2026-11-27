@@ -13,6 +13,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import type { Auth, Employee } from '@/types';
 
 interface PageProps {
@@ -62,7 +63,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
 
     return (
         <>
-            <Head title="New Overtime Request" />
+            <Head title={__('New Overtime Request')} />
 
             <div className="mx-auto flex max-w-4xl flex-col gap-6 p-4">
                 <div className="flex items-center gap-4">
@@ -70,28 +71,30 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                         variant="ghost"
                         size="icon"
                         asChild
-                        title="Back to Overtime Requests"
+                        title={__('Back to Overtime Requests')}
                     >
                         <Link href={overtimeIndex().url}>
                             <ChevronLeft className="h-4 w-4" />
                         </Link>
                     </Button>
                     <Heading
-                        title="New Overtime Request"
-                        description="Create a new overtime request with multiple members."
+                        title={__('New Overtime Request')}
+                        description={__(
+                            'Create a new overtime request with multiple members.',
+                        )}
                     />
                 </div>
 
                 <form onSubmit={handleSubmit} className="grid gap-8">
                     <div className="grid gap-6 rounded-lg border bg-card p-6">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Request Details
+                            {__('Request Details')}
                         </h3>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="request_number">
-                                    Request Number
+                                    {__('Request Number')}
                                 </Label>
                                 <Input
                                     id="request_number"
@@ -101,7 +104,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="request_date">
-                                    Request Date
+                                    {__('Request Date')}
                                 </Label>
                                 <Input
                                     id="request_date"
@@ -116,7 +119,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="title">Title</Label>
+                            <Label htmlFor="title">{__('Title')}</Label>
                             <Input
                                 id="title"
                                 value={data.title}
@@ -133,7 +136,9 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="description">Description</Label>
+                            <Label htmlFor="description">
+                                {__('Description')}
+                            </Label>
                             <Textarea
                                 id="description"
                                 value={data.description}
@@ -146,7 +151,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="planned_start_time">
-                                    Planned Start
+                                    {__('Planned Start')}
                                 </Label>
                                 <Input
                                     id="planned_start_time"
@@ -168,7 +173,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="planned_end_time">
-                                    Planned End
+                                    {__('Planned End')}
                                 </Label>
                                 <Input
                                     id="planned_end_time"
@@ -192,7 +197,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
 
                         <div className="grid gap-2">
                             <Label htmlFor="submitted_by">
-                                Submitted By (Manager/Supervisor)
+                                {__('Submitted By (Manager/Supervisor)')}
                             </Label>
                             <Select
                                 onValueChange={(val) =>
@@ -200,7 +205,9 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                                 }
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select employee" />
+                                    <SelectValue
+                                        placeholder={__('Select employee')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employees.map((emp) => (
@@ -220,14 +227,17 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
 
                     <div className="grid gap-6 rounded-lg border bg-card p-6">
                         <div className="flex items-center justify-between border-b pb-2">
-                            <h3 className="text-lg font-semibold">Members</h3>
+                            <h3 className="text-lg font-semibold">
+                                {__('Members')}
+                            </h3>
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
                                 onClick={addMember}
                             >
-                                <Plus className="mr-2 h-4 w-4" /> Add Member
+                                <Plus className="mr-2 h-4 w-4" />{' '}
+                                {__('Add Member')}
                             </Button>
                         </div>
 
@@ -237,7 +247,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                                 className="grid grid-cols-12 items-end gap-4 border-b pb-4 last:border-0 last:pb-0"
                             >
                                 <div className="col-span-4 grid gap-2">
-                                    <Label>Employee</Label>
+                                    <Label>{__('Employee')}</Label>
                                     <Select
                                         onValueChange={(val) =>
                                             updateMember(
@@ -248,7 +258,11 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                                         }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select employee" />
+                                            <SelectValue
+                                                placeholder={__(
+                                                    'Select employee',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {employees.map((emp) => (
@@ -263,7 +277,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                                     </Select>
                                 </div>
                                 <div className="col-span-3 grid gap-2">
-                                    <Label>Role</Label>
+                                    <Label>{__('Role')}</Label>
                                     <Input
                                         value={member.role}
                                         onChange={(e) =>
@@ -273,11 +287,11 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                                                 e.target.value,
                                             )
                                         }
-                                        placeholder="e.g. Lead"
+                                        placeholder={__('e.g. Lead')}
                                     />
                                 </div>
                                 <div className="col-span-3 grid gap-2">
-                                    <Label>Planned Hours</Label>
+                                    <Label>{__('Planned Hours')}</Label>
                                     <Input
                                         type="number"
                                         step="0.5"
@@ -304,7 +318,7 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                                     </Button>
                                 </div>
                                 <div className="col-span-12 grid gap-2">
-                                    <Label>Job Description</Label>
+                                    <Label>{__('Job Description')}</Label>
                                     <Input
                                         value={member.job_desc || ''}
                                         onChange={(e) =>
@@ -314,7 +328,9 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                                                 e.target.value,
                                             )
                                         }
-                                        placeholder="Specific tasks for this member"
+                                        placeholder={__(
+                                            'Specific tasks for this member',
+                                        )}
                                     />
                                 </div>
                             </div>
@@ -327,15 +343,13 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            asChild
-                        >
-                            <Link href={overtimeIndex().url}>Cancel</Link>
+                        <Button type="button" variant="outline" asChild>
+                            <Link href={overtimeIndex().url}>
+                                {__('Cancel')}
+                            </Link>
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            Submit Overtime Request
+                            {__('Submit Overtime Request')}
                         </Button>
                     </div>
                 </form>
@@ -347,11 +361,11 @@ export default function OvertimeRequestCreate({ employees }: PageProps) {
 OvertimeRequestCreate.layout = {
     breadcrumbs: [
         {
-            title: 'Overtime Requests',
+            title: __('Overtime Requests'),
             href: overtimeIndex(),
         },
         {
-            title: 'New Request',
+            title: __('New Request'),
             href: '#',
         },
     ],

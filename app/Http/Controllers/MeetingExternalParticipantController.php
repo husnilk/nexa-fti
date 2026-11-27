@@ -39,10 +39,10 @@ class MeetingExternalParticipantController extends Controller
         $request->session()->flash('meetingExternalParticipant.id', $meetingExternalParticipant->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'External participant added successfully.');
+            return redirect()->back()->with('success', __('External participant added successfully.'));
         }
 
-        return redirect()->route('meeting-external-participants.index')->with('success', 'External participant added successfully.');
+        return redirect()->route('meeting-external-participants.index')->with('success', __('External participant added successfully.'));
     }
 
     public function show(Request $request, MeetingExternalParticipant $meetingExternalParticipant): Response
@@ -68,10 +68,10 @@ class MeetingExternalParticipantController extends Controller
         $request->session()->flash('meetingExternalParticipant.id', $meetingExternalParticipant->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'External participant updated successfully.');
+            return redirect()->back()->with('success', __('External participant updated successfully.'));
         }
 
-        return redirect()->route('meeting-external-participants.index')->with('success', 'External participant updated successfully.');
+        return redirect()->route('meeting-external-participants.index')->with('success', __('External participant updated successfully.'));
     }
 
     public function destroy(Request $request, MeetingExternalParticipant $meetingExternalParticipant): RedirectResponse
@@ -79,9 +79,9 @@ class MeetingExternalParticipantController extends Controller
         $meetingExternalParticipant->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'External participant removed successfully.');
+            return redirect()->back()->with('success', __('External participant removed successfully.'));
         }
 
-        return redirect()->route('meeting-external-participants.index')->with('success', 'External participant removed successfully.');
+        return redirect()->route('meeting-external-participants.index')->with('success', __('External participant removed successfully.'));
     }
 }

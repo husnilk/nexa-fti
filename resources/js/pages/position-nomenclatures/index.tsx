@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { BookOpen, Eye, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import { Eye, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import PositionNomenclatureController from '@/actions/App/Http/Controllers/Acl/PositionNomenclatureController';
@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import {
     index as nomenclaturesIndex,
     show as nomenclatureShow,
@@ -46,7 +47,7 @@ type PageProps = {
     };
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -155,13 +156,15 @@ export default function PositionNomenclatureIndex({
 
     return (
         <>
-            <Head title="Position Nomenclatures" />
+            <Head title={__('Position Nomenclatures')} />
 
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <Heading
-                        title="Position Nomenclatures"
-                        description="Manage standardized job nomenclatures and requirements"
+                        title={__('Position Nomenclatures')}
+                        description={__(
+                            'Manage standardized job nomenclatures and requirements',
+                        )}
                     />
 
                     <div className="flex items-center gap-4">
@@ -169,7 +172,7 @@ export default function PositionNomenclatureIndex({
                             <Search className="absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
                             <Input
                                 type="search"
-                                placeholder="Search nomenclatures..."
+                                placeholder={__('Search nomenclatures...')}
                                 className="pr-10 pl-8"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -190,7 +193,7 @@ export default function PositionNomenclatureIndex({
                                 onClick={() => setIsCreating(true)}
                             >
                                 <Plus />
-                                Add Nomenclature
+                                {__('Add Nomenclature')}
                             </Button>
                         )}
                     </div>
@@ -198,16 +201,16 @@ export default function PositionNomenclatureIndex({
 
                 <div className="overflow-hidden rounded-lg border border-sidebar-border/70 dark:border-sidebar-border">
                     <div className="grid min-w-[700px] grid-cols-[minmax(250px,1fr)_100px_minmax(200px,1fr)_140px_120px] gap-4 border-b bg-muted/40 px-4 py-3 text-sm font-medium text-muted-foreground">
-                        <span>Name</span>
-                        <span>Grade</span>
-                        <span>Qualification</span>
-                        <span>Created</span>
-                        <span className="text-right">Actions</span>
+                        <span>{__('Name')}</span>
+                        <span>{__('Grade')}</span>
+                        <span>{__('Qualification')}</span>
+                        <span>{__('Created')}</span>
+                        <span className="text-right">{__('Actions')}</span>
                     </div>
 
                     {nomenclatures.length === 0 ? (
                         <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                            No position nomenclatures found.
+                            {__('No position nomenclatures found.')}
                         </div>
                     ) : (
                         <div className="min-w-[700px] divide-y">
@@ -233,7 +236,7 @@ export default function PositionNomenclatureIndex({
                                             asChild
                                             variant="ghost"
                                             size="icon"
-                                            title="View Detail"
+                                            title={__('View Detail')}
                                         >
                                             <Link
                                                 href={nomenclatureShow.url(
@@ -251,7 +254,9 @@ export default function PositionNomenclatureIndex({
                                                 onClick={() =>
                                                     openEditDialog(nom)
                                                 }
-                                                aria-label={`Edit ${nom.name}`}
+                                                aria-label={__('Edit :name', {
+                                                    name: nom.name,
+                                                })}
                                             >
                                                 <Pencil />
                                             </Button>
@@ -264,7 +269,9 @@ export default function PositionNomenclatureIndex({
                                                 onClick={() =>
                                                     setDeletingNomenclature(nom)
                                                 }
-                                                aria-label={`Delete ${nom.name}`}
+                                                aria-label={__('Delete :name', {
+                                                    name: nom.name,
+                                                })}
                                             >
                                                 <Trash2 />
                                             </Button>
@@ -280,28 +287,32 @@ export default function PositionNomenclatureIndex({
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Create Nomenclature</DialogTitle>
+                        <DialogTitle>{__('Create Nomenclature')}</DialogTitle>
                         <DialogDescription>
-                            Add a new position nomenclature to the system.
+                            {__(
+                                'Add a new position nomenclature to the system.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
 
                     <form onSubmit={submitCreate} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="create_name">Name</Label>
+                            <Label htmlFor="create_name">{__('Name')}</Label>
                             <Input
                                 id="create_name"
                                 value={createForm.data.name}
                                 onChange={(e) =>
                                     createForm.setData('name', e.target.value)
                                 }
-                                placeholder="e.g. Senior Software Engineer"
+                                placeholder={__(
+                                    'e.g. Senior Software Engineer',
+                                )}
                             />
                             <InputError message={createForm.errors.name} />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="create_grade">Grade</Label>
+                            <Label htmlFor="create_grade">{__('Grade')}</Label>
                             <Input
                                 id="create_grade"
                                 type="number"
@@ -318,7 +329,7 @@ export default function PositionNomenclatureIndex({
 
                         <div className="grid gap-2">
                             <Label htmlFor="create_qualification">
-                                Qualification
+                                {__('Qualification')}
                             </Label>
                             <textarea
                                 id="create_qualification"
@@ -342,13 +353,13 @@ export default function PositionNomenclatureIndex({
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -361,15 +372,15 @@ export default function PositionNomenclatureIndex({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Nomenclature</DialogTitle>
+                        <DialogTitle>{__('Edit Nomenclature')}</DialogTitle>
                         <DialogDescription>
-                            Update the nomenclature details.
+                            {__('Update the nomenclature details.')}
                         </DialogDescription>
                     </DialogHeader>
 
                     <form onSubmit={submitEdit} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_name">Name</Label>
+                            <Label htmlFor="edit_name">{__('Name')}</Label>
                             <Input
                                 id="edit_name"
                                 value={editForm.data.name}
@@ -381,7 +392,7 @@ export default function PositionNomenclatureIndex({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_grade">Grade</Label>
+                            <Label htmlFor="edit_grade">{__('Grade')}</Label>
                             <Input
                                 id="edit_grade"
                                 type="number"
@@ -398,7 +409,7 @@ export default function PositionNomenclatureIndex({
 
                         <div className="grid gap-2">
                             <Label htmlFor="edit_qualification">
-                                Qualification
+                                {__('Qualification')}
                             </Label>
                             <textarea
                                 id="edit_qualification"
@@ -422,13 +433,13 @@ export default function PositionNomenclatureIndex({
                                 variant="outline"
                                 onClick={() => setEditingNomenclature(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -441,12 +452,12 @@ export default function PositionNomenclatureIndex({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Nomenclature</DialogTitle>
+                        <DialogTitle>{__('Delete Nomenclature')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete{' '}
-                            {deletingNomenclature?.name}? This action cannot be
-                            undone and will also delete all related
-                            responsibilities and classifications.
+                            {__(
+                                'Are you sure you want to delete :name? This action cannot be undone and will also delete all related responsibilities and classifications.',
+                                { name: deletingNomenclature?.name ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -455,14 +466,14 @@ export default function PositionNomenclatureIndex({
                             variant="outline"
                             onClick={() => setDeletingNomenclature(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyNomenclature}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -474,7 +485,7 @@ export default function PositionNomenclatureIndex({
 PositionNomenclatureIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Position Nomenclatures',
+            title: __('Position Nomenclatures'),
             href: nomenclaturesIndex(),
         },
     ],

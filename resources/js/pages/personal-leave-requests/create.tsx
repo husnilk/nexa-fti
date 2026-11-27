@@ -13,7 +13,11 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { index as personalLeaveIndex, store as personalLeaveStore } from '@/routes/personal-leave-requests';
+import { __ } from '@/lib/i18n';
+import {
+    index as personalLeaveIndex,
+    store as personalLeaveStore,
+} from '@/routes/personal-leave-requests';
 import type { Auth, Employee, LeaveType } from '@/types';
 
 interface PageProps {
@@ -44,40 +48,53 @@ export default function PersonalLeaveRequestCreate({
     };
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title="New Leave Request" />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('New Leave Request')} />
 
             <div className="flex items-center gap-4 border-b pb-5 dark:border-zinc-800">
                 <Link href={personalLeaveIndex()}>
-                    <Button variant="outline" size="icon" className="cursor-pointer">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="cursor-pointer"
+                    >
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                 </Link>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        New Leave Request
+                        {__('New Leave Request')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Submit a new leave request for approval.
+                    <p className="mt-1 text-muted-foreground">
+                        {__('Submit a new leave request for approval.')}
                     </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="mx-auto w-full max-w-4xl grid gap-6 md:grid-cols-2">
+            <form
+                onSubmit={handleSubmit}
+                className="mx-auto grid w-full max-w-4xl gap-6 md:grid-cols-2"
+            >
                 <Card className="border dark:border-zinc-800">
-                    <CardContent className="pt-6 grid gap-6">
-                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 border-b pb-2">
-                            Request Details
+                    <CardContent className="grid gap-6 pt-6">
+                        <h3 className="border-b pb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                            {__('Request Details')}
                         </h3>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="leave_type_id">Leave Type</Label>
+                            <Label htmlFor="leave_type_id">
+                                {__('Leave Type')}
+                            </Label>
                             <Select
                                 value={data.leave_type_id}
-                                onValueChange={(val) => setData('leave_type_id', val)}
+                                onValueChange={(val) =>
+                                    setData('leave_type_id', val)
+                                }
                             >
                                 <SelectTrigger id="leave_type_id">
-                                    <SelectValue placeholder="Select leave type" />
+                                    <SelectValue
+                                        placeholder={__('Select leave type')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {leaveTypes.map((type) => (
@@ -99,7 +116,9 @@ export default function PersonalLeaveRequestCreate({
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="start_date">Start Date</Label>
+                                <Label htmlFor="start_date">
+                                    {__('Start Date')}
+                                </Label>
                                 <Input
                                     id="start_date"
                                     type="date"
@@ -116,7 +135,9 @@ export default function PersonalLeaveRequestCreate({
                                 )}
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="end_date">End Date</Label>
+                                <Label htmlFor="end_date">
+                                    {__('End Date')}
+                                </Label>
                                 <Input
                                     id="end_date"
                                     type="date"
@@ -135,14 +156,19 @@ export default function PersonalLeaveRequestCreate({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="total_days">Total Days</Label>
+                            <Label htmlFor="total_days">
+                                {__('Total Days')}
+                            </Label>
                             <Input
                                 id="total_days"
                                 type="number"
                                 min="1"
                                 value={data.total_days}
                                 onChange={(e) =>
-                                    setData('total_days', parseInt(e.target.value) || 1)
+                                    setData(
+                                        'total_days',
+                                        parseInt(e.target.value) || 1,
+                                    )
                                 }
                                 required
                             />
@@ -154,12 +180,16 @@ export default function PersonalLeaveRequestCreate({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="reason">Reason</Label>
+                            <Label htmlFor="reason">{__('Reason')}</Label>
                             <Textarea
                                 id="reason"
-                                placeholder="Explain the reason for your leave request..."
+                                placeholder={__(
+                                    'Explain the reason for your leave request...',
+                                )}
                                 value={data.reason}
-                                onChange={(e) => setData('reason', e.target.value)}
+                                onChange={(e) =>
+                                    setData('reason', e.target.value)
+                                }
                                 rows={4}
                                 required
                             />
@@ -174,18 +204,24 @@ export default function PersonalLeaveRequestCreate({
 
                 <div className="grid gap-6">
                     <Card className="border dark:border-zinc-800">
-                        <CardContent className="pt-6 grid gap-6">
-                            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 border-b pb-2">
-                                Contact & Location during Leave
+                        <CardContent className="grid gap-6 pt-6">
+                            <h3 className="border-b pb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                                {__('Contact & Location during Leave')}
                             </h3>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="address_leave">Address</Label>
+                                <Label htmlFor="address_leave">
+                                    {__('Address')}
+                                </Label>
                                 <Input
                                     id="address_leave"
-                                    placeholder="Temporary address during leave..."
+                                    placeholder={__(
+                                        'Temporary address during leave...',
+                                    )}
                                     value={data.address_leave}
-                                    onChange={(e) => setData('address_leave', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('address_leave', e.target.value)
+                                    }
                                 />
                                 {errors.address_leave && (
                                     <p className="text-sm text-destructive">
@@ -195,12 +231,18 @@ export default function PersonalLeaveRequestCreate({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="contact_leave">Contact Phone</Label>
+                                <Label htmlFor="contact_leave">
+                                    {__('Contact Phone')}
+                                </Label>
                                 <Input
                                     id="contact_leave"
-                                    placeholder="Emergency phone number..."
+                                    placeholder={__(
+                                        'Emergency phone number...',
+                                    )}
                                     value={data.contact_leave}
-                                    onChange={(e) => setData('contact_leave', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('contact_leave', e.target.value)
+                                    }
                                 />
                                 {errors.contact_leave && (
                                     <p className="text-sm text-destructive">
@@ -212,14 +254,14 @@ export default function PersonalLeaveRequestCreate({
                     </Card>
 
                     <Card className="border dark:border-zinc-800">
-                        <CardContent className="pt-6 grid gap-6">
-                            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 border-b pb-2">
-                                Approvers
+                        <CardContent className="grid gap-6 pt-6">
+                            <h3 className="border-b pb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                                {__('Approvers')}
                             </h3>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="approver_level_1_id">
-                                    Level 1 Approver (Supervisor)
+                                    {__('Level 1 Approver (Supervisor)')}
                                 </Label>
                                 <Select
                                     value={data.approver_level_1_id}
@@ -228,11 +270,18 @@ export default function PersonalLeaveRequestCreate({
                                     }
                                 >
                                     <SelectTrigger id="approver_level_1_id">
-                                        <SelectValue placeholder="Select supervisor" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select supervisor',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {employees.map((emp) => (
-                                            <SelectItem key={emp.id} value={emp.id}>
+                                            <SelectItem
+                                                key={emp.id}
+                                                value={emp.id}
+                                            >
                                                 {emp.name}
                                             </SelectItem>
                                         ))}
@@ -247,7 +296,7 @@ export default function PersonalLeaveRequestCreate({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="approver_level_2_id">
-                                    Level 2 Approver (Dean / HR)
+                                    {__('Level 2 Approver (Dean / HR)')}
                                 </Label>
                                 <Select
                                     value={data.approver_level_2_id}
@@ -256,11 +305,18 @@ export default function PersonalLeaveRequestCreate({
                                     }
                                 >
                                     <SelectTrigger id="approver_level_2_id">
-                                        <SelectValue placeholder="Select head of department / HR" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select head of department / HR',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {employees.map((emp) => (
-                                            <SelectItem key={emp.id} value={emp.id}>
+                                            <SelectItem
+                                                key={emp.id}
+                                                value={emp.id}
+                                            >
                                                 {emp.name}
                                             </SelectItem>
                                         ))}
@@ -276,14 +332,23 @@ export default function PersonalLeaveRequestCreate({
                     </Card>
                 </div>
 
-                <div className="md:col-span-2 flex justify-end gap-3">
+                <div className="flex justify-end gap-3 md:col-span-2">
                     <Link href={personalLeaveIndex()}>
-                        <Button type="button" variant="outline" className="cursor-pointer">
-                            Cancel
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                        >
+                            {__('Cancel')}
                         </Button>
                     </Link>
-                    <Button type="submit" disabled={processing} className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-md gap-2">
-                        <Save className="h-4 w-4" /> Submit Leave Request
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        className="cursor-pointer gap-2 bg-primary font-medium text-primary-foreground shadow-md hover:bg-primary/90"
+                    >
+                        <Save className="h-4 w-4" />{' '}
+                        {__('Submit Leave Request')}
                     </Button>
                 </div>
             </form>
@@ -293,8 +358,8 @@ export default function PersonalLeaveRequestCreate({
 
 PersonalLeaveRequestCreate.layout = {
     breadcrumbs: [
-        { title: 'Self-Service', href: '#' },
-        { title: 'My Leave Requests', href: personalLeaveIndex() },
-        { title: 'New Request', href: '#' },
+        { title: __('Self-Service'), href: '#' },
+        { title: __('My Leave Requests'), href: personalLeaveIndex() },
+        { title: __('New Request'), href: '#' },
     ],
 };

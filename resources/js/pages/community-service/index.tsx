@@ -26,6 +26,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { __, intlLocale } from '@/lib/i18n';
 import type { Auth, CommunityService, CommunityServiceStatus } from '@/types';
 
 interface PageProps {
@@ -42,7 +43,13 @@ const statusColors: Record<CommunityServiceStatus, string> = {
         'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400',
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const statusLabels: Record<CommunityServiceStatus, string> = {
+    proposed: __('Proposed'),
+    ongoing: __('Ongoing'),
+    completed: __('Completed'),
+};
+
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
 });
 
@@ -141,41 +148,44 @@ export default function CommunityServiceIndex({
             svc.title.toLowerCase().includes(search.toLowerCase()) ||
             svc.location.toLowerCase().includes(search.toLowerCase());
 
-        const matchesStatus = statusFilter === 'all' || svc.status === statusFilter;
+        const matchesStatus =
+            statusFilter === 'all' || svc.status === statusFilter;
 
         return matchesSearch && matchesStatus;
     });
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title="Community Service" />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('Community Service')} />
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        Community Service
+                        {__('Community Service')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Manage community service projects and member assignments.
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Manage community service projects and member assignments.',
+                        )}
                     </p>
                 </div>
                 {mayCreate && (
                     <Button
                         onClick={() => setIsCreating(true)}
-                        className="cursor-pointer gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-md"
+                        className="cursor-pointer gap-2 bg-primary font-medium text-primary-foreground shadow-md hover:bg-primary/90"
                     >
-                        <Plus className="h-4 w-4" /> Add Project
+                        <Plus className="h-4 w-4" /> {__('Add Project')}
                     </Button>
                 )}
             </div>
 
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border dark:border-zinc-800">
+            <div className="flex flex-col items-center justify-between gap-4 rounded-xl border bg-zinc-50 p-4 md:flex-row dark:border-zinc-800 dark:bg-zinc-900/50">
                 <div className="relative w-full md:max-w-xs">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="search"
-                        placeholder="Search projects..."
-                        className="pl-9 pr-9 bg-white dark:bg-zinc-900"
+                        placeholder={__('Search projects...')}
+                        className="bg-white pr-9 pl-9 dark:bg-zinc-900"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -183,71 +193,82 @@ export default function CommunityServiceIndex({
                         <button
                             type="button"
                             onClick={() => setSearch('')}
-                            className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
                         >
                             <X className="h-4 w-4" />
                         </button>
                     )}
                 </div>
 
-                <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <div className="flex w-full flex-wrap gap-3 md:w-auto">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="h-10 rounded-md border border-input bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800"
+                        className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                     >
-                        <option value="all">All Statuses</option>
-                        <option value="proposed">Proposed</option>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="completed">Completed</option>
+                        <option value="all">{__('All Statuses')}</option>
+                        <option value="proposed">{__('Proposed')}</option>
+                        <option value="ongoing">{__('Ongoing')}</option>
+                        <option value="completed">{__('Completed')}</option>
                     </select>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+            <div className="overflow-hidden rounded-2xl border bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse text-left">
                         <thead>
-                            <tr className="bg-zinc-50 dark:bg-zinc-900 border-b dark:border-zinc-800 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                <th className="py-4 px-6">Title</th>
-                                <th className="py-4 px-6">Location</th>
-                                <th className="py-4 px-6 text-center">Status</th>
-                                <th className="py-4 px-6">Start Date</th>
-                                <th className="py-4 px-6 text-right w-[150px]">Actions</th>
+                            <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                                <th className="px-6 py-4">{__('Title')}</th>
+                                <th className="px-6 py-4">{__('Location')}</th>
+                                <th className="px-6 py-4 text-center">
+                                    {__('Status')}
+                                </th>
+                                <th className="px-6 py-4">
+                                    {__('Start Date')}
+                                </th>
+                                <th className="w-[150px] px-6 py-4 text-right">
+                                    {__('Actions')}
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
+                        <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
                             {filteredServices.length > 0 ? (
                                 filteredServices.map((svc) => (
                                     <tr
                                         key={svc.id}
-                                        className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors"
+                                        className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50"
                                     >
-                                        <td className="py-4 px-6 font-semibold text-zinc-900 dark:text-zinc-50">
+                                        <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-50">
                                             {svc.title}
                                         </td>
-                                        <td className="py-4 px-6 text-zinc-700 dark:text-zinc-300">
+                                        <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
                                             {svc.location}
                                         </td>
-                                        <td className="py-4 px-6 text-center">
+                                        <td className="px-6 py-4 text-center">
                                             <Badge
                                                 variant="outline"
-                                                className={`capitalize font-semibold ${statusColors[svc.status]}`}
+                                                className={`font-semibold capitalize ${statusColors[svc.status]}`}
                                             >
-                                                {svc.status}
+                                                {statusLabels[svc.status] ??
+                                                    svc.status}
                                             </Badge>
                                         </td>
-                                        <td className="py-4 px-6 text-zinc-600 dark:text-zinc-400">
-                                            {svc.start_date ? dateFormatter.format(new Date(svc.start_date)) : '-'}
+                                        <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
+                                            {svc.start_date
+                                                ? dateFormatter.format(
+                                                      new Date(svc.start_date),
+                                                  )
+                                                : '-'}
                                         </td>
-                                        <td className="py-4 px-6 text-right">
+                                        <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     asChild
-                                                    title="View Details"
-                                                    className="cursor-pointer h-8 w-8 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                                                    title={__('View Details')}
+                                                    className="h-8 w-8 cursor-pointer text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
                                                 >
                                                     <Link
                                                         href={`/community-services/${svc.id}`}
@@ -259,9 +280,11 @@ export default function CommunityServiceIndex({
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        onClick={() => openEdit(svc)}
-                                                        title="Edit"
-                                                        className="cursor-pointer h-8 w-8 text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                        onClick={() =>
+                                                            openEdit(svc)
+                                                        }
+                                                        title={__('Edit')}
+                                                        className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
@@ -270,9 +293,13 @@ export default function CommunityServiceIndex({
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        onClick={() => setDeletingService(svc)}
-                                                        title="Delete"
-                                                        className="cursor-pointer h-8 w-8 text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
+                                                        onClick={() =>
+                                                            setDeletingService(
+                                                                svc,
+                                                            )
+                                                        }
+                                                        title={__('Delete')}
+                                                        className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -287,7 +314,9 @@ export default function CommunityServiceIndex({
                                         colSpan={5}
                                         className="py-8 text-center text-muted-foreground"
                                     >
-                                        No community service projects found.
+                                        {__(
+                                            'No community service projects found.',
+                                        )}
                                     </td>
                                 </tr>
                             )}
@@ -300,20 +329,25 @@ export default function CommunityServiceIndex({
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Add New Project</DialogTitle>
+                        <DialogTitle>{__('Add New Project')}</DialogTitle>
                         <DialogDescription>
-                            Enter the details of the new community service project.
+                            {__(
+                                'Enter the details of the new community service project.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="title">Title</Label>
+                                <Label htmlFor="title">{__('Title')}</Label>
                                 <Input
                                     id="title"
                                     value={createForm.data.title}
                                     onChange={(e) =>
-                                        createForm.setData('title', e.target.value)
+                                        createForm.setData(
+                                            'title',
+                                            e.target.value,
+                                        )
                                     }
                                     required
                                 />
@@ -324,69 +358,94 @@ export default function CommunityServiceIndex({
                                 )}
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="location">Location</Label>
+                                <Label htmlFor="location">
+                                    {__('Location')}
+                                </Label>
                                 <Input
                                     id="location"
                                     value={createForm.data.location}
                                     onChange={(e) =>
-                                        createForm.setData('location', e.target.value)
+                                        createForm.setData(
+                                            'location',
+                                            e.target.value,
+                                        )
                                     }
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">
+                                    {__('Description')}
+                                </Label>
                                 <Input
                                     id="description"
                                     value={createForm.data.description}
                                     onChange={(e) =>
-                                        createForm.setData('description', e.target.value)
+                                        createForm.setData(
+                                            'description',
+                                            e.target.value,
+                                        )
                                     }
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="start_date">Start Date</Label>
+                                    <Label htmlFor="start_date">
+                                        {__('Start Date')}
+                                    </Label>
                                     <Input
                                         id="start_date"
                                         type="date"
                                         value={createForm.data.start_date}
                                         onChange={(e) =>
-                                            createForm.setData('start_date', e.target.value)
+                                            createForm.setData(
+                                                'start_date',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="end_date">End Date</Label>
+                                    <Label htmlFor="end_date">
+                                        {__('End Date')}
+                                    </Label>
                                     <Input
                                         id="end_date"
                                         type="date"
                                         value={createForm.data.end_date}
                                         onChange={(e) =>
-                                            createForm.setData('end_date', e.target.value)
+                                            createForm.setData(
+                                                'end_date',
+                                                e.target.value,
+                                            )
                                         }
                                     />
                                 </div>
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="funding_source">Funding Source</Label>
+                                <Label htmlFor="funding_source">
+                                    {__('Funding Source')}
+                                </Label>
                                 <Input
                                     id="funding_source"
                                     value={createForm.data.funding_source}
                                     onChange={(e) =>
-                                        createForm.setData('funding_source', e.target.value)
+                                        createForm.setData(
+                                            'funding_source',
+                                            e.target.value,
+                                        )
                                     }
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="status">Status</Label>
+                                <Label htmlFor="status">{__('Status')}</Label>
                                 <Select
                                     value={createForm.data.status}
                                     onValueChange={(val) =>
                                         createForm.setData(
                                             'status',
-                                            val as CommunityServiceStatus
+                                            val as CommunityServiceStatus,
                                         )
                                     }
                                 >
@@ -394,9 +453,15 @@ export default function CommunityServiceIndex({
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="proposed">Proposed</SelectItem>
-                                        <SelectItem value="ongoing">Ongoing</SelectItem>
-                                        <SelectItem value="completed">Completed</SelectItem>
+                                        <SelectItem value="proposed">
+                                            {__('Proposed')}
+                                        </SelectItem>
+                                        <SelectItem value="ongoing">
+                                            {__('Ongoing')}
+                                        </SelectItem>
+                                        <SelectItem value="completed">
+                                            {__('Completed')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -407,10 +472,13 @@ export default function CommunityServiceIndex({
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={createForm.processing}>
-                                Save
+                            <Button
+                                type="submit"
+                                disabled={createForm.processing}
+                            >
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -424,43 +492,57 @@ export default function CommunityServiceIndex({
             >
                 <DialogContent className="max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Edit Project</DialogTitle>
+                        <DialogTitle>{__('Edit Project')}</DialogTitle>
                         <DialogDescription>
-                            Update the community service project details.
+                            {__(
+                                'Update the community service project details.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-title">Title</Label>
+                                <Label htmlFor="edit-title">
+                                    {__('Title')}
+                                </Label>
                                 <Input
                                     id="edit-title"
                                     value={editForm.data.title}
                                     onChange={(e) =>
-                                        editForm.setData('title', e.target.value)
+                                        editForm.setData(
+                                            'title',
+                                            e.target.value,
+                                        )
                                     }
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-location">Location</Label>
+                                <Label htmlFor="edit-location">
+                                    {__('Location')}
+                                </Label>
                                 <Input
                                     id="edit-location"
                                     value={editForm.data.location}
                                     onChange={(e) =>
-                                        editForm.setData('location', e.target.value)
+                                        editForm.setData(
+                                            'location',
+                                            e.target.value,
+                                        )
                                     }
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-status">Status</Label>
+                                <Label htmlFor="edit-status">
+                                    {__('Status')}
+                                </Label>
                                 <Select
                                     value={editForm.data.status}
                                     onValueChange={(val) =>
                                         editForm.setData(
                                             'status',
-                                            val as CommunityServiceStatus
+                                            val as CommunityServiceStatus,
                                         )
                                     }
                                 >
@@ -468,9 +550,15 @@ export default function CommunityServiceIndex({
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="proposed">Proposed</SelectItem>
-                                        <SelectItem value="ongoing">Ongoing</SelectItem>
-                                        <SelectItem value="completed">Completed</SelectItem>
+                                        <SelectItem value="proposed">
+                                            {__('Proposed')}
+                                        </SelectItem>
+                                        <SelectItem value="ongoing">
+                                            {__('Ongoing')}
+                                        </SelectItem>
+                                        <SelectItem value="completed">
+                                            {__('Completed')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -481,10 +569,13 @@ export default function CommunityServiceIndex({
                                 variant="outline"
                                 onClick={() => setEditingService(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={editForm.processing}>
-                                Update
+                            <Button
+                                type="submit"
+                                disabled={editForm.processing}
+                            >
+                                {__('Update')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -498,10 +589,12 @@ export default function CommunityServiceIndex({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Project</DialogTitle>
+                        <DialogTitle>{__('Delete Project')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete "{deletingService?.title}"? This
-                            action cannot be undone.
+                            {__(
+                                'Are you sure you want to delete ":title"? This action cannot be undone.',
+                                { title: deletingService?.title ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -509,10 +602,10 @@ export default function CommunityServiceIndex({
                             variant="outline"
                             onClick={() => setDeletingService(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button variant="destructive" onClick={handleDelete}>
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -524,7 +617,7 @@ export default function CommunityServiceIndex({
 CommunityServiceIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Community Service',
+            title: __('Community Service'),
             href: serviceIndex(),
         },
     ],

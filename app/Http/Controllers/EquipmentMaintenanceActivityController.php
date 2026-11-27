@@ -33,7 +33,7 @@ class EquipmentMaintenanceActivityController extends Controller
     {
         EquipmentMaintenanceActivity::create($request->validated());
 
-        return redirect()->route('equipment-maintenance-activities.index')->with('success', 'Maintenance activity created successfully.');
+        return redirect()->route('equipment-maintenance-activities.index')->with('success', __('Maintenance activity created successfully.'));
     }
 
     public function show(Request $request, EquipmentMaintenanceActivity $equipmentMaintenanceActivity): Response
@@ -55,13 +55,13 @@ class EquipmentMaintenanceActivityController extends Controller
     {
         $equipmentMaintenanceActivity->update($request->validated());
 
-        return redirect()->route('equipment-maintenance-activities.index')->with('success', 'Maintenance activity updated successfully.');
+        return redirect()->route('equipment-maintenance-activities.index')->with('success', __('Maintenance activity updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentMaintenanceActivity $equipmentMaintenanceActivity): RedirectResponse
     {
         $equipmentMaintenanceActivity->delete();
 
-        return redirect()->route('equipment-maintenance-activities.index')->with('success', 'Maintenance activity deleted successfully.');
+        return redirect()->route('equipment-maintenance-activities.index')->with('success', __('Maintenance activity deleted successfully.'));
     }
 }

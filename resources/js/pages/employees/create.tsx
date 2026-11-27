@@ -15,8 +15,13 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-import { toEmployeeFormData, type EmployeeFormData } from '@/pages/employees/components/employee-form-modal';
+import {
+    RELIGION_LABELS,
+    toEmployeeFormData,
+} from '@/pages/employees/components/employee-form-modal';
+import type { EmployeeFormData } from '@/pages/employees/components/employee-form-modal';
 import { index as employeesIndex } from '@/routes/employees';
 
 type PageProps = {
@@ -32,9 +37,8 @@ export default function EmployeeCreate({
     positions,
     supervisors,
 }: PageProps) {
-    const { data, setData, post, processing, errors } = useForm<EmployeeFormData>(
-        toEmployeeFormData(null),
-    );
+    const { data, setData, post, processing, errors } =
+        useForm<EmployeeFormData>(toEmployeeFormData(null));
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -43,18 +47,21 @@ export default function EmployeeCreate({
 
     return (
         <>
-            <Head title="Add Employee" />
+            <Head title={__('Add Employee')} />
             <div className="mx-auto flex h-full max-w-5xl flex-1 flex-col gap-6 p-4">
                 <div className="flex flex-col gap-2">
                     <Link
                         href={employeesIndex()}
                         className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                     >
-                        <ArrowLeft className="size-4" /> Back to Employees
+                        <ArrowLeft className="size-4" />{' '}
+                        {__('Back to Employees')}
                     </Link>
                     <Heading
-                        title="Add Employee"
-                        description="Onboard a new lecturer or staff member"
+                        title={__('Add Employee')}
+                        description={__(
+                            'Onboard a new lecturer or staff member',
+                        )}
                     />
                 </div>
 
@@ -62,65 +69,92 @@ export default function EmployeeCreate({
                     {/* 1. Personal Information */}
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-xs">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Personal Information
+                            {__('Personal Information')}
                         </h3>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Full Name <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="name">
+                                    {__('Full Name')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('name', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.name} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Work Email <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="email">
+                                    {__('Work Email')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('email', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.email} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="emp_number">
-                                    Employee Number (NIP/NIDN) <span className="text-destructive">*</span>
+                                    {__('Employee Number (NIP/NIDN)')}{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="emp_number"
                                     value={data.emp_number}
-                                    onChange={(e) => setData('emp_number', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('emp_number', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.emp_number} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="id_card_number">
-                                    ID Card (KTP) <span className="text-destructive">*</span>
+                                    {__('ID Card (KTP)')}{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="id_card_number"
                                     value={data.id_card_number}
-                                    onChange={(e) => setData('id_card_number', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'id_card_number',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                                 <InputError message={errors.id_card_number} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="tax_id">Tax ID (NPWP)</Label>
+                                <Label htmlFor="tax_id">
+                                    {__('Tax ID (NPWP)')}
+                                </Label>
                                 <Input
                                     id="tax_id"
                                     value={data.tax_id_number}
-                                    onChange={(e) => setData('tax_id_number', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('tax_id_number', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.tax_id_number} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Phone Number</Label>
+                                <Label htmlFor="phone">
+                                    {__('Phone Number')}
+                                </Label>
                                 <Input
                                     id="phone"
                                     value={data.phone}
-                                    onChange={(e) => setData('phone', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('phone', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.phone} />
                             </div>
@@ -128,36 +162,55 @@ export default function EmployeeCreate({
 
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <div className="space-y-2">
-                                <Label htmlFor="birth_place">Birth Place <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="birth_place">
+                                    {__('Birth Place')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Input
                                     id="birth_place"
                                     value={data.birth_place}
-                                    onChange={(e) => setData('birth_place', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('birth_place', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.birth_place} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="birth_date">Birth Date <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="birth_date">
+                                    {__('Birth Date')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Input
                                     id="birth_date"
                                     type="date"
                                     value={data.birth_date}
-                                    onChange={(e) => setData('birth_date', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('birth_date', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.birth_date} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="gender">Gender <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="gender">
+                                    {__('Gender')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Select
                                     value={data.gender}
-                                    onValueChange={(v: 'male' | 'female') => setData('gender', v)}
+                                    onValueChange={(v: 'male' | 'female') =>
+                                        setData('gender', v)
+                                    }
                                 >
                                     <SelectTrigger id="gender">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="male">Male</SelectItem>
-                                        <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="male">
+                                            {__('Male')}
+                                        </SelectItem>
+                                        <SelectItem value="female">
+                                            {__('Female')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.gender} />
@@ -166,50 +219,59 @@ export default function EmployeeCreate({
 
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="religion">Religion <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="religion">
+                                    {__('Religion')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Select
                                     value={data.religion}
-                                    onValueChange={(v) => setData('religion', v)}
+                                    onValueChange={(v) =>
+                                        setData('religion', v)
+                                    }
                                 >
                                     <SelectTrigger id="religion">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {[
-                                            'Islam',
-                                            'Kristen',
-                                            'Katolik',
-                                            'Hindu',
-                                            'Budha',
-                                            'Konghucu',
-                                            'Lainnya',
-                                        ].map((r) => (
-                                            <SelectItem key={r} value={r}>
-                                                {r}
-                                            </SelectItem>
-                                        ))}
+                                        {Object.entries(RELIGION_LABELS).map(
+                                            ([r, label]) => (
+                                                <SelectItem key={r} value={r}>
+                                                    {label}
+                                                </SelectItem>
+                                            ),
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.religion} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="marital">Marital Status <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="marital">
+                                    {__('Marital Status')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Input
                                     id="marital"
                                     value={data.marital_status}
-                                    onChange={(e) => setData('marital_status', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'marital_status',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                                 <InputError message={errors.marital_status} />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="address">Address</Label>
+                            <Label htmlFor="address">{__('Address')}</Label>
                             <Textarea
                                 id="address"
                                 rows={3}
                                 value={data.address}
-                                onChange={(e) => setData('address', e.target.value)}
+                                onChange={(e) =>
+                                    setData('address', e.target.value)
+                                }
                             />
                             <InputError message={errors.address} />
                         </div>
@@ -218,53 +280,77 @@ export default function EmployeeCreate({
                     {/* 2. Employment Information */}
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-xs">
                         <h3 className="border-b pb-2 text-lg font-semibold">
-                            Employment Information
+                            {__('Employment Information')}
                         </h3>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="join_date">Join Date <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="join_date">
+                                    {__('Join Date')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Input
                                     id="join_date"
                                     type="date"
                                     value={data.join_date}
-                                    onChange={(e) => setData('join_date', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('join_date', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.join_date} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="emp_type">
-                                    Employment Type <span className="text-destructive">*</span>
+                                    {__('Employment Type')}{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                                 <Select
                                     value={data.employment_type_id}
-                                    onValueChange={(v) => setData('employment_type_id', v)}
+                                    onValueChange={(v) =>
+                                        setData('employment_type_id', v)
+                                    }
                                 >
                                     <SelectTrigger id="emp_type">
-                                        <SelectValue placeholder="Select type" />
+                                        <SelectValue
+                                            placeholder={__('Select type')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {employmentTypes.map((t) => (
                                             <SelectItem key={t.id} value={t.id}>
-                                                {t.employee_type?.name} / {t.employment_contract?.name}
+                                                {t.employee_type?.name} /{' '}
+                                                {t.employment_contract?.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <InputError message={errors.employment_type_id} />
+                                <InputError
+                                    message={errors.employment_type_id}
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="supervisor">
-                                    Direct Supervisor
+                                    {__('Direct Supervisor')}
                                 </Label>
                                 <Select
                                     value={data.supervisor_id || 'none'}
-                                    onValueChange={(v) => setData('supervisor_id', v === 'none' ? null : v)}
+                                    onValueChange={(v) =>
+                                        setData(
+                                            'supervisor_id',
+                                            v === 'none' ? null : v,
+                                        )
+                                    }
                                 >
                                     <SelectTrigger id="supervisor">
-                                        <SelectValue placeholder="Select supervisor" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select supervisor',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value="none">
+                                            {__('None')}
+                                        </SelectItem>
                                         {supervisors.map((s) => (
                                             <SelectItem key={s.id} value={s.id}>
                                                 {s.name} ({s.emp_number})
@@ -275,17 +361,26 @@ export default function EmployeeCreate({
                                 <InputError message={errors.supervisor_id} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="status">Status <span className="text-destructive">*</span></Label>
+                                <Label htmlFor="status">
+                                    {__('Status')}{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
                                 <Select
                                     value={data.status.toString()}
-                                    onValueChange={(v) => setData('status', parseInt(v))}
+                                    onValueChange={(v) =>
+                                        setData('status', parseInt(v))
+                                    }
                                 >
                                     <SelectTrigger id="status">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="1">Active</SelectItem>
-                                        <SelectItem value="0">Inactive</SelectItem>
+                                        <SelectItem value="1">
+                                            {__('Active')}
+                                        </SelectItem>
+                                        <SelectItem value="0">
+                                            {__('Inactive')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.status} />
@@ -297,32 +392,36 @@ export default function EmployeeCreate({
                     <div className="space-y-6 rounded-lg border bg-card p-6 shadow-xs">
                         <div className="flex items-center justify-between border-b pb-2">
                             <h3 className="text-lg font-semibold">
-                                Professional Specification
+                                {__('Professional Specification')}
                             </h3>
                             <div className="flex rounded-md bg-muted p-1">
                                 <button
                                     type="button"
-                                    onClick={() => setData('specialization', 'lecturer')}
+                                    onClick={() =>
+                                        setData('specialization', 'lecturer')
+                                    }
                                     className={cn(
                                         'cursor-pointer rounded-sm px-4 py-1.5 text-sm font-medium transition-all',
                                         data.specialization === 'lecturer'
-                                            ? 'bg-background shadow-xs text-foreground font-semibold'
+                                            ? 'bg-background font-semibold text-foreground shadow-xs'
                                             : 'text-muted-foreground hover:text-foreground',
                                     )}
                                 >
-                                    Lecturer
+                                    {__('Lecturer')}
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setData('specialization', 'staff')}
+                                    onClick={() =>
+                                        setData('specialization', 'staff')
+                                    }
                                     className={cn(
                                         'cursor-pointer rounded-sm px-4 py-1.5 text-sm font-medium transition-all',
                                         data.specialization === 'staff'
-                                            ? 'bg-background shadow-xs text-foreground font-semibold'
+                                            ? 'bg-background font-semibold text-foreground shadow-xs'
                                             : 'text-muted-foreground hover:text-foreground',
                                     )}
                                 >
-                                    Staff
+                                    {__('Staff')}
                                 </button>
                             </div>
                         </div>
@@ -331,51 +430,97 @@ export default function EmployeeCreate({
                             <div className="space-y-6 pt-2">
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="rank">Academic Rank</Label>
+                                        <Label htmlFor="rank">
+                                            {__('Academic Rank')}
+                                        </Label>
                                         <Input
                                             id="rank"
                                             value={data.academic_rank}
-                                            onChange={(e) => setData('academic_rank', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'academic_rank',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
-                                        <InputError message={errors.academic_rank} />
+                                        <InputError
+                                            message={errors.academic_rank}
+                                        />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="func">Functional Position</Label>
+                                        <Label htmlFor="func">
+                                            {__('Functional Position')}
+                                        </Label>
                                         <Select
-                                            value={data.functional_position_id || 'none'}
-                                            onValueChange={(v) => setData('functional_position_id', v === 'none' ? '' : v)}
+                                            value={
+                                                data.functional_position_id ||
+                                                'none'
+                                            }
+                                            onValueChange={(v) =>
+                                                setData(
+                                                    'functional_position_id',
+                                                    v === 'none' ? '' : v,
+                                                )
+                                            }
                                         >
                                             <SelectTrigger id="func">
-                                                <SelectValue placeholder="Select level" />
+                                                <SelectValue
+                                                    placeholder={__(
+                                                        'Select level',
+                                                    )}
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="none">None</SelectItem>
-                                                {functionalPositions.map((f) => (
-                                                    <SelectItem key={f.id} value={f.id}>
-                                                        {f.name} (Lvl {f.level})
-                                                    </SelectItem>
-                                                ))}
+                                                <SelectItem value="none">
+                                                    {__('None')}
+                                                </SelectItem>
+                                                {functionalPositions.map(
+                                                    (f) => (
+                                                        <SelectItem
+                                                            key={f.id}
+                                                            value={f.id}
+                                                        >
+                                                            {__(
+                                                                ':name (Lvl :level)',
+                                                                {
+                                                                    name: f.name,
+                                                                    level: f.level,
+                                                                },
+                                                            )}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
                                             </SelectContent>
                                         </Select>
-                                        <InputError message={errors.functional_position_id} />
+                                        <InputError
+                                            message={
+                                                errors.functional_position_id
+                                            }
+                                        />
                                     </div>
                                     <div className="space-y-2 md:col-span-2">
                                         <Label htmlFor="nuptk">NUPTK</Label>
                                         <Input
                                             id="nuptk"
                                             value={data.nuptk}
-                                            onChange={(e) => setData('nuptk', e.target.value)}
+                                            onChange={(e) =>
+                                                setData('nuptk', e.target.value)
+                                            }
                                         />
                                         <InputError message={errors.nuptk} />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="expertise">Area of Expertise</Label>
+                                    <Label htmlFor="expertise">
+                                        {__('Area of Expertise')}
+                                    </Label>
                                     <Textarea
                                         id="expertise"
                                         rows={3}
                                         value={data.expertise}
-                                        onChange={(e) => setData('expertise', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('expertise', e.target.value)
+                                        }
                                     />
                                     <InputError message={errors.expertise} />
                                 </div>
@@ -383,19 +528,40 @@ export default function EmployeeCreate({
                         ) : (
                             <div className="space-y-6 pt-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="pos">Structural Position</Label>
+                                    <Label htmlFor="pos">
+                                        {__('Structural Position')}
+                                    </Label>
                                     <Select
                                         value={data.position_id || 'none'}
-                                        onValueChange={(v) => setData('position_id', v === 'none' ? '' : v)}
+                                        onValueChange={(v) =>
+                                            setData(
+                                                'position_id',
+                                                v === 'none' ? '' : v,
+                                            )
+                                        }
                                     >
                                         <SelectTrigger id="pos">
-                                            <SelectValue placeholder="Select position" />
+                                            <SelectValue
+                                                placeholder={__(
+                                                    'Select position',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="none">None</SelectItem>
+                                            <SelectItem value="none">
+                                                {__('None')}
+                                            </SelectItem>
                                             {positions.map((p) => (
-                                                <SelectItem key={p.id} value={p.id}>
-                                                    {p.name} {p.grade ? `(Grade ${p.grade})` : ''}
+                                                <SelectItem
+                                                    key={p.id}
+                                                    value={p.id}
+                                                >
+                                                    {p.name}{' '}
+                                                    {p.grade
+                                                        ? __('(Grade :grade)', {
+                                                              grade: p.grade,
+                                                          })
+                                                        : ''}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -403,12 +569,16 @@ export default function EmployeeCreate({
                                     <InputError message={errors.position_id} />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="skills">Key Skills</Label>
+                                    <Label htmlFor="skills">
+                                        {__('Key Skills')}
+                                    </Label>
                                     <Textarea
                                         id="skills"
                                         rows={3}
                                         value={data.skills}
-                                        onChange={(e) => setData('skills', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('skills', e.target.value)
+                                        }
                                     />
                                     <InputError message={errors.skills} />
                                 </div>
@@ -418,14 +588,16 @@ export default function EmployeeCreate({
 
                     <div className="flex justify-end gap-4 pt-6">
                         <Button type="button" variant="outline" asChild>
-                            <Link href={employeesIndex()}>Cancel</Link>
+                            <Link href={employeesIndex()}>{__('Cancel')}</Link>
                         </Button>
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-xs"
+                            className="bg-gradient-to-r from-violet-600 to-indigo-600 font-medium text-white shadow-xs hover:from-violet-700 hover:to-indigo-700"
                         >
-                            {processing ? 'Creating...' : 'Create Employee Record'}
+                            {processing
+                                ? __('Creating...')
+                                : __('Create Employee Record')}
                         </Button>
                     </div>
                 </form>

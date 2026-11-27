@@ -37,6 +37,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as permissionsIndex } from '@/routes/permissions';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex, show as userShow } from '@/routes/users';
@@ -80,7 +81,7 @@ function toUserFormData(user?: UserWithRoles | null): UserForm {
     };
 }
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -206,17 +207,18 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
 
     return (
         <>
-            <Head title="Users" />
+            <Head title={__('Users')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                            Users
+                            {__('Users')}
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Manage application users, their assigned roles, and
-                            account status.
+                            {__(
+                                'Manage application users, their assigned roles, and account status.',
+                            )}
                         </p>
                     </div>
 
@@ -224,21 +226,33 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                         {mayCreate && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="cursor-pointer gap-2">
+                                    <Button
+                                        variant="outline"
+                                        className="cursor-pointer gap-2"
+                                    >
                                         <ShieldCheck className="h-4 w-4" />
-                                        Access Control
+                                        {__('Access Control')}
                                         <ChevronDown className="h-4 w-4 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="w-48"
+                                >
                                     <DropdownMenuItem asChild>
-                                        <Link href={rolesIndex()} className="w-full cursor-pointer">
-                                            Roles
+                                        <Link
+                                            href={rolesIndex()}
+                                            className="w-full cursor-pointer"
+                                        >
+                                            {__('Roles')}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
-                                        <Link href={permissionsIndex()} className="w-full cursor-pointer">
-                                            Permissions
+                                        <Link
+                                            href={permissionsIndex()}
+                                            className="w-full cursor-pointer"
+                                        >
+                                            {__('Permissions')}
                                         </Link>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -252,7 +266,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                 className="cursor-pointer gap-2"
                             >
                                 <Plus className="h-4 w-4" />
-                                Add User
+                                {__('Add User')}
                             </Button>
                         )}
                     </div>
@@ -266,7 +280,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total users
+                                    {__('Total users')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {users.length}
@@ -282,7 +296,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Active users
+                                    {__('Active users')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {activeUsersCount}
@@ -298,7 +312,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Users with roles
+                                    {__('Users with roles')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {usersWithRolesCount}
@@ -313,7 +327,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search users..."
+                            placeholder={__('Search users...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
@@ -334,13 +348,15 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             variant="outline"
                             className="h-10 rounded-full px-4 text-xs uppercase"
                         >
-                            {users.length} records
+                            {__(':count records', { count: users.length })}
                         </Badge>
                         <Badge
                             variant="outline"
                             className="h-10 rounded-full px-4 text-xs uppercase"
                         >
-                            {inactiveUsersCount} inactive
+                            {__(':count inactive', {
+                                count: inactiveUsersCount,
+                            })}
                         </Badge>
                     </div>
                 </div>
@@ -350,14 +366,16 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                         <table className="w-full min-w-[1000px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">User</th>
-                                    <th className="px-6 py-4">Roles</th>
+                                    <th className="px-6 py-4">{__('User')}</th>
+                                    <th className="px-6 py-4">{__('Roles')}</th>
                                     <th className="px-6 py-4 text-center">
-                                        Status
+                                        {__('Status')}
                                     </th>
-                                    <th className="px-6 py-4">Joined</th>
+                                    <th className="px-6 py-4">
+                                        {__('Joined')}
+                                    </th>
                                     <th className="px-6 py-4 text-right">
-                                        Actions
+                                        {__('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -368,7 +386,9 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                             colSpan={5}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No users found matching your search.
+                                            {__(
+                                                'No users found matching your search.',
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -390,17 +410,21 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-wrap gap-1">
                                                     {user.roles.length > 0 ? (
-                                                        user.roles.map((role) => (
-                                                            <Badge
-                                                                key={role.id}
-                                                                variant="secondary"
-                                                            >
-                                                                {role.name}
-                                                            </Badge>
-                                                        ))
+                                                        user.roles.map(
+                                                            (role) => (
+                                                                <Badge
+                                                                    key={
+                                                                        role.id
+                                                                    }
+                                                                    variant="secondary"
+                                                                >
+                                                                    {role.name}
+                                                                </Badge>
+                                                            ),
+                                                        )
                                                     ) : (
                                                         <span className="text-xs text-muted-foreground">
-                                                            No roles
+                                                            {__('No roles')}
                                                         </span>
                                                     )}
                                                 </div>
@@ -414,8 +438,8 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                                     }`}
                                                 >
                                                     {user.is_active
-                                                        ? 'Active'
-                                                        : 'Inactive'}
+                                                        ? __('Active')
+                                                        : __('Inactive')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
@@ -444,17 +468,33 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                                             variant="ghost"
                                                             size="icon"
                                                             onClick={() =>
-                                                                toggleStatus(user)
+                                                                toggleStatus(
+                                                                    user,
+                                                                )
                                                             }
                                                             aria-label={
                                                                 user.is_active
-                                                                    ? `Deactivate ${user.name}`
-                                                                    : `Activate ${user.name}`
+                                                                    ? __(
+                                                                          'Deactivate :name',
+                                                                          {
+                                                                              name: user.name,
+                                                                          },
+                                                                      )
+                                                                    : __(
+                                                                          'Activate :name',
+                                                                          {
+                                                                              name: user.name,
+                                                                          },
+                                                                      )
                                                             }
                                                             title={
                                                                 user.is_active
-                                                                    ? 'Deactivate'
-                                                                    : 'Activate'
+                                                                    ? __(
+                                                                          'Deactivate',
+                                                                      )
+                                                                    : __(
+                                                                          'Activate',
+                                                                      )
                                                             }
                                                             className={`h-8 w-8 cursor-pointer ${
                                                                 user.is_active
@@ -479,7 +519,12 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                                                     user,
                                                                 )
                                                             }
-                                                            aria-label={`Edit ${user.name}`}
+                                                            aria-label={__(
+                                                                'Edit :name',
+                                                                {
+                                                                    name: user.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                         >
                                                             <Pencil className="h-4 w-4" />
@@ -495,7 +540,12 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                                                     user,
                                                                 )
                                                             }
-                                                            aria-label={`Delete ${user.name}`}
+                                                            aria-label={__(
+                                                                'Delete :name',
+                                                                {
+                                                                    name: user.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -517,11 +567,12 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Create User
+                                {__('Create User')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Add a new account and assign the access roles it
-                                should receive.
+                                {__(
+                                    'Add a new account and assign the access roles it should receive.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -529,7 +580,9 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                     <form onSubmit={submitCreate} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_name">Name</Label>
+                                <Label htmlFor="create_name">
+                                    {__('Name')}
+                                </Label>
                                 <Input
                                     id="create_name"
                                     value={createForm.data.name}
@@ -544,7 +597,9 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="create_email">Email</Label>
+                                <Label htmlFor="create_email">
+                                    {__('Email')}
+                                </Label>
                                 <Input
                                     id="create_email"
                                     type="email"
@@ -562,7 +617,9 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
 
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_password">Password</Label>
+                                <Label htmlFor="create_password">
+                                    {__('Password')}
+                                </Label>
                                 <Input
                                     id="create_password"
                                     type="password"
@@ -581,7 +638,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="create_password_confirmation">
-                                    Confirm Password
+                                    {__('Confirm Password')}
                                 </Label>
                                 <Input
                                     id="create_password_confirmation"
@@ -609,17 +666,18 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="create_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Disable this if the user should not be able to
-                                    sign in yet.
+                                    {__(
+                                        'Disable this if the user should not be able to sign in yet.',
+                                    )}
                                 </p>
                             </div>
                         </div>
 
                         <div className="grid gap-2">
-                            <Label>Roles</Label>
+                            <Label>{__('Roles')}</Label>
                             <div className="grid max-h-64 grid-cols-1 gap-3 overflow-y-auto rounded-xl border bg-zinc-50 p-4 md:grid-cols-2 dark:border-zinc-800 dark:bg-zinc-950/30">
                                 {roles.map((role) => (
                                     <div
@@ -655,13 +713,13 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save User
+                                {__('Save User')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -676,11 +734,12 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Edit User
+                                {__('Edit User')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Update account details, password, role access,
-                                and status.
+                                {__(
+                                    'Update account details, password, role access, and status.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -688,7 +747,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                     <form onSubmit={submitEdit} className="grid gap-5 p-6">
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_name">Name</Label>
+                                <Label htmlFor="edit_name">{__('Name')}</Label>
                                 <Input
                                     id="edit_name"
                                     value={editForm.data.name}
@@ -703,7 +762,9 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_email">Email</Label>
+                                <Label htmlFor="edit_email">
+                                    {__('Email')}
+                                </Label>
                                 <Input
                                     id="edit_email"
                                     type="email"
@@ -722,7 +783,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
                                 <Label htmlFor="edit_password">
-                                    New Password
+                                    {__('New Password')}
                                 </Label>
                                 <Input
                                     id="edit_password"
@@ -735,15 +796,19 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                         )
                                     }
                                 />
-                                <InputError message={editForm.errors.password} />
+                                <InputError
+                                    message={editForm.errors.password}
+                                />
                                 <p className="text-xs text-muted-foreground">
-                                    Leave blank to keep the current password.
+                                    {__(
+                                        'Leave blank to keep the current password.',
+                                    )}
                                 </p>
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="edit_password_confirmation">
-                                    Confirm New Password
+                                    {__('Confirm New Password')}
                                 </Label>
                                 <Input
                                     id="edit_password_confirmation"
@@ -769,17 +834,18 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="edit_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Turn this off to prevent the account from
-                                    accessing the application.
+                                    {__(
+                                        'Turn this off to prevent the account from accessing the application.',
+                                    )}
                                 </p>
                             </div>
                         </div>
 
                         <div className="grid gap-2">
-                            <Label>Roles</Label>
+                            <Label>{__('Roles')}</Label>
                             <div className="grid max-h-64 grid-cols-1 gap-3 overflow-y-auto rounded-xl border bg-zinc-50 p-4 md:grid-cols-2 dark:border-zinc-800 dark:bg-zinc-950/30">
                                 {roles.map((role) => (
                                     <div
@@ -799,9 +865,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                                 )
                                             }
                                         />
-                                        <Label
-                                            htmlFor={`edit_role_${role.id}`}
-                                        >
+                                        <Label htmlFor={`edit_role_${role.id}`}>
                                             {role.name}
                                         </Label>
                                     </div>
@@ -815,13 +879,13 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                 variant="outline"
                                 onClick={() => setEditingUser(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save Changes
+                                {__('Save changes')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -834,10 +898,12 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
             >
                 <DialogContent className="rounded-2xl border bg-white sm:max-w-md dark:border-zinc-800 dark:bg-zinc-900">
                     <DialogHeader>
-                        <DialogTitle>Delete User</DialogTitle>
+                        <DialogTitle>{__('Delete User')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete {deletingUser?.name}?
-                            This action cannot be undone.
+                            {__(
+                                'Are you sure you want to delete :name? This action cannot be undone.',
+                                { name: deletingUser?.name ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -846,14 +912,14 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                             variant="outline"
                             onClick={() => setDeletingUser(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyUser}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -865,7 +931,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
 UsersIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Users',
+            title: __('Users'),
             href: usersIndex(),
         },
     ],

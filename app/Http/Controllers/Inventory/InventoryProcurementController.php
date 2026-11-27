@@ -67,7 +67,7 @@ class InventoryProcurementController extends Controller
         });
 
         return redirect()->route('inventory-procurements.index')
-            ->with('success', 'Procurement request submitted.');
+            ->with('success', __('Procurement request submitted.'));
     }
 
     public function show(InventoryProcurement $inventoryProcurement): Response
@@ -95,7 +95,7 @@ class InventoryProcurementController extends Controller
             'approved_at' => now(),
         ]);
 
-        return back()->with('success', 'Procurement approved.');
+        return back()->with('success', __('Procurement approved.'));
     }
 
     public function reject(Request $request, InventoryProcurement $inventoryProcurement): RedirectResponse
@@ -112,6 +112,6 @@ class InventoryProcurementController extends Controller
             'approved_at' => now(),
         ]);
 
-        return back()->with('success', 'Procurement rejected.');
+        return back()->with('success', __('Procurement rejected.'));
     }
 }

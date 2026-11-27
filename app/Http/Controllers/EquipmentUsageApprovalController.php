@@ -28,7 +28,7 @@ class EquipmentUsageApprovalController extends Controller
             ]);
         });
 
-        return redirect()->back()->with('success', 'Equipment loan approved.');
+        return redirect()->back()->with('success', __('Equipment loan approved.'));
     }
 
     public function reject(Request $request, EquipmentUsage $equipmentUsage): RedirectResponse
@@ -47,6 +47,6 @@ class EquipmentUsageApprovalController extends Controller
             ]);
         });
 
-        return redirect()->back()->with('success', 'Equipment loan rejected.');
+        return redirect()->back()->with('success', __('Equipment loan rejected.'));
     }
 }

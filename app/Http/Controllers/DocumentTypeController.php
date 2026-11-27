@@ -18,7 +18,7 @@ class DocumentTypeController extends Controller
     protected function authorizeAccess(Request $request, string $permission = 'document.view'): void
     {
         if (! $request->user()->can($permission) && ! $request->user()->hasRole('super-admin')) {
-            abort(403, 'Unauthorized.');
+            abort(403, __('Unauthorized.'));
         }
     }
 
@@ -44,7 +44,7 @@ class DocumentTypeController extends Controller
 
         DocumentType::create($request->validated());
 
-        return redirect()->route('document-types.index')->with('success', 'Document type created successfully.');
+        return redirect()->route('document-types.index')->with('success', __('Document type created successfully.'));
     }
 
     public function show(Request $request, DocumentType $documentType): Response
@@ -71,7 +71,7 @@ class DocumentTypeController extends Controller
 
         $documentType->update($request->validated());
 
-        return redirect()->route('document-types.index')->with('success', 'Document type updated successfully.');
+        return redirect()->route('document-types.index')->with('success', __('Document type updated successfully.'));
     }
 
     public function destroy(Request $request, DocumentType $documentType): RedirectResponse
@@ -80,6 +80,6 @@ class DocumentTypeController extends Controller
 
         $documentType->delete();
 
-        return redirect()->route('document-types.index')->with('success', 'Document type deleted successfully.');
+        return redirect()->route('document-types.index')->with('success', __('Document type deleted successfully.'));
     }
 }

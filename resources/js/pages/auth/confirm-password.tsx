@@ -4,12 +4,13 @@ import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { __ } from '@/lib/i18n';
 import { store } from '@/routes/password/confirm';
 
 export default function ConfirmPassword() {
     return (
         <>
-            <Head title="Confirm password" />
+            <Head title={__('Confirm password')} />
 
             <Form
                 action={store.url()}
@@ -19,11 +20,11 @@ export default function ConfirmPassword() {
                 {({ processing, errors }) => (
                     <div className="space-y-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">{__('Password')}</Label>
                             <PasswordInput
                                 id="password"
                                 name="password"
-                                placeholder="Password"
+                                placeholder={__('Password')}
                                 autoComplete="current-password"
                                 autoFocus
                             />
@@ -38,7 +39,7 @@ export default function ConfirmPassword() {
                                 data-test="confirm-password-button"
                             >
                                 {processing && <Spinner />}
-                                Confirm password
+                                {__('Confirm password')}
                             </Button>
                         </div>
                     </div>
@@ -49,7 +50,8 @@ export default function ConfirmPassword() {
 }
 
 ConfirmPassword.layout = {
-    title: 'Confirm password',
-    description:
+    title: __('Confirm password'),
+    description: __(
         'This is a secure area of the application. Please confirm your password before continuing.',
+    ),
 };

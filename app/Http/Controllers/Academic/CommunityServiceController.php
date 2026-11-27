@@ -33,7 +33,7 @@ class CommunityServiceController extends Controller
     {
         CommunityService::create($request->validated());
 
-        return redirect()->route('community-services.index')->with('success', 'Community service created successfully.');
+        return redirect()->route('community-services.index')->with('success', __('Community service created successfully.'));
     }
 
     public function show(Request $request, CommunityService $communityService): Response
@@ -51,13 +51,13 @@ class CommunityServiceController extends Controller
     {
         $communityService->update($request->validated());
 
-        return redirect()->route('community-services.index')->with('success', 'Community service updated successfully.');
+        return redirect()->route('community-services.index')->with('success', __('Community service updated successfully.'));
     }
 
     public function destroy(Request $request, CommunityService $communityService): RedirectResponse
     {
         $communityService->delete();
 
-        return redirect()->route('community-services.index')->with('success', 'Community service deleted successfully.');
+        return redirect()->route('community-services.index')->with('success', __('Community service deleted successfully.'));
     }
 }

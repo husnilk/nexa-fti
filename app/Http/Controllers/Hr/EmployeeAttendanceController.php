@@ -59,7 +59,7 @@ class EmployeeAttendanceController extends Controller
         EmployeeAttendance::create($request->validated());
 
         return redirect()->route('employee-attendances.index')
-            ->with('success', 'Attendance record created successfully.');
+            ->with('success', __('Attendance record created successfully.'));
     }
 
     public function show(EmployeeAttendance $employeeAttendance): Response
@@ -82,7 +82,7 @@ class EmployeeAttendanceController extends Controller
         $employeeAttendance->update($request->validated());
 
         return redirect()->route('employee-attendances.index')
-            ->with('success', 'Attendance record updated successfully.');
+            ->with('success', __('Attendance record updated successfully.'));
     }
 
     public function destroy(EmployeeAttendance $employeeAttendance): RedirectResponse
@@ -90,6 +90,6 @@ class EmployeeAttendanceController extends Controller
         $employeeAttendance->delete();
 
         return redirect()->route('employee-attendances.index')
-            ->with('success', 'Attendance record deleted successfully.');
+            ->with('success', __('Attendance record deleted successfully.'));
     }
 }

@@ -60,7 +60,7 @@ class MeetingController extends Controller
 
         $request->session()->flash('meeting.id', $meeting->id);
 
-        return redirect()->route('meetings.index')->with('success', 'Meeting created successfully.');
+        return redirect()->route('meetings.index')->with('success', __('Meeting created successfully.'));
     }
 
     public function show(Request $request, Meeting $meeting): Response
@@ -115,13 +115,13 @@ class MeetingController extends Controller
 
         $request->session()->flash('meeting.id', $meeting->id);
 
-        return redirect()->route('meetings.index')->with('success', 'Meeting updated successfully.');
+        return redirect()->route('meetings.index')->with('success', __('Meeting updated successfully.'));
     }
 
     public function destroy(Request $request, Meeting $meeting): RedirectResponse
     {
         $meeting->delete();
 
-        return redirect()->route('meetings.index')->with('success', 'Meeting deleted successfully.');
+        return redirect()->route('meetings.index')->with('success', __('Meeting deleted successfully.'));
     }
 }

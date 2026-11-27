@@ -39,10 +39,10 @@ class MeetingParticipantController extends Controller
         $request->session()->flash('meetingParticipant.id', $meetingParticipant->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Participant added successfully.');
+            return redirect()->back()->with('success', __('Participant added successfully.'));
         }
 
-        return redirect()->route('meeting-participants.index')->with('success', 'Participant added successfully.');
+        return redirect()->route('meeting-participants.index')->with('success', __('Participant added successfully.'));
     }
 
     public function show(Request $request, MeetingParticipant $meetingParticipant): Response
@@ -68,10 +68,10 @@ class MeetingParticipantController extends Controller
         $request->session()->flash('meetingParticipant.id', $meetingParticipant->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Participant updated successfully.');
+            return redirect()->back()->with('success', __('Participant updated successfully.'));
         }
 
-        return redirect()->route('meeting-participants.index')->with('success', 'Participant updated successfully.');
+        return redirect()->route('meeting-participants.index')->with('success', __('Participant updated successfully.'));
     }
 
     public function destroy(Request $request, MeetingParticipant $meetingParticipant): RedirectResponse
@@ -79,9 +79,9 @@ class MeetingParticipantController extends Controller
         $meetingParticipant->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Participant removed successfully.');
+            return redirect()->back()->with('success', __('Participant removed successfully.'));
         }
 
-        return redirect()->route('meeting-participants.index')->with('success', 'Participant removed successfully.');
+        return redirect()->route('meeting-participants.index')->with('success', __('Participant removed successfully.'));
     }
 }

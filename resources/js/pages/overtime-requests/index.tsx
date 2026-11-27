@@ -17,6 +17,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { __ } from '@/lib/i18n';
 import type { Auth, OvertimeRequest, OvertimeStatus } from '@/types';
 
 interface PageProps {
@@ -38,6 +39,15 @@ const statusColors: Record<OvertimeStatus, string> = {
     cancelled: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
 };
 
+const statusLabels: Record<string, string> = {
+    draft: __('Draft'),
+    pending: __('Pending'),
+    approved: __('Approved'),
+    rejected: __('Rejected'),
+    completed: __('Completed'),
+    cancelled: __('Cancelled'),
+};
+
 function can(auth: Auth, ability: string): boolean {
     return (
         auth.roles.includes('super-admin') || auth.permissions.includes(ability)
@@ -47,17 +57,16 @@ function can(auth: Auth, ability: string): boolean {
 export default function OvertimeRequestIndex({ overtimeRequests }: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const [searchTerm, setSearchTerm] = useState('');
-    const [deletingRequest, setDeletingRequest] = useState<OvertimeRequest | null>(
-        null,
-    );
+    const [deletingRequest, setDeletingRequest] =
+        useState<OvertimeRequest | null>(null);
 
     const mayCreate = can(auth, 'overtime.manage');
     const mayDelete = can(auth, 'overtime.manage');
 
     const handleDelete = () => {
         if (!deletingRequest) {
-return;
-}
+            return;
+        }
 
         router.delete(destroy.url(deletingRequest.id), {
             onSuccess: () => setDeletingRequest(null),
@@ -77,19 +86,21 @@ return;
 
     return (
         <>
-            <Head title="Overtime Requests" />
+            <Head title={__('Overtime Requests')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title="Overtime Requests"
-                        description="Manage employee overtime requests and approvals."
+                        title={__('Overtime Requests')}
+                        description={__(
+                            'Manage employee overtime requests and approvals.',
+                        )}
                     />
                     {mayCreate && (
                         <Button asChild>
                             <Link href="/overtime-requests/create">
                                 <Plus className="mr-2 h-4 w-4" />
-                                New Request
+                                {__('New Request')}
                             </Link>
                         </Button>
                     )}
@@ -99,7 +110,7 @@ return;
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search requests..."
+                            placeholder={__('Search requests...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -112,25 +123,25 @@ return;
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Request #
+                                    {__('Request #')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Title
+                                    {__('Title')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Requester
+                                    {__('Requester')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Date
+                                    {__('Date')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Members
+                                    {__('Members')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Status
+                                    {__('Status')}
                                 </th>
                                 <th className="h-12 px-4 text-left text-right align-middle font-medium text-muted-foreground">
-                                    Actions
+                                    {__('Actions')}
                                 </th>
                             </tr>
                         </thead>
@@ -160,7 +171,8 @@ return;
                                             variant="outline"
                                             className={statusColors[req.status]}
                                         >
-                                            {req.status}
+                                            {statusLabels[req.status] ??
+                                                req.status}
                                         </Badge>
                                     </td>
                                     <td className="p-4 text-right align-middle">
@@ -197,7 +209,7 @@ return;
                                         colSpan={7}
                                         className="p-8 text-center text-muted-foreground"
                                     >
-                                        No overtime requests found.
+                                        {__('No overtime requests found.')}
                                     </td>
                                 </tr>
                             )}
@@ -213,11 +225,14 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Overtime Request</DialogTitle>
+                        <DialogTitle>
+                            {__('Delete Overtime Request')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete "
-                            {deletingRequest?.title}"? This action cannot be
-                            undone.
+                            {__(
+                                'Are you sure you want to delete ":name"? This action cannot be undone.',
+                                { name: deletingRequest?.title },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -225,10 +240,10 @@ return;
                             variant="outline"
                             onClick={() => setDeletingRequest(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button variant="destructive" onClick={handleDelete}>
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -240,7 +255,7 @@ return;
 OvertimeRequestIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Overtime Requests',
+            title: __('Overtime Requests'),
             href: overtimeIndex(),
         },
     ],

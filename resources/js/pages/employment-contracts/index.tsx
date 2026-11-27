@@ -1,16 +1,23 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { ArrowLeft, ChevronDown, FileText, Pencil, Plus, Search, Settings, Trash2, X } from 'lucide-react';
+import {
+    ArrowLeft,
+    ChevronDown,
+    Pencil,
+    Plus,
+    Search,
+    Settings,
+    Trash2,
+    X,
+} from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import EmploymentContractController from '@/actions/App/Http/Controllers/Acl/EmploymentContractController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -26,6 +33,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as employeeRanksIndex } from '@/routes/employee-ranks';
 import { index as employeeTypesIndex } from '@/routes/employee-types';
 import { index as employeesIndex } from '@/routes/employees';
@@ -54,7 +62,7 @@ type PageProps = {
     };
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -134,8 +142,8 @@ export default function EmploymentContractIndex({
         event.preventDefault();
 
         if (!editingContract) {
-return;
-}
+            return;
+        }
 
         editForm.patch(
             EmploymentContractController.update.url(editingContract.id),
@@ -148,8 +156,8 @@ return;
 
     function destroyContract(): void {
         if (!deletingContract) {
-return;
-}
+            return;
+        }
 
         router.delete(
             EmploymentContractController.destroy.url(deletingContract.id),
@@ -162,45 +170,66 @@ return;
 
     return (
         <>
-            <Head title="Employment Contracts" />
+            <Head title={__('Employment Contracts')} />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-3">
                         <Link href={employeesIndex()}>
-                            <Button variant="ghost" size="icon" className="cursor-pointer" title="Back to Employees">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer"
+                                title={__('Back to Employees')}
+                            >
                                 <ArrowLeft className="h-4 w-4" />
                             </Button>
                         </Link>
                         <Heading
-                            title="Employment Contracts"
-                            description="Manage various employment contract types"
+                            title={__('Employment Contracts')}
+                            description={__(
+                                'Manage various employment contract types',
+                            )}
                         />
                     </div>
                     <div className="flex items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="cursor-pointer gap-2">
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer gap-2"
+                                >
                                     <Settings className="h-4 w-4" />
-                                    Settings
+                                    {__('Settings')}
                                     <ChevronDown className="h-4 w-4 opacity-50" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-52">
-                                <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">HR Configuration</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                                    {__('HR Configuration')}
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link href={employeeTypesIndex()} className="w-full cursor-pointer">
-                                        Employee Types
+                                    <Link
+                                        href={employeeTypesIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employee Types')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href={employmentTypesIndex()} className="w-full cursor-pointer">
-                                        Employment Types
+                                    <Link
+                                        href={employmentTypesIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employment Types')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href={employeeRanksIndex()} className="w-full cursor-pointer">
-                                        Employee Ranks
+                                    <Link
+                                        href={employeeRanksIndex()}
+                                        className="w-full cursor-pointer"
+                                    >
+                                        {__('Employee Ranks')}
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -210,7 +239,7 @@ return;
                             <Search className="absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
                             <Input
                                 type="search"
-                                placeholder="Search..."
+                                placeholder={__('Search...')}
                                 className="pr-10 pl-8"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -230,7 +259,7 @@ return;
                                 type="button"
                                 onClick={() => setIsCreating(true)}
                             >
-                                <Plus /> Add Employment Contract
+                                <Plus /> {__('Add Employment Contract')}
                             </Button>
                         )}
                     </div>
@@ -239,14 +268,14 @@ return;
                 <div className="overflow-hidden rounded-lg border border-sidebar-border/70 dark:border-sidebar-border">
                     <div className="grid min-w-[600px] grid-cols-[100px_minmax(200px,1fr)_minmax(200px,1fr)_140px_100px] gap-4 border-b bg-muted/40 px-4 py-3 text-sm font-medium text-muted-foreground">
                         <span>ID</span>
-                        <span>Name</span>
-                        <span>Description</span>
-                        <span>Created</span>
-                        <span className="text-right">Actions</span>
+                        <span>{__('Name')}</span>
+                        <span>{__('Description')}</span>
+                        <span>{__('Created')}</span>
+                        <span className="text-right">{__('Actions')}</span>
                     </div>
                     {employmentContracts.length === 0 ? (
                         <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                            No employment contracts found.
+                            {__('No employment contracts found.')}
                         </div>
                     ) : (
                         <div className="min-w-[600px] divide-y">
@@ -307,11 +336,13 @@ return;
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Create Employment Contract</DialogTitle>
+                        <DialogTitle>
+                            {__('Create Employment Contract')}
+                        </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitCreate} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="id">ID (Integer)</Label>
+                            <Label htmlFor="id">{__('ID (Integer)')}</Label>
                             <Input
                                 id="id"
                                 type="number"
@@ -326,7 +357,7 @@ return;
                             <InputError message={createForm.errors.id} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Name</Label>
+                            <Label htmlFor="name">{__('Name')}</Label>
                             <Input
                                 id="name"
                                 value={createForm.data.name}
@@ -337,7 +368,9 @@ return;
                             <InputError message={createForm.errors.name} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="description">Description</Label>
+                            <Label htmlFor="description">
+                                {__('Description')}
+                            </Label>
                             <textarea
                                 id="description"
                                 className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
@@ -359,13 +392,13 @@ return;
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -378,11 +411,15 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Employment Contract</DialogTitle>
+                        <DialogTitle>
+                            {__('Edit Employment Contract')}
+                        </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitEdit} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_id">ID (Integer)</Label>
+                            <Label htmlFor="edit_id">
+                                {__('ID (Integer)')}
+                            </Label>
                             <Input
                                 id="edit_id"
                                 type="number"
@@ -397,7 +434,7 @@ return;
                             <InputError message={editForm.errors.id} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_name">Name</Label>
+                            <Label htmlFor="edit_name">{__('Name')}</Label>
                             <Input
                                 id="edit_name"
                                 value={editForm.data.name}
@@ -409,7 +446,7 @@ return;
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="edit_description">
-                                Description
+                                {__('Description')}
                             </Label>
                             <textarea
                                 id="edit_description"
@@ -430,13 +467,13 @@ return;
                                 variant="outline"
                                 onClick={() => setEditingContract(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -449,11 +486,14 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Employment Contract</DialogTitle>
+                        <DialogTitle>
+                            {__('Delete Employment Contract')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to delete {deletingContract?.name}
-                        ?
+                        {__('Are you sure you want to delete :name?', {
+                            name: deletingContract?.name ?? '',
+                        })}
                     </div>
                     <DialogFooter>
                         <Button
@@ -461,14 +501,14 @@ return;
                             variant="outline"
                             onClick={() => setDeletingContract(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyContract}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -1,5 +1,12 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { CheckCircle, ChevronLeft, XCircle, Clock, FileText, Users } from 'lucide-react';
+import {
+    CheckCircle,
+    ChevronLeft,
+    XCircle,
+    Clock,
+    FileText,
+    Users,
+} from 'lucide-react';
 import { index as overtimeIndex } from '@/actions/App/Http/Controllers/Hr/OvertimeRequestController';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { __, intlLocale } from '@/lib/i18n';
 import type { Auth, OvertimeRequest, OvertimeStatus } from '@/types';
 
 interface PageProps {
@@ -25,6 +33,15 @@ const statusColors: Record<OvertimeStatus, string> = {
     cancelled: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
 };
 
+const statusLabels: Record<string, string> = {
+    draft: __('Draft'),
+    pending: __('Pending'),
+    approved: __('Approved'),
+    rejected: __('Rejected'),
+    completed: __('Completed'),
+    cancelled: __('Cancelled'),
+};
+
 export default function OvertimeRequestShow({ overtimeRequest }: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const approveForm = useForm({ approver_id: '', notes: '' });
@@ -39,7 +56,7 @@ export default function OvertimeRequestShow({ overtimeRequest }: PageProps) {
         e.preventDefault();
 
         if (!rejectForm.data.notes) {
-            alert('Please provide a reason for rejection.');
+            alert(__('Please provide a reason for rejection.'));
 
             return;
         }
@@ -54,10 +71,10 @@ export default function OvertimeRequestShow({ overtimeRequest }: PageProps) {
 
     const formatDateTime = (dateStr: string) => {
         if (!dateStr) {
-return 'N/A';
-}
+            return __('N/A');
+        }
 
-        return new Date(dateStr).toLocaleString(undefined, {
+        return new Date(dateStr).toLocaleString(intlLocale(), {
             dateStyle: 'medium',
             timeStyle: 'short',
         });
@@ -66,7 +83,9 @@ return 'N/A';
     return (
         <>
             <Head
-                title={`Overtime Request - ${overtimeRequest.request_number}`}
+                title={__('Overtime Request - :number', {
+                    number: overtimeRequest.request_number,
+                })}
             />
 
             <div className="flex flex-col gap-6 p-4">
@@ -76,22 +95,30 @@ return 'N/A';
                             variant="ghost"
                             size="icon"
                             asChild
-                            title="Back to Overtime Requests"
+                            title={__('Back to Overtime Requests')}
                         >
                             <Link href={overtimeIndex().url}>
                                 <ChevronLeft className="h-4 w-4" />
                             </Link>
                         </Button>
                         <Heading
-                            title={`Overtime Request: ${overtimeRequest.request_number}`}
-                            description={`Submitted by ${overtimeRequest.requester?.name} on ${overtimeRequest.submitted_at}`}
+                            title={__('Overtime Request: :number', {
+                                number: overtimeRequest.request_number,
+                            })}
+                            description={__('Submitted by :name on :date', {
+                                name: overtimeRequest.requester?.name,
+                                date: overtimeRequest.submitted_at,
+                            })}
                         />
                     </div>
                     <Badge
                         variant="outline"
                         className={`${statusColors[overtimeRequest.status]} px-4 py-1`}
                     >
-                        {overtimeRequest.status.toUpperCase()}
+                        {(
+                            statusLabels[overtimeRequest.status] ??
+                            overtimeRequest.status
+                        ).toUpperCase()}
                     </Badge>
                 </div>
 
@@ -99,43 +126,47 @@ return 'N/A';
                     <div className="space-y-6 lg:col-span-2">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Information</CardTitle>
+                                <CardTitle>{__('Information')}</CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-6">
                                 <div className="grid grid-cols-1 gap-6 border-b pb-6 md:grid-cols-2">
                                     <div>
-                                        <Label className="text-muted-foreground uppercase tracking-wider text-[10px] font-bold">
-                                            Title
+                                        <Label className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                                            {__('Title')}
                                         </Label>
                                         <p className="mt-1 text-lg font-medium">
                                             {overtimeRequest.title}
                                         </p>
                                     </div>
                                     <div>
-                                        <div className="mb-1 flex items-center gap-2 text-muted-foreground uppercase tracking-wider text-[10px] font-bold">
+                                        <div className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
                                             <Clock className="h-3 w-3" />
-                                            <Label>Planned Period</Label>
+                                            <Label>
+                                                {__('Planned Period')}
+                                            </Label>
                                         </div>
-                                        <p className="mt-1 font-medium text-sm">
-                                            {overtimeRequest.planned_start_time}{' '}
-                                            to{' '}
-                                            {overtimeRequest.planned_end_time}
+                                        <p className="mt-1 text-sm font-medium">
+                                            {__(':start to :end', {
+                                                start: overtimeRequest.planned_start_time,
+                                                end: overtimeRequest.planned_end_time,
+                                            })}
                                         </p>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            Request Date:{' '}
-                                            {overtimeRequest.request_date}
+                                        <p className="mt-1 text-xs text-muted-foreground">
+                                            {__('Request Date: :date', {
+                                                date: overtimeRequest.request_date,
+                                            })}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <div className="mb-1 flex items-center gap-2 text-muted-foreground uppercase tracking-wider text-[10px] font-bold">
+                                    <div className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
                                         <FileText className="h-3 w-3" />
-                                        <Label>Description</Label>
+                                        <Label>{__('Description')}</Label>
                                     </div>
                                     <p className="mt-1 text-sm whitespace-pre-wrap">
                                         {overtimeRequest.description ||
-                                            'No description provided.'}
+                                            __('No description provided.')}
                                     </p>
                                 </div>
                             </CardContent>
@@ -145,71 +176,127 @@ return 'N/A';
                             <CardHeader>
                                 <div className="flex items-center gap-2">
                                     <Users className="h-5 w-5 text-primary" />
-                                    <CardTitle>Team Members</CardTitle>
+                                    <CardTitle>{__('Team Members')}</CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                 <table className="w-full text-sm border-collapse text-left">
-                                     <thead>
-                                         <tr className="border-b text-muted-foreground font-medium">
-                                             <th className="py-2 px-4">Employee</th>
-                                             <th className="py-2 px-4">Role & Job Description</th>
-                                             <th className="py-2 px-4 text-center">Planned Hours</th>
-                                             <th className="py-2 px-4">Actual Period & Hours</th>
-                                             <th className="py-2 px-4">Activity & Outcome</th>
-                                         </tr>
-                                     </thead>
-                                     <tbody>
-                                         {overtimeRequest.members?.map(
-                                             (member) => (
-                                                 <tr
-                                                     key={member.id}
-                                                     className="border-b last:border-0 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50"
-                                                 >
-                                                     <td className="py-3 px-4 font-medium">
-                                                         {member.employee?.name}
-                                                     </td>
-                                                     <td className="py-3 px-4">
-                                                         <div className="font-semibold text-zinc-900 dark:text-zinc-100">{member.role || '-'}</div>
-                                                         <div className="text-xs text-muted-foreground mt-0.5 whitespace-pre-wrap">{member.job_desc || '-'}</div>
-                                                     </td>
-                                                     <td className="py-3 px-4 text-center">
-                                                         {member.planned_hours} hrs
-                                                     </td>
-                                                     <td className="py-3 px-4 text-xs">
-                                                         {member.actual_hours ? (
-                                                             <div>
-                                                                 <span className="font-semibold text-blue-700 dark:text-blue-400">{member.actual_hours} hrs</span>
-                                                                 <div className="text-[10px] text-muted-foreground mt-1">
-                                                                     {formatDateTime(member.actual_start_time || '')} to <br />
-                                                                     {formatDateTime(member.actual_end_time || '')}
-                                                                 </div>
-                                                             </div>
-                                                         ) : (
-                                                             <span className="text-muted-foreground italic text-xs">Not reported yet</span>
-                                                         )}
-                                                     </td>
-                                                     <td className="py-3 px-4 text-xs max-w-xs">
-                                                         {member.actual_hours ? (
-                                                             <div className="space-y-1">
-                                                                 <div>
-                                                                     <span className="font-semibold text-zinc-850 dark:text-zinc-200">Activity:</span>{' '}
-                                                                     <span className="text-zinc-650 dark:text-zinc-350">{member.activity || '-'}</span>
-                                                                 </div>
-                                                                 <div>
-                                                                     <span className="font-semibold text-zinc-855 dark:text-zinc-200">Outcome:</span>{' '}
-                                                                     <span className="text-zinc-655 dark:text-zinc-350">{member.outcome || '-'}</span>
-                                                                 </div>
-                                                             </div>
-                                                         ) : (
-                                                             <span className="text-muted-foreground">-</span>
-                                                         )}
-                                                     </td>
-                                                 </tr>
-                                             ),
-                                         )}
-                                     </tbody>
-                                 </table>
+                                <table className="w-full border-collapse text-left text-sm">
+                                    <thead>
+                                        <tr className="border-b font-medium text-muted-foreground">
+                                            <th className="px-4 py-2">
+                                                {__('Employee')}
+                                            </th>
+                                            <th className="px-4 py-2">
+                                                {__('Role & Job Description')}
+                                            </th>
+                                            <th className="px-4 py-2 text-center">
+                                                {__('Planned Hours')}
+                                            </th>
+                                            <th className="px-4 py-2">
+                                                {__('Actual Period & Hours')}
+                                            </th>
+                                            <th className="px-4 py-2">
+                                                {__('Activity & Outcome')}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {overtimeRequest.members?.map(
+                                            (member) => (
+                                                <tr
+                                                    key={member.id}
+                                                    className="border-b last:border-0 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50"
+                                                >
+                                                    <td className="px-4 py-3 font-medium">
+                                                        {member.employee?.name}
+                                                    </td>
+                                                    <td className="px-4 py-3">
+                                                        <div className="font-semibold text-zinc-900 dark:text-zinc-100">
+                                                            {member.role || '-'}
+                                                        </div>
+                                                        <div className="mt-0.5 text-xs whitespace-pre-wrap text-muted-foreground">
+                                                            {member.job_desc ||
+                                                                '-'}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-center">
+                                                        {__(':hours hrs', {
+                                                            hours: member.planned_hours,
+                                                        })}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-xs">
+                                                        {member.actual_hours ? (
+                                                            <div>
+                                                                <span className="font-semibold text-blue-700 dark:text-blue-400">
+                                                                    {__(
+                                                                        ':hours hrs',
+                                                                        {
+                                                                            hours: member.actual_hours,
+                                                                        },
+                                                                    )}
+                                                                </span>
+                                                                <div className="mt-1 text-[10px] text-muted-foreground">
+                                                                    {__(
+                                                                        ':start to',
+                                                                        {
+                                                                            start: formatDateTime(
+                                                                                member.actual_start_time ||
+                                                                                    '',
+                                                                            ),
+                                                                        },
+                                                                    )}{' '}
+                                                                    <br />
+                                                                    {formatDateTime(
+                                                                        member.actual_end_time ||
+                                                                            '',
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs text-muted-foreground italic">
+                                                                {__(
+                                                                    'Not reported yet',
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td className="max-w-xs px-4 py-3 text-xs">
+                                                        {member.actual_hours ? (
+                                                            <div className="space-y-1">
+                                                                <div>
+                                                                    <span className="text-zinc-850 font-semibold dark:text-zinc-200">
+                                                                        {__(
+                                                                            'Activity:',
+                                                                        )}
+                                                                    </span>{' '}
+                                                                    <span className="text-zinc-650 dark:text-zinc-350">
+                                                                        {member.activity ||
+                                                                            '-'}
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-zinc-855 font-semibold dark:text-zinc-200">
+                                                                        {__(
+                                                                            'Outcome:',
+                                                                        )}
+                                                                    </span>{' '}
+                                                                    <span className="text-zinc-655 dark:text-zinc-350">
+                                                                        {member.outcome ||
+                                                                            '-'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-muted-foreground">
+                                                                -
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ),
+                                        )}
+                                    </tbody>
+                                </table>
                             </CardContent>
                         </Card>
                     </div>
@@ -217,7 +304,7 @@ return 'N/A';
                     <div className="space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Approval Log</CardTitle>
+                                <CardTitle>{__('Approval Log')}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {overtimeRequest.approval_logs &&
@@ -242,7 +329,9 @@ return 'N/A';
                                                             }
                                                             className="h-4 text-[10px]"
                                                         >
-                                                            {log.status}
+                                                            {statusLabels[
+                                                                log.status
+                                                            ] ?? log.status}
                                                         </Badge>
                                                     </div>
                                                     <p className="text-xs text-muted-foreground">
@@ -259,7 +348,7 @@ return 'N/A';
                                     </div>
                                 ) : (
                                     <p className="py-4 text-center text-sm text-muted-foreground">
-                                        No approval activity yet.
+                                        {__('No approval activity yet.')}
                                     </p>
                                 )}
                             </CardContent>
@@ -268,11 +357,15 @@ return 'N/A';
                         {canApprove && (
                             <Card className="border-primary/20 bg-primary/5">
                                 <CardHeader>
-                                    <CardTitle>Process Approval</CardTitle>
+                                    <CardTitle>
+                                        {__('Process Approval')}
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid gap-4">
                                     <Textarea
-                                        placeholder="Add notes for this action..."
+                                        placeholder={__(
+                                            'Add notes for this action...',
+                                        )}
                                         value={
                                             approveForm.data.notes ||
                                             rejectForm.data.notes
@@ -296,7 +389,7 @@ return 'N/A';
                                             disabled={rejectForm.processing}
                                         >
                                             <XCircle className="mr-2 h-4 w-4" />{' '}
-                                            Reject
+                                            {__('Reject')}
                                         </Button>
                                         <Button
                                             variant="default"
@@ -304,7 +397,7 @@ return 'N/A';
                                             disabled={approveForm.processing}
                                         >
                                             <CheckCircle className="mr-2 h-4 w-4" />{' '}
-                                            Approve
+                                            {__('Approve')}
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -320,11 +413,11 @@ return 'N/A';
 OvertimeRequestShow.layout = {
     breadcrumbs: [
         {
-            title: 'Overtime Requests',
+            title: __('Overtime Requests'),
             href: overtimeIndex(),
         },
         {
-            title: 'Detail',
+            title: __('Detail'),
             href: '#',
         },
     ],

@@ -28,6 +28,7 @@ class StoreOrganizationRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:255', 'unique:organizations,code'],
             'is_active' => ['required', 'boolean'],
+            'has_pagu' => ['sometimes', 'boolean'],
             'description' => ['nullable', 'string'],
         ];
     }

@@ -1,12 +1,18 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
+import { __ } from '@/lib/i18n';
 
 export default function Edit() {
     return (
         <>
-            <Head title="Edit Equipment Maintenance Request" />
+            <Head title={__('Edit Equipment Maintenance Request')} />
             <div className="flex flex-col gap-4 p-4">
-                <Heading title="Edit Maintenance Request" description="Update the details of this equipment maintenance request." />
+                <Heading
+                    title={__('Edit Maintenance Request')}
+                    description={__(
+                        'Update the details of this equipment maintenance request.',
+                    )}
+                />
             </div>
         </>
     );
@@ -14,8 +20,8 @@ export default function Edit() {
 
 Edit.layout = {
     breadcrumbs: [
-        { title: 'Equipment', href: '#' },
-        { title: 'Maintenance Requests', href: '#' },
-        { title: 'Edit', href: '#' },
+        { title: __('Equipment'), href: '#' },
+        { title: __('Maintenance Requests'), href: '#' },
+        { title: __('Edit'), href: '#' },
     ],
 };

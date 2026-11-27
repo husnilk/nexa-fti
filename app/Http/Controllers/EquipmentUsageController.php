@@ -55,7 +55,7 @@ class EquipmentUsageController extends Controller
         ]));
 
         return redirect()->route('equipment-usages.index')
-            ->with('success', 'Equipment loan request submitted.');
+            ->with('success', __('Equipment loan request submitted.'));
     }
 
     public function show(Request $request, EquipmentUsage $equipmentUsage): Response
@@ -78,7 +78,7 @@ class EquipmentUsageController extends Controller
 
         if ($equipmentUsage->status !== 'requested') {
             return redirect()->route('equipment-usages.index')
-                ->with('error', 'Only requested loans can be edited.');
+                ->with('error', __('Only requested loans can be edited.'));
         }
 
         return Inertia::render('equipment/usages/edit', [
@@ -93,13 +93,13 @@ class EquipmentUsageController extends Controller
 
         if ($equipmentUsage->status !== 'requested') {
             return redirect()->route('equipment-usages.index')
-                ->with('error', 'Only requested loans can be updated.');
+                ->with('error', __('Only requested loans can be updated.'));
         }
 
         $equipmentUsage->update($request->validated());
 
         return redirect()->route('equipment-usages.index')
-            ->with('success', 'Loan request updated.');
+            ->with('success', __('Loan request updated.'));
     }
 
     public function destroy(Request $request, EquipmentUsage $equipmentUsage): RedirectResponse
@@ -109,7 +109,7 @@ class EquipmentUsageController extends Controller
         $equipmentUsage->delete();
 
         return redirect()->route('equipment-usages.index')
-            ->with('success', 'Loan request deleted.');
+            ->with('success', __('Loan request deleted.'));
     }
 
     public function return(Request $request, EquipmentUsage $equipmentUsage): RedirectResponse
@@ -118,7 +118,7 @@ class EquipmentUsageController extends Controller
 
         if (! in_array($equipmentUsage->status, ['approved', 'borrowed'])) {
             return redirect()->back()
-                ->with('error', 'This equipment is not currently on loan.');
+                ->with('error', __('This equipment is not currently on loan.'));
         }
 
         $equipmentUsage->update([
@@ -129,6 +129,6 @@ class EquipmentUsageController extends Controller
         $equipmentUsage->equipment->update(['status' => 'available']);
 
         return redirect()->back()
-            ->with('success', 'Equipment returned successfully.');
+            ->with('success', __('Equipment returned successfully.'));
     }
 }

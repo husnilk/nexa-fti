@@ -37,6 +37,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { __, intlLocale } from '@/lib/i18n';
 import {
     index as positionsIndex,
     show as positionShow,
@@ -83,7 +84,7 @@ type PageProps = {
     position: Position;
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'long',
     timeStyle: 'short',
 });
@@ -120,7 +121,9 @@ export default function PositionShow({ position }: PageProps) {
         order: 0,
     });
 
-    function submitCreateResponsibility(event: FormEvent<HTMLFormElement>): void {
+    function submitCreateResponsibility(
+        event: FormEvent<HTMLFormElement>,
+    ): void {
         event.preventDefault();
 
         createForm.post(PositionResponsibilityController.store.url(), {
@@ -182,7 +185,7 @@ export default function PositionShow({ position }: PageProps) {
 
     return (
         <>
-            <Head title={`Position: ${position.name}`} />
+            <Head title={__('Position: :name', { name: position.name })} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex items-center gap-3 border-b pb-5 dark:border-zinc-800">
@@ -206,12 +209,15 @@ export default function PositionShow({ position }: PageProps) {
                                 }
                                 className="rounded-full px-3 py-1 uppercase"
                             >
-                                {position.is_active ? 'Active' : 'Inactive'}
+                                {position.is_active
+                                    ? __('Active')
+                                    : __('Inactive')}
                             </Badge>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Review hierarchy, scoring metrics, qualifications,
-                            and responsibilities for this position.
+                            {__(
+                                'Review hierarchy, scoring metrics, qualifications, and responsibilities for this position.',
+                            )}
                         </p>
                     </div>
                     {mayManage && (
@@ -222,7 +228,7 @@ export default function PositionShow({ position }: PageProps) {
                                 })}
                             >
                                 <Edit className="h-4 w-4" />
-                                Edit Position
+                                {__('Edit Position')}
                             </Link>
                         </Button>
                     )}
@@ -232,28 +238,44 @@ export default function PositionShow({ position }: PageProps) {
                     <div className="space-y-6 lg:col-span-1">
                         <div className="space-y-4 rounded-2xl border bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                             <h3 className="border-b pb-3 text-lg font-bold text-zinc-900 dark:border-zinc-800 dark:text-zinc-50">
-                                Position Details
+                                {__('Position Details')}
                             </h3>
 
                             <div className="space-y-3 text-sm">
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <Briefcase className="h-4 w-4 text-muted-foreground" />
-                                    <span>Grade {position.grade}</span>
+                                    <span>
+                                        {__('Grade :value', {
+                                            value: position.grade,
+                                        })}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <Activity className="h-4 w-4 text-muted-foreground" />
-                                    <span>Job Value {position.job_value}</span>
+                                    <span>
+                                        {__('Job Value :value', {
+                                            value: position.job_value,
+                                        })}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                                    <span>CG {position.cg}</span>
+                                    <span>
+                                        {__('CG :value', {
+                                            value: position.cg,
+                                        })}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <Activity className="h-4 w-4 text-muted-foreground" />
-                                    <span>SKP Point {position.skp_point}</span>
+                                    <span>
+                                        {__('SKP Point :value', {
+                                            value: position.skp_point,
+                                        })}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
@@ -268,8 +290,8 @@ export default function PositionShow({ position }: PageProps) {
                                 <div className="flex items-start gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <GitBranch className="mt-0.5 h-4 w-4 text-muted-foreground" />
                                     <div className="flex flex-col">
-                                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                                            Parent
+                                        <span className="text-xs tracking-wide text-muted-foreground uppercase">
+                                            {__('Parent')}
                                         </span>
                                         {position.parent ? (
                                             <Link
@@ -281,7 +303,9 @@ export default function PositionShow({ position }: PageProps) {
                                                 {position.parent.name}
                                             </Link>
                                         ) : (
-                                            <span>No parent position</span>
+                                            <span>
+                                                {__('No parent position')}
+                                            </span>
                                         )}
                                     </div>
                                 </div>
@@ -293,15 +317,18 @@ export default function PositionShow({ position }: PageProps) {
                                 <div className="flex items-center gap-2">
                                     <GitBranch className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                     <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                        Child Positions
+                                        {__('Child Positions')}
                                     </h3>
                                 </div>
-                                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                    {position.children?.length || 0} total
+                                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                                    {__(':count total', {
+                                        count: position.children?.length || 0,
+                                    })}
                                 </span>
                             </div>
 
-                            {position.children && position.children.length > 0 ? (
+                            {position.children &&
+                            position.children.length > 0 ? (
                                 <div className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
                                     {position.children.map((child) => (
                                         <Link
@@ -314,8 +341,13 @@ export default function PositionShow({ position }: PageProps) {
                                                     {child.name}
                                                 </span>
                                                 <span className="text-xs text-muted-foreground">
-                                                    Grade {child.grade} • CG{' '}
-                                                    {child.cg}
+                                                    {__(
+                                                        'Grade :grade • CG :cg',
+                                                        {
+                                                            grade: child.grade,
+                                                            cg: child.cg,
+                                                        },
+                                                    )}
                                                 </span>
                                             </div>
                                             <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
@@ -324,7 +356,7 @@ export default function PositionShow({ position }: PageProps) {
                                 </div>
                             ) : (
                                 <p className="mt-4 text-sm text-muted-foreground">
-                                    No child positions found.
+                                    {__('No child positions found.')}
                                 </p>
                             )}
                         </div>
@@ -335,13 +367,13 @@ export default function PositionShow({ position }: PageProps) {
                             <div className="flex items-center gap-2 border-b pb-3 dark:border-zinc-800">
                                 <FileText className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                 <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                    Qualification
+                                    {__('Qualification')}
                                 </h3>
                             </div>
 
-                            <p className="mt-4 whitespace-pre-wrap leading-relaxed text-zinc-700 dark:text-zinc-300">
+                            <p className="mt-4 leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
                                 {position.qualification ||
-                                    'No qualification provided.'}
+                                    __('No qualification provided.')}
                             </p>
                         </div>
 
@@ -349,13 +381,13 @@ export default function PositionShow({ position }: PageProps) {
                             <div className="flex items-center gap-2 border-b pb-3 dark:border-zinc-800">
                                 <FileText className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                 <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                    Description
+                                    {__('Description')}
                                 </h3>
                             </div>
 
-                            <p className="mt-4 whitespace-pre-wrap leading-relaxed text-zinc-700 dark:text-zinc-300">
+                            <p className="mt-4 leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
                                 {position.description ||
-                                    'No description provided.'}
+                                    __('No description provided.')}
                             </p>
                         </div>
 
@@ -364,7 +396,7 @@ export default function PositionShow({ position }: PageProps) {
                                 <div className="flex items-center gap-2">
                                     <Briefcase className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                     <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                        Responsibilities
+                                        {__('Responsibilities')}
                                     </h3>
                                 </div>
                                 {mayManage && (
@@ -375,7 +407,7 @@ export default function PositionShow({ position }: PageProps) {
                                         }
                                     >
                                         <Plus className="mr-1 h-4 w-4" />
-                                        Add
+                                        {__('Add')}
                                     </Button>
                                 )}
                             </div>
@@ -407,14 +439,21 @@ export default function PositionShow({ position }: PageProps) {
                                                                 variant="outline"
                                                                 className="h-5 text-[10px] uppercase"
                                                             >
-                                                                {
-                                                                    responsibility.type
-                                                                }
+                                                                {responsibility.type ===
+                                                                'primary'
+                                                                    ? __(
+                                                                          'Primary',
+                                                                      )
+                                                                    : __(
+                                                                          'Secondary',
+                                                                      )}
                                                             </Badge>
                                                         </div>
-                                                        <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                                                        <p className="text-sm whitespace-pre-wrap text-muted-foreground">
                                                             {responsibility.description ||
-                                                                'No description provided.'}
+                                                                __(
+                                                                    'No description provided.',
+                                                                )}
                                                         </p>
                                                     </div>
                                                     {mayManage && (
@@ -451,8 +490,9 @@ export default function PositionShow({ position }: PageProps) {
                                     )
                                 ) : (
                                     <div className="rounded-xl border-2 border-dashed py-10 text-center text-sm text-muted-foreground dark:border-zinc-800">
-                                        No responsibilities defined for this
-                                        position yet.
+                                        {__(
+                                            'No responsibilities defined for this position yet.',
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -469,10 +509,12 @@ export default function PositionShow({ position }: PageProps) {
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Add Responsibility
+                                {__('Add Responsibility')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Define a new responsibility for this position.
+                                {__(
+                                    'Define a new responsibility for this position.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -481,7 +523,7 @@ export default function PositionShow({ position }: PageProps) {
                         className="grid gap-5 p-6"
                     >
                         <div className="grid gap-2">
-                            <Label htmlFor="resp_title">Title</Label>
+                            <Label htmlFor="resp_title">{__('Title')}</Label>
                             <Input
                                 id="resp_title"
                                 value={createForm.data.title}
@@ -496,7 +538,7 @@ export default function PositionShow({ position }: PageProps) {
                         </div>
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="resp_type">Type</Label>
+                                <Label htmlFor="resp_type">{__('Type')}</Label>
                                 <Select
                                     value={createForm.data.type}
                                     onValueChange={(
@@ -504,21 +546,25 @@ export default function PositionShow({ position }: PageProps) {
                                     ) => createForm.setData('type', value)}
                                 >
                                     <SelectTrigger id="resp_type">
-                                        <SelectValue placeholder="Select type" />
+                                        <SelectValue
+                                            placeholder={__('Select type')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="primary">
-                                            Primary
+                                            {__('Primary')}
                                         </SelectItem>
                                         <SelectItem value="secondary">
-                                            Secondary
+                                            {__('Secondary')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={createForm.errors.type} />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="resp_order">Order</Label>
+                                <Label htmlFor="resp_order">
+                                    {__('Order')}
+                                </Label>
                                 <Input
                                     type="number"
                                     id="resp_order"
@@ -536,7 +582,9 @@ export default function PositionShow({ position }: PageProps) {
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="resp_desc">Description</Label>
+                            <Label htmlFor="resp_desc">
+                                {__('Description')}
+                            </Label>
                             <Textarea
                                 id="resp_desc"
                                 value={createForm.data.description || ''}
@@ -560,13 +608,13 @@ export default function PositionShow({ position }: PageProps) {
                                     setIsCreatingResponsibility(false)
                                 }
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save Responsibility
+                                {__('Save Responsibility')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -581,10 +629,10 @@ export default function PositionShow({ position }: PageProps) {
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Edit Responsibility
+                                {__('Edit Responsibility')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Update the responsibility details.
+                                {__('Update the responsibility details.')}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -593,7 +641,9 @@ export default function PositionShow({ position }: PageProps) {
                         className="grid gap-5 p-6"
                     >
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_resp_title">Title</Label>
+                            <Label htmlFor="edit_resp_title">
+                                {__('Title')}
+                            </Label>
                             <Input
                                 id="edit_resp_title"
                                 value={editForm.data.title}
@@ -608,7 +658,9 @@ export default function PositionShow({ position }: PageProps) {
                         </div>
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_resp_type">Type</Label>
+                                <Label htmlFor="edit_resp_type">
+                                    {__('Type')}
+                                </Label>
                                 <Select
                                     value={editForm.data.type}
                                     onValueChange={(
@@ -616,21 +668,25 @@ export default function PositionShow({ position }: PageProps) {
                                     ) => editForm.setData('type', value)}
                                 >
                                     <SelectTrigger id="edit_resp_type">
-                                        <SelectValue placeholder="Select type" />
+                                        <SelectValue
+                                            placeholder={__('Select type')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="primary">
-                                            Primary
+                                            {__('Primary')}
                                         </SelectItem>
                                         <SelectItem value="secondary">
-                                            Secondary
+                                            {__('Secondary')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={editForm.errors.type} />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_resp_order">Order</Label>
+                                <Label htmlFor="edit_resp_order">
+                                    {__('Order')}
+                                </Label>
                                 <Input
                                     type="number"
                                     id="edit_resp_order"
@@ -648,7 +704,9 @@ export default function PositionShow({ position }: PageProps) {
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_resp_desc">Description</Label>
+                            <Label htmlFor="edit_resp_desc">
+                                {__('Description')}
+                            </Label>
                             <Textarea
                                 id="edit_resp_desc"
                                 value={editForm.data.description || ''}
@@ -668,13 +726,13 @@ export default function PositionShow({ position }: PageProps) {
                                 variant="outline"
                                 onClick={() => setEditingResponsibility(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save Responsibility
+                                {__('Save Responsibility')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -689,10 +747,11 @@ export default function PositionShow({ position }: PageProps) {
             >
                 <DialogContent className="rounded-2xl border bg-white sm:max-w-md dark:border-zinc-800 dark:bg-zinc-900">
                     <DialogHeader>
-                        <DialogTitle>Delete Responsibility</DialogTitle>
+                        <DialogTitle>{__('Delete Responsibility')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete this responsibility?
-                            This action cannot be undone.
+                            {__(
+                                'Are you sure you want to delete this responsibility? This action cannot be undone.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -701,14 +760,14 @@ export default function PositionShow({ position }: PageProps) {
                             variant="outline"
                             onClick={() => setDeletingResponsibility(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyResponsibility}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -720,11 +779,11 @@ export default function PositionShow({ position }: PageProps) {
 PositionShow.layout = {
     breadcrumbs: [
         {
-            title: 'Positions',
+            title: __('Positions'),
             href: positionsIndex(),
         },
         {
-            title: 'Detail',
+            title: __('Detail'),
             href: '',
         },
     ],

@@ -21,7 +21,7 @@ class LeaveApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $leaveRequests = LeaveRequest::whereHas('leaveApprovals', function ($query) use ($employee) {
@@ -41,7 +41,7 @@ class LeaveApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $isApprover = $leaveRequest->leaveApprovals()
@@ -49,7 +49,7 @@ class LeaveApprovalController extends Controller
             ->exists();
 
         if (! $isApprover) {
-            abort(403, 'You are not authorized to view this leave request.');
+            abort(403, __('You are not authorized to view this leave request.'));
         }
 
         $leaveRequest->load(['employee', 'leaveType', 'leaveApprovals.approver']);
@@ -64,7 +64,7 @@ class LeaveApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $validated = $request->validate([
@@ -77,7 +77,7 @@ class LeaveApprovalController extends Controller
             ->first();
 
         if (! $currentApproval || $currentApproval->approver_id !== $employee->id) {
-            abort(403, 'You are not authorized to approve this request at this stage.');
+            abort(403, __('You are not authorized to approve this request at this stage.'));
         }
 
         DB::transaction(function () use ($leaveRequest, $currentApproval, $validated) {
@@ -101,7 +101,7 @@ class LeaveApprovalController extends Controller
         });
 
         return redirect()->route('leave-approvals.index')
-            ->with('success', 'Leave request approved successfully.');
+            ->with('success', __('Leave request approved successfully.'));
     }
 
     public function reject(Request $request, LeaveRequest $leaveRequest): RedirectResponse
@@ -109,7 +109,7 @@ class LeaveApprovalController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $validated = $request->validate([
@@ -122,7 +122,7 @@ class LeaveApprovalController extends Controller
             ->first();
 
         if (! $currentApproval || $currentApproval->approver_id !== $employee->id) {
-            abort(403, 'You are not authorized to reject this request at this stage.');
+            abort(403, __('You are not authorized to reject this request at this stage.'));
         }
 
         DB::transaction(function () use ($leaveRequest, $currentApproval, $validated) {
@@ -138,6 +138,6 @@ class LeaveApprovalController extends Controller
         });
 
         return redirect()->route('leave-approvals.index')
-            ->with('success', 'Leave request rejected.');
+            ->with('success', __('Leave request rejected.'));
     }
 }

@@ -33,10 +33,10 @@ class CommitteeExpenseItemController extends Controller
         $request->session()->flash('committeeExpenseItem.id', $committeeExpenseItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee expense item created successfully.');
+            return redirect()->back()->with('success', __('Committee expense item created successfully.'));
         }
 
-        return redirect()->route('committee-expense-items.index')->with('success', 'Committee expense item created successfully.');
+        return redirect()->route('committee-expense-items.index')->with('success', __('Committee expense item created successfully.'));
     }
 
     public function show(Request $request, CommitteeExpenseItem $committeeExpenseItem): Response
@@ -62,10 +62,10 @@ class CommitteeExpenseItemController extends Controller
         $request->session()->flash('committeeExpenseItem.id', $committeeExpenseItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee expense item updated successfully.');
+            return redirect()->back()->with('success', __('Committee expense item updated successfully.'));
         }
 
-        return redirect()->route('committee-expense-items.index')->with('success', 'Committee expense item updated successfully.');
+        return redirect()->route('committee-expense-items.index')->with('success', __('Committee expense item updated successfully.'));
     }
 
     public function destroy(Request $request, CommitteeExpenseItem $committeeExpenseItem): RedirectResponse
@@ -73,9 +73,9 @@ class CommitteeExpenseItemController extends Controller
         $committeeExpenseItem->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee expense item deleted successfully.');
+            return redirect()->back()->with('success', __('Committee expense item deleted successfully.'));
         }
 
-        return redirect()->route('committee-expense-items.index')->with('success', 'Committee expense item deleted successfully.');
+        return redirect()->route('committee-expense-items.index')->with('success', __('Committee expense item deleted successfully.'));
     }
 }

@@ -41,6 +41,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { __, intlLocale } from '@/lib/i18n';
 import type { Auth, Publication, User } from '@/types';
 
 interface PageProps {
@@ -56,7 +57,13 @@ const typeColors: Record<string, string> = {
         'bg-amber-50 text-amber-700 dark:bg-amber-950/35 dark:text-amber-400',
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const typeLabels: Record<string, string> = {
+    journal: __('Journal'),
+    conference: __('Conference'),
+    unknown: __('Unknown'),
+};
+
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
 });
 
@@ -91,16 +98,18 @@ export default function PublicationShow({ publication, users }: PageProps) {
     };
 
     const handleRemoveAuthor = (authorId: string) => {
-        if (confirm('Are you sure you want to remove this author?')) {
+        if (confirm(__('Are you sure you want to remove this author?'))) {
             router.delete(authorDestroy.url(authorId));
         }
     };
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title={`Publication: ${publication.title}`} />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head
+                title={__('Publication: :title', { title: publication.title })}
+            />
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div className="flex items-center gap-4">
                     <Link href={publicationIndex().url}>
                         <Button
@@ -115,17 +124,17 @@ export default function PublicationShow({ publication, users }: PageProps) {
                         <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                             {publication.title}
                         </h1>
-                        <p className="text-muted-foreground mt-1">
-                            DOI: {publication.doi || 'N/A'}
+                        <p className="mt-1 text-muted-foreground">
+                            DOI: {publication.doi || __('N/A')}
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <Badge
                         variant="outline"
-                        className={`capitalize font-semibold py-1 px-3 text-sm ${typeColors[publication.type] || ''}`}
+                        className={`px-3 py-1 text-sm font-semibold capitalize ${typeColors[publication.type] || ''}`}
                     >
-                        {publication.type}
+                        {typeLabels[publication.type] ?? publication.type}
                     </Badge>
                 </div>
             </div>
@@ -135,24 +144,24 @@ export default function PublicationShow({ publication, users }: PageProps) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Info className="size-5 text-primary" />
-                            Publication Information
+                            {__('Publication Information')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-6">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Abstract
+                                {__('Abstract')}
                             </Label>
-                            <p className="mt-1 text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                            <p className="mt-1 leading-relaxed text-zinc-700 dark:text-zinc-300">
                                 {publication.abstract ||
-                                    'No abstract provided.'}
+                                    __('No abstract provided.')}
                             </p>
                         </div>
 
                         <div className="grid gap-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-muted-foreground">
-                                    Publication Date
+                                    {__('Publication Date')}
                                 </span>
                                 <div className="flex items-center gap-2 font-medium">
                                     <Calendar className="size-4 text-muted-foreground" />
@@ -166,24 +175,24 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                 <span className="text-sm font-medium text-muted-foreground">
                                     DOI
                                 </span>
-                                <span className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-800 dark:text-zinc-300">
+                                <span className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
                                     {publication.doi || '-'}
                                 </span>
                             </div>
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-muted-foreground">
-                                    URL
+                                    {__('URL')}
                                 </span>
                                 {publication.url ? (
                                     <a
                                         href={publication.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 font-medium text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+                                        className="flex items-center gap-2 font-medium text-indigo-600 transition-colors hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                     >
                                         <Globe className="size-4" />
-                                        Visit Publication
+                                        {__('Visit Publication')}
                                     </a>
                                 ) : (
                                     <span className="font-medium">-</span>
@@ -192,7 +201,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-muted-foreground">
-                                    Related Research
+                                    {__('Related Research')}
                                 </span>
                                 <span className="font-medium text-zinc-700 dark:text-zinc-300">
                                     {publication.research?.title || '-'}
@@ -206,13 +215,13 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                     <div className="flex items-center gap-2 text-primary">
                                         <BookOpen className="size-5" />
                                         <h4 className="font-semibold">
-                                            Journal Details
+                                            {__('Journal Details')}
                                         </h4>
                                     </div>
-                                    <div className="grid gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border dark:border-zinc-800">
+                                    <div className="grid gap-4 rounded-xl border bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Journal Name
+                                                {__('Journal Name')}
                                             </span>
                                             <span className="font-semibold text-zinc-900 dark:text-zinc-50">
                                                 {
@@ -225,11 +234,10 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                         <Separator className="opacity-50" />
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Publisher
+                                                {__('Publisher')}
                                             </span>
                                             <span className="font-medium">
-                                                {publication
-                                                    .journal_publication
+                                                {publication.journal_publication
                                                     .publisher || '-'}
                                             </span>
                                         </div>
@@ -238,16 +246,15 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                             <span className="text-sm font-medium text-muted-foreground">
                                                 ISSN
                                             </span>
-                                            <span className="font-mono text-xs bg-white dark:bg-zinc-900 px-1.5 py-0.5 rounded border dark:border-zinc-800">
-                                                {publication
-                                                    .journal_publication
+                                            <span className="rounded border bg-white px-1.5 py-0.5 font-mono text-xs dark:border-zinc-800 dark:bg-zinc-900">
+                                                {publication.journal_publication
                                                     .issn || '-'}
                                             </span>
                                         </div>
                                         <Separator className="opacity-50" />
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Indexing & Quartile
+                                                {__('Indexing & Quartile')}
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 <Badge variant="secondary">
@@ -255,10 +262,9 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                                         .journal_publication
                                                         .indexing || '-'}
                                                 </Badge>
-                                                {publication
-                                                    .journal_publication
+                                                {publication.journal_publication
                                                     .quartile && (
-                                                    <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400 hover:bg-emerald-50 border-emerald-200">
+                                                    <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50 dark:bg-emerald-950/35 dark:text-emerald-400">
                                                         {
                                                             publication
                                                                 .journal_publication
@@ -271,7 +277,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                         <Separator className="opacity-50" />
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Volume / Issue / Pages
+                                                {__('Volume / Issue / Pages')}
                                             </span>
                                             <div className="flex items-center gap-3 text-sm font-medium">
                                                 <span className="flex items-center gap-1">
@@ -312,13 +318,13 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                     <div className="flex items-center gap-2 text-primary">
                                         <Building2 className="size-5" />
                                         <h4 className="font-semibold">
-                                            Conference Details
+                                            {__('Conference Details')}
                                         </h4>
                                     </div>
-                                    <div className="grid gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border dark:border-zinc-800">
+                                    <div className="grid gap-4 rounded-xl border bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Conference Name
+                                                {__('Conference Name')}
                                             </span>
                                             <span className="font-semibold text-zinc-900 dark:text-zinc-50">
                                                 {
@@ -331,7 +337,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                         <Separator className="opacity-50" />
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Location
+                                                {__('Location')}
                                             </span>
                                             <div className="flex items-center gap-2 font-medium">
                                                 <MapPin className="size-4 text-muted-foreground" />
@@ -343,7 +349,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                         <Separator className="opacity-50" />
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Conference Date
+                                                {__('Conference Date')}
                                             </span>
                                             <div className="flex items-center gap-2 font-medium">
                                                 <Calendar className="size-4 text-muted-foreground" />
@@ -352,7 +358,9 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                                     .conference_date
                                                     ? dateFormatter.format(
                                                           new Date(
-                                                              publication.conference_proceeding.conference_date,
+                                                              publication
+                                                                  .conference_proceeding
+                                                                  .conference_date,
                                                           ),
                                                       )
                                                     : '-'}
@@ -361,10 +369,10 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                         <Separator className="opacity-50" />
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Publisher & ISBN
+                                                {__('Publisher & ISBN')}
                                             </span>
                                             <div className="flex items-center gap-3">
-                                                <span className="font-medium text-sm">
+                                                <span className="text-sm font-medium">
                                                     {publication
                                                         .conference_proceeding
                                                         .publisher || '-'}
@@ -372,7 +380,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                                 <span className="text-muted-foreground/30">
                                                     |
                                                 </span>
-                                                <span className="font-mono text-xs bg-white dark:bg-zinc-900 px-1.5 py-0.5 rounded border dark:border-zinc-800">
+                                                <span className="rounded border bg-white px-1.5 py-0.5 font-mono text-xs dark:border-zinc-800 dark:bg-zinc-900">
                                                     ISBN:{' '}
                                                     {publication
                                                         .conference_proceeding
@@ -383,7 +391,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                         <Separator className="opacity-50" />
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">
-                                                Indexing & Pages
+                                                {__('Indexing & Pages')}
                                             </span>
                                             <div className="flex items-center gap-3">
                                                 <Badge variant="secondary">
@@ -415,13 +423,13 @@ export default function PublicationShow({ publication, users }: PageProps) {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                         <CardTitle className="flex items-center gap-2 text-base font-medium">
                             <UsersIcon className="size-4 text-primary" />
-                            Authors
+                            {__('Authors')}
                         </CardTitle>
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => setIsAddingAuthor(true)}
-                            title="Add Author"
+                            title={__('Add Author')}
                             className="h-8 w-8 text-primary hover:bg-primary/10"
                         >
                             <UserPlus className="h-4 w-4" />
@@ -430,30 +438,32 @@ export default function PublicationShow({ publication, users }: PageProps) {
                     <CardContent>
                         <div className="space-y-4">
                             {publication.publication_authors
-                                ?.sort((a, b) => a.author_order - b.author_order)
+                                ?.sort(
+                                    (a, b) => a.author_order - b.author_order,
+                                )
                                 .map((author) => (
                                     <div
                                         key={author.id}
-                                        className="flex items-center justify-between gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                                        className="flex items-center justify-between gap-3 rounded-lg p-2 transition-colors hover:bg-muted/50"
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/35 dark:text-indigo-400 font-bold text-xs">
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-bold text-indigo-700 dark:bg-indigo-950/35 dark:text-indigo-400">
                                                 {author.author_order}
                                             </div>
                                             <div className="overflow-hidden">
                                                 <p className="flex items-center gap-2 truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">
                                                     {author.author?.name ||
-                                                        'Unknown'}
+                                                        __('Unknown')}
                                                     {author.is_corresponding && (
-                                                        <Badge className="h-4 px-1 py-0 text-[10px] bg-blue-50 text-blue-700 dark:bg-blue-950/35 dark:text-blue-400 border-blue-200">
-                                                            Corr.
+                                                        <Badge className="h-4 border-blue-200 bg-blue-50 px-1 py-0 text-[10px] text-blue-700 dark:bg-blue-950/35 dark:text-blue-400">
+                                                            {__('Corr.')}
                                                         </Badge>
                                                     )}
                                                 </p>
-                                                <p className="truncate text-xs text-muted-foreground font-medium">
+                                                <p className="truncate text-xs font-medium text-muted-foreground">
                                                     {author.user?.name
                                                         ? author.user.name
-                                                        : 'External Author'}
+                                                        : __('External Author')}
                                                 </p>
                                             </div>
                                         </div>
@@ -464,7 +474,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                             onClick={() =>
                                                 handleRemoveAuthor(author.id)
                                             }
-                                            title="Remove Author"
+                                            title={__('Remove Author')}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
@@ -473,10 +483,10 @@ export default function PublicationShow({ publication, users }: PageProps) {
                             {(!publication.publication_authors ||
                                 publication.publication_authors.length ===
                                     0) && (
-                                <div className="py-10 text-center space-y-2">
-                                    <UsersIcon className="h-10 w-10 mx-auto text-muted-foreground/30" />
-                                    <p className="text-sm text-muted-foreground font-medium">
-                                        No authors added yet.
+                                <div className="space-y-2 py-10 text-center">
+                                    <UsersIcon className="mx-auto h-10 w-10 text-muted-foreground/30" />
+                                    <p className="text-sm font-medium text-muted-foreground">
+                                        {__('No authors added yet.')}
                                     </p>
                                 </div>
                             )}
@@ -489,15 +499,19 @@ export default function PublicationShow({ publication, users }: PageProps) {
             <Dialog open={isAddingAuthor} onOpenChange={setIsAddingAuthor}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Add Publication Author</DialogTitle>
+                        <DialogTitle>
+                            {__('Add Publication Author')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Add an author to this publication.
+                            {__('Add an author to this publication.')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleAddAuthor}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="author_id">Author (User)</Label>
+                                <Label htmlFor="author_id">
+                                    {__('Author (User)')}
+                                </Label>
                                 <Select
                                     value={authorForm.data.author_id}
                                     onValueChange={(val) => {
@@ -509,7 +523,9 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                     }}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select an author" />
+                                        <SelectValue
+                                            placeholder={__('Select an author')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {users.map((user) => (
@@ -526,7 +542,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="author_order">
-                                        Author Order
+                                        {__('Author Order')}
                                     </Label>
                                     <Input
                                         id="author_order"
@@ -559,7 +575,7 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                             htmlFor="is_corresponding"
                                             className="cursor-pointer text-sm font-medium"
                                         >
-                                            Corresponding Author
+                                            {__('Corresponding Author')}
                                         </Label>
                                     </div>
                                 </div>
@@ -571,13 +587,13 @@ export default function PublicationShow({ publication, users }: PageProps) {
                                 variant="outline"
                                 onClick={() => setIsAddingAuthor(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={authorForm.processing}
                             >
-                                Add Author
+                                {__('Add Author')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -590,11 +606,11 @@ export default function PublicationShow({ publication, users }: PageProps) {
 PublicationShow.layout = {
     breadcrumbs: [
         {
-            title: 'Publications',
+            title: __('Publications'),
             href: publicationIndex(),
         },
         {
-            title: 'Detail',
+            title: __('Detail'),
             href: '#',
         },
     ],

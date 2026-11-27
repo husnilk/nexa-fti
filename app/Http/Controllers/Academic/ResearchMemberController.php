@@ -29,20 +29,20 @@ class ResearchMemberController extends Controller
     {
         ResearchMember::create($request->validated());
 
-        return back()->with('success', 'Member added successfully.');
+        return back()->with('success', __('Member added successfully.'));
     }
 
     public function update(ResearchMemberUpdateRequest $request, ResearchMember $researchMember): RedirectResponse
     {
         $researchMember->update($request->validated());
 
-        return back()->with('success', 'Member updated successfully.');
+        return back()->with('success', __('Member updated successfully.'));
     }
 
     public function destroy(Request $request, ResearchMember $researchMember): RedirectResponse
     {
         $researchMember->delete();
 
-        return back()->with('success', 'Member removed successfully.');
+        return back()->with('success', __('Member removed successfully.'));
     }
 }

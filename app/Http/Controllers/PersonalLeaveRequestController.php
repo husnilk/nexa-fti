@@ -23,7 +23,7 @@ class PersonalLeaveRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $leaveRequests = LeaveRequest::with(['leaveType', 'leaveApprovals.approver'])
@@ -41,7 +41,7 @@ class PersonalLeaveRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         return Inertia::render('personal-leave-requests/create', [
@@ -55,7 +55,7 @@ class PersonalLeaveRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $validated = $request->validate([
@@ -100,7 +100,7 @@ class PersonalLeaveRequestController extends Controller
         });
 
         return redirect()->route('personal-leave-requests.index')
-            ->with('success', 'Leave request submitted successfully.');
+            ->with('success', __('Leave request submitted successfully.'));
     }
 
     public function show(LeaveRequest $personalLeaveRequest): Response
@@ -108,7 +108,7 @@ class PersonalLeaveRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee || $personalLeaveRequest->employee_id !== $employee->id) {
-            abort(403, 'You are not authorized to view this leave request.');
+            abort(403, __('You are not authorized to view this leave request.'));
         }
 
         $personalLeaveRequest->load(['employee', 'leaveType', 'leaveApprovals.approver']);

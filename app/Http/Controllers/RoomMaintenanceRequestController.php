@@ -57,7 +57,7 @@ class RoomMaintenanceRequestController extends Controller
             ]);
         }
 
-        return redirect()->route('room-maintenance-requests.index')->with('success', 'Maintenance request submitted.');
+        return redirect()->route('room-maintenance-requests.index')->with('success', __('Maintenance request submitted.'));
     }
 
     public function show(RoomMaintenanceRequest $room_maintenance_request): Response
@@ -81,7 +81,7 @@ class RoomMaintenanceRequestController extends Controller
             'status' => $request->status,
         ]);
 
-        return back()->with('success', 'Request status updated to '.$request->status.'.');
+        return back()->with('success', __('Request status updated to :status.', ['status' => $request->status]));
     }
 
     public function addLog(Request $request, RoomMaintenanceRequest $room_maintenance_request): RedirectResponse
@@ -105,7 +105,7 @@ class RoomMaintenanceRequestController extends Controller
             'status' => $request->status,
         ]);
 
-        return back()->with('success', 'Log added and status updated.');
+        return back()->with('success', __('Log added and status updated.'));
     }
 
     public function verify(Request $request, RoomMaintenanceRequest $room_maintenance_request): RedirectResponse
@@ -127,7 +127,7 @@ class RoomMaintenanceRequestController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Maintenance verified and completed.');
+        return back()->with('success', __('Maintenance verified and completed.'));
     }
 
     public function destroy(RoomMaintenanceRequest $room_maintenance_request): RedirectResponse
@@ -136,6 +136,6 @@ class RoomMaintenanceRequestController extends Controller
 
         $room_maintenance_request->delete();
 
-        return redirect()->route('room-maintenance-requests.index')->with('success', 'Maintenance request deleted.');
+        return redirect()->route('room-maintenance-requests.index')->with('success', __('Maintenance request deleted.'));
     }
 }

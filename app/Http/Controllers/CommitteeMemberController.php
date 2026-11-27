@@ -33,10 +33,10 @@ class CommitteeMemberController extends Controller
         $request->session()->flash('committeeMember.id', $committeeMember->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee member created successfully.');
+            return redirect()->back()->with('success', __('Committee member created successfully.'));
         }
 
-        return redirect()->route('committee-members.index')->with('success', 'Committee member created successfully.');
+        return redirect()->route('committee-members.index')->with('success', __('Committee member created successfully.'));
     }
 
     public function show(Request $request, CommitteeMember $committeeMember): Response
@@ -62,10 +62,10 @@ class CommitteeMemberController extends Controller
         $request->session()->flash('committeeMember.id', $committeeMember->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee member updated successfully.');
+            return redirect()->back()->with('success', __('Committee member updated successfully.'));
         }
 
-        return redirect()->route('committee-members.index')->with('success', 'Committee member updated successfully.');
+        return redirect()->route('committee-members.index')->with('success', __('Committee member updated successfully.'));
     }
 
     public function destroy(Request $request, CommitteeMember $committeeMember): RedirectResponse
@@ -73,9 +73,9 @@ class CommitteeMemberController extends Controller
         $committeeMember->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee member deleted successfully.');
+            return redirect()->back()->with('success', __('Committee member deleted successfully.'));
         }
 
-        return redirect()->route('committee-members.index')->with('success', 'Committee member deleted successfully.');
+        return redirect()->route('committee-members.index')->with('success', __('Committee member deleted successfully.'));
     }
 }

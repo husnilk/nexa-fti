@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { __ } from '@/lib/i18n';
 import { home } from '@/routes';
 import { request } from '@/routes/password';
 
@@ -44,7 +45,7 @@ export default function Login({
 
     return (
         <>
-            <Head title="Log in" />
+            <Head title={__('Log in')} />
 
             <div className="grid min-h-svh lg:grid-cols-2">
                 <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -62,11 +63,12 @@ export default function Login({
                         <div className="flex w-full max-w-sm flex-col gap-6">
                             <div className="flex flex-col items-center gap-2 text-center">
                                 <h1 className="text-2xl font-bold">
-                                    Log in to your account
+                                    {__('Log in to your account')}
                                 </h1>
                                 <p className="text-sm text-balance text-muted-foreground">
-                                    Enter your email and password below to log
-                                    in
+                                    {__(
+                                        'Enter your email and password below to log in',
+                                    )}
                                 </p>
                             </div>
 
@@ -77,7 +79,7 @@ export default function Login({
                                 <div className="grid gap-6">
                                     <div className="grid gap-2">
                                         <Label htmlFor="email">
-                                            Email address
+                                            {__('Email address')}
                                         </Label>
                                         <Input
                                             id="email"
@@ -99,7 +101,7 @@ export default function Login({
                                     <div className="grid gap-2">
                                         <div className="flex items-center">
                                             <Label htmlFor="password">
-                                                Password
+                                                {__('Password')}
                                             </Label>
                                             {canResetPassword && (
                                                 <TextLink
@@ -107,7 +109,9 @@ export default function Login({
                                                     className="ml-auto text-sm"
                                                     tabIndex={5}
                                                 >
-                                                    Forgot your password?
+                                                    {__(
+                                                        'Forgot your password?',
+                                                    )}
                                                 </TextLink>
                                             )}
                                         </div>
@@ -124,7 +128,7 @@ export default function Login({
                                             required
                                             tabIndex={2}
                                             autoComplete="current-password"
-                                            placeholder="Password"
+                                            placeholder={__('Password')}
                                         />
                                         <InputError message={errors.password} />
                                     </div>
@@ -143,7 +147,7 @@ export default function Login({
                                             tabIndex={3}
                                         />
                                         <Label htmlFor="remember">
-                                            Remember me
+                                            {__('Remember me')}
                                         </Label>
                                     </div>
 
@@ -155,7 +159,7 @@ export default function Login({
                                         data-test="login-button"
                                     >
                                         {processing && <Spinner />}
-                                        Log in
+                                        {__('Log in')}
                                     </Button>
                                 </div>
                             </form>
@@ -180,3 +184,8 @@ export default function Login({
         </>
     );
 }
+
+Login.layout = {
+    title: __('Log in to your account'),
+    description: __('Enter your email and password below to log in'),
+};

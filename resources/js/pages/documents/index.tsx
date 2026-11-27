@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __ } from '@/lib/i18n';
 import { index as documentTypesIndex } from '@/routes/document-types';
 import {
     index as documentsIndex,
@@ -67,12 +68,20 @@ type PageProps = {
 };
 
 function can(auth: Auth, ability: string): boolean {
-    return auth.roles.includes('super-admin') || auth.permissions.includes(ability);
+    return (
+        auth.roles.includes('super-admin') || auth.permissions.includes(ability)
+    );
 }
 
-export default function DocumentsIndex({ documents = [], documentTypes, filters }: PageProps) {
+export default function DocumentsIndex({
+    documents = [],
+    documentTypes,
+    filters,
+}: PageProps) {
     const { auth } = usePage<PageProps>().props;
-    const [deletingDocument, setDeletingDocument] = useState<Document | null>(null);
+    const [deletingDocument, setDeletingDocument] = useState<Document | null>(
+        null,
+    );
 
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || 'all');
@@ -88,16 +97,16 @@ export default function DocumentsIndex({ documents = [], documentTypes, filters 
         const query: Record<string, string> = {};
 
         if (debouncedSearch) {
-query.search = debouncedSearch;
-}
+            query.search = debouncedSearch;
+        }
 
         if (status && status !== 'all') {
-query.status = status;
-}
+            query.status = status;
+        }
 
         if (type && type !== 'all') {
-query.type = type;
-}
+            query.type = type;
+        }
 
         router.get(documentsIndex(), query, {
             preserveState: true,
@@ -120,65 +129,72 @@ query.type = type;
     function getStatusBadge(publishStatus: string) {
         if (publishStatus === 'published') {
             return (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400">
-                    <CheckCircle className="h-3 w-3" /> Published
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400">
+                    <CheckCircle className="h-3 w-3" /> {__('Published')}
                 </span>
             );
         }
 
         if (publishStatus === 'archived') {
             return (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950/35 dark:text-amber-400">
-                    <Archive className="h-3 w-3" /> Archived
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-950/35 dark:text-amber-400">
+                    <Archive className="h-3 w-3" /> {__('Archived')}
                 </span>
             );
         }
 
         return (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/35 dark:text-blue-400">
-                <Edit3 className="h-3 w-3" /> Draft
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-950/35 dark:text-blue-400">
+                <Edit3 className="h-3 w-3" /> {__('Draft')}
             </span>
         );
     }
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title="Documents" />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('Documents')} />
 
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        Documents
+                        {__('Documents')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Access, publish, and search university documents and revisions.
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Access, publish, and search university documents and revisions.',
+                        )}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     {mayCreate && (
                         <Link href={documentCreate()}>
-                            <Button className="cursor-pointer gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-md">
-                                <Plus className="h-4 w-4" /> Add Document
+                            <Button className="cursor-pointer gap-2 bg-primary font-medium text-primary-foreground shadow-md hover:bg-primary/90">
+                                <Plus className="h-4 w-4" />{' '}
+                                {__('Add Document')}
                             </Button>
                         </Link>
                     )}
                     <Link href={documentTypesIndex()}>
-                        <Button variant="outline" className="cursor-pointer gap-2 font-medium">
-                            <ClipboardList className="h-4 w-4" /> Document Types
+                        <Button
+                            variant="outline"
+                            className="cursor-pointer gap-2 font-medium"
+                        >
+                            <ClipboardList className="h-4 w-4" />{' '}
+                            {__('Document Types')}
                         </Button>
                     </Link>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border dark:border-zinc-800">
+            <div className="flex flex-col items-center justify-between gap-4 rounded-xl border bg-zinc-50 p-4 md:flex-row dark:border-zinc-800 dark:bg-zinc-900/50">
                 <div className="relative w-full md:max-w-xs">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="search"
-                        placeholder="Search documents or number..."
-                        className="pl-9 pr-9 bg-white dark:bg-zinc-900"
+                        placeholder={__('Search documents or number...')}
+                        className="bg-white pr-9 pl-9 dark:bg-zinc-900"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -186,31 +202,31 @@ query.type = type;
                         <button
                             type="button"
                             onClick={() => setSearch('')}
-                            className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
                         >
                             <X className="h-4 w-4" />
                         </button>
                     )}
                 </div>
 
-                <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <div className="flex w-full flex-wrap gap-3 md:w-auto">
                     <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
-                        className="h-10 rounded-md border border-input bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800"
+                        className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                     >
-                        <option value="all">All Statuses</option>
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
-                        <option value="archived">Archived</option>
+                        <option value="all">{__('All Statuses')}</option>
+                        <option value="draft">{__('Draft')}</option>
+                        <option value="published">{__('Published')}</option>
+                        <option value="archived">{__('Archived')}</option>
                     </select>
 
                     <select
                         value={type}
                         onChange={(e) => setType(e.target.value)}
-                        className="h-10 rounded-md border border-input bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800"
+                        className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                     >
-                        <option value="all">All Types</option>
+                        <option value="all">{__('All Types')}</option>
                         {documentTypes.map((t) => (
                             <option key={t.id} value={t.id.toString()}>
                                 {t.name}
@@ -221,94 +237,125 @@ query.type = type;
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+            <div className="overflow-hidden rounded-2xl border bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse text-left">
                         <thead>
-                            <tr className="bg-zinc-50 dark:bg-zinc-900 border-b dark:border-zinc-800 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                <th className="py-4 px-6">Title</th>
-                                <th className="py-4 px-6 w-[140px]">Document No.</th>
-                                <th className="py-4 px-6">Type</th>
-                                <th className="py-4 px-6 w-[120px]">Organization</th>
-                                <th className="py-4 px-6 w-[140px]">Active Revision</th>
-                                <th className="py-4 px-6 text-center w-[130px]">Status</th>
-                                <th className="py-4 px-6 text-right w-[140px]">Actions</th>
+                            <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                                <th className="px-6 py-4">{__('Title')}</th>
+                                <th className="w-[140px] px-6 py-4">
+                                    {__('Document No.')}
+                                </th>
+                                <th className="px-6 py-4">{__('Type')}</th>
+                                <th className="w-[120px] px-6 py-4">
+                                    {__('Organization')}
+                                </th>
+                                <th className="w-[140px] px-6 py-4">
+                                    {__('Active Revision')}
+                                </th>
+                                <th className="w-[130px] px-6 py-4 text-center">
+                                    {__('Status')}
+                                </th>
+                                <th className="w-[140px] px-6 py-4 text-right">
+                                    {__('Actions')}
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
+                        <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
                             {documents.length > 0 ? (
                                 documents.map((doc) => {
-                                    const activeRevision = doc.document_revisions?.[0];
+                                    const activeRevision =
+                                        doc.document_revisions?.[0];
 
                                     return (
                                         <tr
                                             key={doc.id}
-                                            className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors"
+                                            className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50"
                                         >
-                                            <td className="py-4 px-6">
+                                            <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                                                    <div className="rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
                                                         <FileText className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                                                     </div>
                                                     <span
-                                                        className="font-semibold text-zinc-900 dark:text-zinc-50 line-clamp-1"
+                                                        className="line-clamp-1 font-semibold text-zinc-900 dark:text-zinc-50"
                                                         title={doc.title}
                                                     >
                                                         {doc.title}
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
-                                                <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-800 dark:text-zinc-300">
+                                            <td className="px-6 py-4">
+                                                <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
                                                     {doc.document_no || '-'}
                                                 </code>
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-700 dark:text-zinc-300">
+                                            <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
                                                 {doc.document_type.name}
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-600 dark:text-zinc-400">
-                                                <span title={doc.organization.name}>
+                                            <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
+                                                <span
+                                                    title={
+                                                        doc.organization.name
+                                                    }
+                                                >
                                                     {doc.organization.code}
                                                 </span>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="px-6 py-4">
                                                 {activeRevision ? (
                                                     <a
                                                         href={`/storage/${activeRevision.file_path}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 text-sm font-medium"
+                                                        className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
                                                     >
-                                                        Rev {activeRevision.revision_no}
+                                                        {__('Rev :number', {
+                                                            number: activeRevision.revision_no,
+                                                        })}
                                                     </a>
                                                 ) : (
-                                                    <span className="text-muted-foreground italic text-xs">
-                                                        No file
+                                                    <span className="text-xs text-muted-foreground italic">
+                                                        {__('No file')}
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="py-4 px-6 text-center">
-                                                {getStatusBadge(doc.publish_status)}
+                                            <td className="px-6 py-4 text-center">
+                                                {getStatusBadge(
+                                                    doc.publish_status,
+                                                )}
                                             </td>
-                                            <td className="py-4 px-6 text-right">
+                                            <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Link href={documentShow.url(doc.id)}>
+                                                    <Link
+                                                        href={documentShow.url(
+                                                            doc.id,
+                                                        )}
+                                                    >
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            title="View Details"
-                                                            className="cursor-pointer h-8 w-8 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                                                            title={__(
+                                                                'View Details',
+                                                            )}
+                                                            className="h-8 w-8 cursor-pointer text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
                                                         >
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
                                                     {mayUpdate && (
-                                                        <Link href={documentEdit.url(doc.id)}>
+                                                        <Link
+                                                            href={documentEdit.url(
+                                                                doc.id,
+                                                            )}
+                                                        >
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                title="Edit"
-                                                                className="cursor-pointer h-8 w-8 text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                                title={__(
+                                                                    'Edit',
+                                                                )}
+                                                                className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                             >
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
@@ -319,9 +366,13 @@ query.type = type;
                                                             type="button"
                                                             variant="ghost"
                                                             size="icon"
-                                                            title="Delete"
-                                                            onClick={() => setDeletingDocument(doc)}
-                                                            className="cursor-pointer h-8 w-8 text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
+                                                            title={__('Delete')}
+                                                            onClick={() =>
+                                                                setDeletingDocument(
+                                                                    doc,
+                                                                )
+                                                            }
+                                                            className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
@@ -333,8 +384,13 @@ query.type = type;
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={7} className="py-8 text-center text-muted-foreground">
-                                        No documents found matching the filters.
+                                    <td
+                                        colSpan={7}
+                                        className="py-8 text-center text-muted-foreground"
+                                    >
+                                        {__(
+                                            'No documents found matching the filters.',
+                                        )}
                                     </td>
                                 </tr>
                             )}
@@ -350,12 +406,17 @@ query.type = type;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Document</DialogTitle>
+                        <DialogTitle>{__('Delete Document')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm italic">
-                        Are you sure you want to delete document{' '}
-                        <strong className="text-foreground not-italic">{deletingDocument?.title}</strong>?
-                        This will also delete all associated files and revision records.
+                        {__('Are you sure you want to delete document')}{' '}
+                        <strong className="text-foreground not-italic">
+                            {deletingDocument?.title}
+                        </strong>
+                        ?{' '}
+                        {__(
+                            'This will also delete all associated files and revision records.',
+                        )}
                     </div>
                     <DialogFooter className="gap-2">
                         <Button
@@ -364,7 +425,7 @@ query.type = type;
                             onClick={() => setDeletingDocument(null)}
                             className="cursor-pointer"
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
@@ -372,7 +433,7 @@ query.type = type;
                             onClick={destroyDocument}
                             className="cursor-pointer"
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -382,5 +443,5 @@ query.type = type;
 }
 
 DocumentsIndex.layout = {
-    breadcrumbs: [{ title: 'Documents', href: documentsIndex() }],
+    breadcrumbs: [{ title: __('Documents'), href: documentsIndex() }],
 };

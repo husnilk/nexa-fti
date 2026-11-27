@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as usersIndex } from '@/routes/users';
 import type { Auth, User } from '@/types';
 
@@ -19,7 +20,7 @@ type PageProps = {
     user: UserWithRoles;
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'long',
     timeStyle: 'short',
 });
@@ -27,7 +28,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 export default function UserShow({ user }: PageProps) {
     return (
         <>
-            <Head title={`User: ${user.name}`} />
+            <Head title={__('User: :name', { name: user.name })} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex items-center gap-3 border-b pb-5 dark:border-zinc-800">
@@ -46,14 +47,18 @@ export default function UserShow({ user }: PageProps) {
                                 {user.name}
                             </h1>
                             <Badge
-                                variant={user.is_active ? 'default' : 'secondary'}
+                                variant={
+                                    user.is_active ? 'default' : 'secondary'
+                                }
                                 className="rounded-full px-3 py-1 uppercase"
                             >
-                                {user.is_active ? 'Active' : 'Inactive'}
+                                {user.is_active ? __('Active') : __('Inactive')}
                             </Badge>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            User details, role assignments, and account status.
+                            {__(
+                                'User details, role assignments, and account status.',
+                            )}
                         </p>
                     </div>
                 </div>
@@ -62,9 +67,9 @@ export default function UserShow({ user }: PageProps) {
                     <div className="space-y-6 lg:col-span-1">
                         <div className="space-y-4 rounded-2xl border bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                             <h3 className="border-b pb-3 text-lg font-bold text-zinc-900 dark:border-zinc-800 dark:text-zinc-50">
-                                General Information
+                                {__('General Information')}
                             </h3>
-                            <div className="grid gap-4 mt-4">
+                            <div className="mt-4 grid gap-4">
                                 <div className="grid grid-cols-3 border-b pb-2">
                                     <span className="text-sm font-medium text-muted-foreground">
                                         ID
@@ -78,7 +83,7 @@ export default function UserShow({ user }: PageProps) {
                                 </div>
                                 <div className="grid grid-cols-3 border-b pb-2">
                                     <span className="text-sm font-medium text-muted-foreground">
-                                        Name
+                                        {__('Name')}
                                     </span>
                                     <span className="col-span-2 text-sm text-zinc-900 dark:text-zinc-50">
                                         {user.name}
@@ -86,7 +91,7 @@ export default function UserShow({ user }: PageProps) {
                                 </div>
                                 <div className="grid grid-cols-3 border-b pb-2">
                                     <span className="text-sm font-medium text-muted-foreground">
-                                        Email
+                                        {__('Email')}
                                     </span>
                                     <span className="col-span-2 text-sm text-zinc-900 dark:text-zinc-50">
                                         {user.email}
@@ -94,7 +99,7 @@ export default function UserShow({ user }: PageProps) {
                                 </div>
                                 <div className="grid grid-cols-3 border-b pb-2">
                                     <span className="text-sm font-medium text-muted-foreground">
-                                        Joined
+                                        {__('Joined')}
                                     </span>
                                     <span className="col-span-2 text-sm text-zinc-900 dark:text-zinc-50">
                                         {dateFormatter.format(
@@ -109,7 +114,7 @@ export default function UserShow({ user }: PageProps) {
                     <div className="space-y-6 lg:col-span-3">
                         <div className="rounded-2xl border bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                             <h3 className="border-b pb-3 text-lg font-bold text-zinc-900 dark:border-zinc-800 dark:text-zinc-50">
-                                Roles & Access
+                                {__('Roles & Access')}
                             </h3>
                             <div className="mt-4 flex flex-wrap gap-2">
                                 {user.roles.length > 0 ? (
@@ -124,7 +129,7 @@ export default function UserShow({ user }: PageProps) {
                                     ))
                                 ) : (
                                     <span className="text-sm text-muted-foreground">
-                                        No roles assigned.
+                                        {__('No roles assigned.')}
                                     </span>
                                 )}
                             </div>
@@ -139,11 +144,11 @@ export default function UserShow({ user }: PageProps) {
 UserShow.layout = {
     breadcrumbs: [
         {
-            title: 'Users',
+            title: __('Users'),
             href: usersIndex(),
         },
         {
-            title: 'Detail',
+            title: __('Detail'),
             href: '',
         },
     ],

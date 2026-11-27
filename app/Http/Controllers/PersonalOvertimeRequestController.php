@@ -22,7 +22,7 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $overtimeRequests = OvertimeRequest::with(['requester', 'approver'])
@@ -46,7 +46,7 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         return Inertia::render('personal-overtime-requests/create', [
@@ -60,7 +60,7 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $validated = $request->validate([
@@ -102,7 +102,7 @@ class PersonalOvertimeRequestController extends Controller
         });
 
         return redirect()->route('personal-overtime-requests.index')
-            ->with('success', 'Overtime request submitted successfully.');
+            ->with('success', __('Overtime request submitted successfully.'));
     }
 
     public function show(OvertimeRequest $personalOvertimeRequest): Response
@@ -110,14 +110,14 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $isMember = $personalOvertimeRequest->members()->where('employee_id', $employee->id)->exists();
         $isSubmitter = $personalOvertimeRequest->submitted_by === $employee->id;
 
         if (! $isSubmitter && ! $isMember) {
-            abort(403, 'You are not authorized to view this overtime request.');
+            abort(403, __('You are not authorized to view this overtime request.'));
         }
 
         $personalOvertimeRequest->load(['requester', 'approver', 'members.employee', 'approvalLogs.approver']);
@@ -133,15 +133,15 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         if ($personalOvertimeRequest->submitted_by !== $employee->id) {
-            abort(403, 'You are not authorized to edit this overtime request.');
+            abort(403, __('You are not authorized to edit this overtime request.'));
         }
 
         if ($personalOvertimeRequest->status !== 'pending') {
-            abort(400, 'Only pending overtime requests can be modified.');
+            abort(400, __('Only pending overtime requests can be modified.'));
         }
 
         $personalOvertimeRequest->load('members');
@@ -158,15 +158,15 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         if ($personalOvertimeRequest->submitted_by !== $employee->id) {
-            abort(403, 'You are not authorized to update this overtime request.');
+            abort(403, __('You are not authorized to update this overtime request.'));
         }
 
         if ($personalOvertimeRequest->status !== 'pending') {
-            abort(400, 'Only pending overtime requests can be modified.');
+            abort(400, __('Only pending overtime requests can be modified.'));
         }
 
         $validated = $request->validate([
@@ -204,7 +204,7 @@ class PersonalOvertimeRequestController extends Controller
         });
 
         return redirect()->route('personal-overtime-requests.show', $personalOvertimeRequest->id)
-            ->with('success', 'Overtime request updated successfully.');
+            ->with('success', __('Overtime request updated successfully.'));
     }
 
     public function destroy(OvertimeRequest $personalOvertimeRequest): RedirectResponse
@@ -212,21 +212,21 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         if ($personalOvertimeRequest->submitted_by !== $employee->id) {
-            abort(403, 'You are not authorized to delete this overtime request.');
+            abort(403, __('You are not authorized to delete this overtime request.'));
         }
 
         if ($personalOvertimeRequest->status !== 'pending') {
-            abort(400, 'Only pending overtime requests can be deleted.');
+            abort(400, __('Only pending overtime requests can be deleted.'));
         }
 
         $personalOvertimeRequest->delete();
 
         return redirect()->route('personal-overtime-requests.index')
-            ->with('success', 'Overtime request cancelled and deleted successfully.');
+            ->with('success', __('Overtime request cancelled and deleted successfully.'));
     }
 
     public function report(OvertimeRequest $personalOvertimeRequest): RedirectResponse
@@ -249,17 +249,17 @@ class PersonalOvertimeRequestController extends Controller
         $employee = auth()->user()->employee;
 
         if (! $employee) {
-            abort(403, 'You do not have an employee profile associated with your user account.');
+            abort(403, __('You do not have an employee profile associated with your user account.'));
         }
 
         $member = $personalOvertimeRequest->members()->where('employee_id', $employee->id)->first();
 
         if (! $member) {
-            abort(403, 'You are not a member of this overtime request.');
+            abort(403, __('You are not a member of this overtime request.'));
         }
 
         if ($personalOvertimeRequest->status !== 'approved') {
-            abort(400, 'Overtime report can only be submitted for approved requests.');
+            abort(400, __('Overtime report can only be submitted for approved requests.'));
         }
 
         $validated = $request->validate([
@@ -292,6 +292,6 @@ class PersonalOvertimeRequestController extends Controller
         });
 
         return redirect()->route('personal-overtime-requests.show', $personalOvertimeRequest->id)
-            ->with('success', 'Your overtime report submitted successfully.');
+            ->with('success', __('Your overtime report submitted successfully.'));
     }
 }

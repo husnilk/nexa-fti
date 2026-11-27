@@ -33,10 +33,10 @@ class CommitteeDocumentController extends Controller
         $request->session()->flash('committeeDocument.id', $committeeDocument->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee document created successfully.');
+            return redirect()->back()->with('success', __('Committee document created successfully.'));
         }
 
-        return redirect()->route('committee-documents.index')->with('success', 'Committee document created successfully.');
+        return redirect()->route('committee-documents.index')->with('success', __('Committee document created successfully.'));
     }
 
     public function show(Request $request, CommitteeDocument $committeeDocument): Response
@@ -62,10 +62,10 @@ class CommitteeDocumentController extends Controller
         $request->session()->flash('committeeDocument.id', $committeeDocument->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee document updated successfully.');
+            return redirect()->back()->with('success', __('Committee document updated successfully.'));
         }
 
-        return redirect()->route('committee-documents.index')->with('success', 'Committee document updated successfully.');
+        return redirect()->route('committee-documents.index')->with('success', __('Committee document updated successfully.'));
     }
 
     public function destroy(Request $request, CommitteeDocument $committeeDocument): RedirectResponse
@@ -73,9 +73,9 @@ class CommitteeDocumentController extends Controller
         $committeeDocument->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee document deleted successfully.');
+            return redirect()->back()->with('success', __('Committee document deleted successfully.'));
         }
 
-        return redirect()->route('committee-documents.index')->with('success', 'Committee document deleted successfully.');
+        return redirect()->route('committee-documents.index')->with('success', __('Committee document deleted successfully.'));
     }
 }

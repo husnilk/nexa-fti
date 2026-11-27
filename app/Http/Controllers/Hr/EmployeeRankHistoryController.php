@@ -35,7 +35,7 @@ class EmployeeRankHistoryController extends Controller
 
         EmployeeRankHistory::create($validated);
 
-        return redirect()->back()->with('success', 'Rank history added successfully.');
+        return redirect()->back()->with('success', __('Rank history added successfully.'));
     }
 
     public function update(Request $request, EmployeeRankHistory $rankHistory): RedirectResponse
@@ -60,7 +60,7 @@ class EmployeeRankHistoryController extends Controller
 
         $rankHistory->update($validated);
 
-        return redirect()->back()->with('success', 'Rank history updated successfully.');
+        return redirect()->back()->with('success', __('Rank history updated successfully.'));
     }
 
     public function destroy(EmployeeRankHistory $rankHistory): RedirectResponse
@@ -71,6 +71,6 @@ class EmployeeRankHistoryController extends Controller
 
         $rankHistory->delete();
 
-        return redirect()->back()->with('success', 'Rank history removed successfully.');
+        return redirect()->back()->with('success', __('Rank history removed successfully.'));
     }
 }

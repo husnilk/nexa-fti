@@ -32,7 +32,7 @@ class ItemCategoryController extends Controller
 
         ItemCategory::create($validated);
 
-        return back()->with('success', 'Category created successfully.');
+        return back()->with('success', __('Category created successfully.'));
     }
 
     public function update(Request $request, ItemCategory $itemCategory): RedirectResponse
@@ -44,13 +44,13 @@ class ItemCategoryController extends Controller
 
         $itemCategory->update($validated);
 
-        return back()->with('success', 'Category updated successfully.');
+        return back()->with('success', __('Category updated successfully.'));
     }
 
     public function destroy(ItemCategory $itemCategory): RedirectResponse
     {
         $itemCategory->delete();
 
-        return back()->with('success', 'Category deleted successfully.');
+        return back()->with('success', __('Category deleted successfully.'));
     }
 }

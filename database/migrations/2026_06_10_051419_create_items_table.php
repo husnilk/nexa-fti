@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('unit');
             $table->integer('minimal_quantity')->default(0);
             $table->text('description')->nullable();
+            $table->string('picture')->nullable();
             $table->timestamps();
         });
 

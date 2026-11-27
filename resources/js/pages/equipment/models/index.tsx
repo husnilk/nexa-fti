@@ -19,8 +19,15 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import { index as equipmentCategoryIndex } from '@/routes/equipment-categories';
 import type { Auth, EquipmentCategory, EquipmentModel } from '@/types';
 
@@ -36,11 +43,18 @@ function can(auth: Auth, ability: string): boolean {
     );
 }
 
-export default function EquipmentModelIndex({ equipmentModels = [], categories = [] }: PageProps) {
+export default function EquipmentModelIndex({
+    equipmentModels = [],
+    categories = [],
+}: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const [isCreating, setIsCreating] = useState(false);
-    const [editingModel, setEditingModel] = useState<EquipmentModel | null>(null);
-    const [deletingModel, setDeletingModel] = useState<EquipmentModel | null>(null);
+    const [editingModel, setEditingModel] = useState<EquipmentModel | null>(
+        null,
+    );
+    const [deletingModel, setDeletingModel] = useState<EquipmentModel | null>(
+        null,
+    );
     const [searchTerm, setSearchTerm] = useState('');
 
     const mayManage = can(auth, 'equipment.manage');
@@ -77,8 +91,8 @@ export default function EquipmentModelIndex({ equipmentModels = [], categories =
         e.preventDefault();
 
         if (!editingModel) {
-return;
-}
+            return;
+        }
 
         editForm.patch(update.url(editingModel.id), {
             onSuccess: () => {
@@ -90,8 +104,8 @@ return;
 
     const handleDelete = () => {
         if (!deletingModel) {
-return;
-}
+            return;
+        }
 
         router.delete(destroy.url(deletingModel.id), {
             onSuccess: () => setDeletingModel(null),
@@ -118,25 +132,29 @@ return;
 
     return (
         <>
-            <Head title="Equipment Models" />
+            <Head title={__('Equipment Models')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title="Equipment Models"
-                        description="Manage models for equipment assets."
+                        title={__('Equipment Models')}
+                        description={__('Manage models for equipment assets.')}
                     />
                     <div className="flex items-center gap-2">
                         {mayManage && (
                             <Link href={equipmentCategoryIndex()}>
-                                <Button variant="outline" className="cursor-pointer gap-2">
-                                    <FolderGit2 className="h-4 w-4" /> Categories
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer gap-2"
+                                >
+                                    <FolderGit2 className="h-4 w-4" />{' '}
+                                    {__('Categories')}
                                 </Button>
                             </Link>
                         )}
                         <Button onClick={() => setIsCreating(true)}>
                             <Plus className="mr-2 h-4 w-4" />
-                            Add Model
+                            {__('Add Model')}
                         </Button>
                     </div>
                 </div>
@@ -145,7 +163,7 @@ return;
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search models..."
+                            placeholder={__('Search models...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -157,26 +175,57 @@ return;
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Category</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Manufacturer</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Brand</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Model Name</th>
-                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Category')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Manufacturer')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Brand')}
+                                </th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                    {__('Model Name')}
+                                </th>
+                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                                    {__('Actions')}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredModels.map((model) => (
-                                <tr key={model.id} className="border-b transition-colors hover:bg-muted/50">
-                                    <td className="p-4 align-middle">{model.equipment_category?.name || '-'}</td>
-                                    <td className="p-4 align-middle">{model.manufacturer}</td>
-                                    <td className="p-4 align-middle">{model.brand}</td>
-                                    <td className="p-4 align-middle font-medium">{model.model_name}</td>
+                                <tr
+                                    key={model.id}
+                                    className="border-b transition-colors hover:bg-muted/50"
+                                >
+                                    <td className="p-4 align-middle">
+                                        {model.equipment_category?.name || '-'}
+                                    </td>
+                                    <td className="p-4 align-middle">
+                                        {model.manufacturer}
+                                    </td>
+                                    <td className="p-4 align-middle">
+                                        {model.brand}
+                                    </td>
+                                    <td className="p-4 align-middle font-medium">
+                                        {model.model_name}
+                                    </td>
                                     <td className="p-4 text-right align-middle">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => openEdit(model)}>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => openEdit(model)}
+                                            >
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => setDeletingModel(model)}>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() =>
+                                                    setDeletingModel(model)
+                                                }
+                                            >
                                                 <Trash2 className="h-4 w-4 text-destructive" />
                                             </Button>
                                         </div>
@@ -185,7 +234,12 @@ return;
                             ))}
                             {filteredModels.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="p-8 text-center text-muted-foreground">No models found.</td>
+                                    <td
+                                        colSpan={5}
+                                        className="p-8 text-center text-muted-foreground"
+                                    >
+                                        {__('No models found.')}
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
@@ -197,23 +251,39 @@ return;
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
-                        <DialogTitle>Add New Model</DialogTitle>
-                        <DialogDescription>Enter details for the new equipment model.</DialogDescription>
+                        <DialogTitle>{__('Add New Model')}</DialogTitle>
+                        <DialogDescription>
+                            {__('Enter details for the new equipment model.')}
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="category">Category</Label>
+                                <Label htmlFor="category">
+                                    {__('Category')}
+                                </Label>
                                 <Select
-                                    onValueChange={(value) => createForm.setData('equipment_category_id', value)}
-                                    value={createForm.data.equipment_category_id}
+                                    onValueChange={(value) =>
+                                        createForm.setData(
+                                            'equipment_category_id',
+                                            value,
+                                        )
+                                    }
+                                    value={
+                                        createForm.data.equipment_category_id
+                                    }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select category" />
+                                        <SelectValue
+                                            placeholder={__('Select category')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {categories.map((cat) => (
-                                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                                            <SelectItem
+                                                key={cat.id}
+                                                value={cat.id.toString()}
+                                            >
                                                 {cat.name}
                                             </SelectItem>
                                         ))}
@@ -222,80 +292,141 @@ return;
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="manufacturer">Manufacturer</Label>
+                                    <Label htmlFor="manufacturer">
+                                        {__('Manufacturer')}
+                                    </Label>
                                     <Input
                                         id="manufacturer"
                                         value={createForm.data.manufacturer}
-                                        onChange={(e) => createForm.setData('manufacturer', e.target.value)}
+                                        onChange={(e) =>
+                                            createForm.setData(
+                                                'manufacturer',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="brand">Brand</Label>
+                                    <Label htmlFor="brand">{__('Brand')}</Label>
                                     <Input
                                         id="brand"
                                         value={createForm.data.brand}
-                                        onChange={(e) => createForm.setData('brand', e.target.value)}
+                                        onChange={(e) =>
+                                            createForm.setData(
+                                                'brand',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="model_name">Model Name</Label>
+                                <Label htmlFor="model_name">
+                                    {__('Model Name')}
+                                </Label>
                                 <Input
                                     id="model_name"
                                     value={createForm.data.model_name}
-                                    onChange={(e) => createForm.setData('model_name', e.target.value)}
+                                    onChange={(e) =>
+                                        createForm.setData(
+                                            'model_name',
+                                            e.target.value,
+                                        )
+                                    }
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="useful_life">Default Useful Life (years)</Label>
+                                <Label htmlFor="useful_life">
+                                    {__('Default Useful Life (years)')}
+                                </Label>
                                 <Input
                                     id="useful_life"
                                     type="number"
                                     value={createForm.data.default_useful_life}
-                                    onChange={(e) => createForm.setData('default_useful_life', e.target.value)}
+                                    onChange={(e) =>
+                                        createForm.setData(
+                                            'default_useful_life',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="specification">Specification</Label>
+                                <Label htmlFor="specification">
+                                    {__('Specification')}
+                                </Label>
                                 <Textarea
                                     id="specification"
                                     value={createForm.data.specification}
-                                    onChange={(e) => createForm.setData('specification', e.target.value)}
+                                    onChange={(e) =>
+                                        createForm.setData(
+                                            'specification',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
-                            <Button type="submit" disabled={createForm.processing}>Save</Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsCreating(false)}
+                            >
+                                {__('Cancel')}
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={createForm.processing}
+                            >
+                                {__('Save')}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
 
             {/* Edit Dialog */}
-            <Dialog open={!!editingModel} onOpenChange={() => setEditingModel(null)}>
+            <Dialog
+                open={!!editingModel}
+                onOpenChange={() => setEditingModel(null)}
+            >
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
-                        <DialogTitle>Edit Model</DialogTitle>
-                        <DialogDescription>Update the model details.</DialogDescription>
+                        <DialogTitle>{__('Edit Model')}</DialogTitle>
+                        <DialogDescription>
+                            {__('Update the model details.')}
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-category">Category</Label>
+                                <Label htmlFor="edit-category">
+                                    {__('Category')}
+                                </Label>
                                 <Select
-                                    onValueChange={(value) => editForm.setData('equipment_category_id', value)}
+                                    onValueChange={(value) =>
+                                        editForm.setData(
+                                            'equipment_category_id',
+                                            value,
+                                        )
+                                    }
                                     value={editForm.data.equipment_category_id}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select category" />
+                                        <SelectValue
+                                            placeholder={__('Select category')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {categories.map((cat) => (
-                                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                                            <SelectItem
+                                                key={cat.id}
+                                                value={cat.id.toString()}
+                                            >
                                                 {cat.name}
                                             </SelectItem>
                                         ))}
@@ -304,71 +435,130 @@ return;
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="edit-manufacturer">Manufacturer</Label>
+                                    <Label htmlFor="edit-manufacturer">
+                                        {__('Manufacturer')}
+                                    </Label>
                                     <Input
                                         id="edit-manufacturer"
                                         value={editForm.data.manufacturer}
-                                        onChange={(e) => editForm.setData('manufacturer', e.target.value)}
+                                        onChange={(e) =>
+                                            editForm.setData(
+                                                'manufacturer',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="edit-brand">Brand</Label>
+                                    <Label htmlFor="edit-brand">
+                                        {__('Brand')}
+                                    </Label>
                                     <Input
                                         id="edit-brand"
                                         value={editForm.data.brand}
-                                        onChange={(e) => editForm.setData('brand', e.target.value)}
+                                        onChange={(e) =>
+                                            editForm.setData(
+                                                'brand',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-model_name">Model Name</Label>
+                                <Label htmlFor="edit-model_name">
+                                    {__('Model Name')}
+                                </Label>
                                 <Input
                                     id="edit-model_name"
                                     value={editForm.data.model_name}
-                                    onChange={(e) => editForm.setData('model_name', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData(
+                                            'model_name',
+                                            e.target.value,
+                                        )
+                                    }
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-useful_life">Default Useful Life (years)</Label>
+                                <Label htmlFor="edit-useful_life">
+                                    {__('Default Useful Life (years)')}
+                                </Label>
                                 <Input
                                     id="edit-useful_life"
                                     type="number"
                                     value={editForm.data.default_useful_life}
-                                    onChange={(e) => editForm.setData('default_useful_life', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData(
+                                            'default_useful_life',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-specification">Specification</Label>
+                                <Label htmlFor="edit-specification">
+                                    {__('Specification')}
+                                </Label>
                                 <Textarea
                                     id="edit-specification"
                                     value={editForm.data.specification}
-                                    onChange={(e) => editForm.setData('specification', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData(
+                                            'specification',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setEditingModel(null)}>Cancel</Button>
-                            <Button type="submit" disabled={editForm.processing}>Update</Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setEditingModel(null)}
+                            >
+                                {__('Cancel')}
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={editForm.processing}
+                            >
+                                {__('Update')}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
 
             {/* Delete Dialog */}
-            <Dialog open={!!deletingModel} onOpenChange={() => setDeletingModel(null)}>
+            <Dialog
+                open={!!deletingModel}
+                onOpenChange={() => setDeletingModel(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Model</DialogTitle>
+                        <DialogTitle>{__('Delete Model')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete "{deletingModel?.model_name}"? This action cannot be undone.
+                            {__(
+                                'Are you sure you want to delete ":name"? This action cannot be undone.',
+                                { name: deletingModel?.model_name ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeletingModel(null)}>Cancel</Button>
-                        <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeletingModel(null)}
+                        >
+                            {__('Cancel')}
+                        </Button>
+                        <Button variant="destructive" onClick={handleDelete}>
+                            {__('Delete')}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -378,7 +568,7 @@ return;
 
 EquipmentModelIndex.layout = {
     breadcrumbs: [
-        { title: 'Equipment', href: '#' },
-        { title: 'Models', href: modelIndex() },
+        { title: __('Equipment'), href: '#' },
+        { title: __('Models'), href: modelIndex() },
     ],
 };

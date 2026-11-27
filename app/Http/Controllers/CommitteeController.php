@@ -44,7 +44,7 @@ class CommitteeController extends Controller
 
         $request->session()->flash('committee.id', $committee->id);
 
-        return redirect()->route('committees.index')->with('success', 'Committee created successfully.');
+        return redirect()->route('committees.index')->with('success', __('Committee created successfully.'));
     }
 
     public function show(Request $request, Committee $committee): Response
@@ -93,13 +93,13 @@ class CommitteeController extends Controller
 
         $request->session()->flash('committee.id', $committee->id);
 
-        return redirect()->route('committees.index')->with('success', 'Committee updated successfully.');
+        return redirect()->route('committees.index')->with('success', __('Committee updated successfully.'));
     }
 
     public function destroy(Request $request, Committee $committee): RedirectResponse
     {
         $committee->delete();
 
-        return redirect()->route('committees.index')->with('success', 'Committee deleted successfully.');
+        return redirect()->route('committees.index')->with('success', __('Committee deleted successfully.'));
     }
 }

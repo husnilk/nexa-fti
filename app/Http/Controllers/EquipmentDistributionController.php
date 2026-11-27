@@ -40,7 +40,7 @@ class EquipmentDistributionController extends Controller
         EquipmentDistribution::create($request->validated());
 
         return redirect()->route('equipment-distributions.index')
-            ->with('success', 'Equipment distributed successfully.');
+            ->with('success', __('Equipment distributed successfully.'));
     }
 
     public function show(Request $request, EquipmentDistribution $equipmentDistribution): Response
@@ -54,7 +54,7 @@ class EquipmentDistributionController extends Controller
     {
         if ($equipmentDistribution->status !== 'pending') {
             return redirect()->route('equipment-distributions.index')
-                ->with('error', 'Only pending distributions can be edited.');
+                ->with('error', __('Only pending distributions can be edited.'));
         }
 
         return Inertia::render('equipment/distributions/edit', [
@@ -69,26 +69,26 @@ class EquipmentDistributionController extends Controller
     {
         if ($equipmentDistribution->status !== 'pending') {
             return redirect()->route('equipment-distributions.index')
-                ->with('error', 'Only pending distributions can be updated.');
+                ->with('error', __('Only pending distributions can be updated.'));
         }
 
         $equipmentDistribution->update($request->validated());
 
         return redirect()->route('equipment-distributions.index')
-            ->with('success', 'Distribution updated successfully.');
+            ->with('success', __('Distribution updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentDistribution $equipmentDistribution): RedirectResponse
     {
         if ($equipmentDistribution->status !== 'pending' && $equipmentDistribution->status !== 'rejected') {
             return redirect()->route('equipment-distributions.index')
-                ->with('error', 'Only pending or rejected distributions can be deleted.');
+                ->with('error', __('Only pending or rejected distributions can be deleted.'));
         }
 
         $equipmentDistribution->delete();
 
         return redirect()->route('equipment-distributions.index')
-            ->with('success', 'Distribution deleted successfully.');
+            ->with('success', __('Distribution deleted successfully.'));
     }
 
     public function accept(Request $request, EquipmentDistribution $equipmentDistribution): RedirectResponse
@@ -100,17 +100,17 @@ class EquipmentDistributionController extends Controller
         $isRoomResponsible = $equipmentDistribution->room?->responsible_employee_id === $employeeId;
 
         if (! $isRecipient && ! $isRoomResponsible) {
-            return redirect()->back()->with('error', 'You are not authorized to accept this equipment.');
+            return redirect()->back()->with('error', __('You are not authorized to accept this equipment.'));
         }
 
         if ($equipmentDistribution->status !== 'pending') {
-            return redirect()->back()->with('error', 'This distribution is not in pending state.');
+            return redirect()->back()->with('error', __('This distribution is not in pending state.'));
         }
 
         $equipmentDistribution->update(['status' => 'accepted']);
         $equipmentDistribution->equipment->update(['status' => 'in_use']);
 
-        return redirect()->back()->with('success', 'Equipment accepted successfully.');
+        return redirect()->back()->with('success', __('Equipment accepted successfully.'));
     }
 
     public function reject(Request $request, EquipmentDistribution $equipmentDistribution): RedirectResponse
@@ -121,11 +121,11 @@ class EquipmentDistributionController extends Controller
         $isRoomResponsible = $equipmentDistribution->room?->responsible_employee_id === $employeeId;
 
         if (! $isRecipient && ! $isRoomResponsible) {
-            return redirect()->back()->with('error', 'You are not authorized to reject this equipment.');
+            return redirect()->back()->with('error', __('You are not authorized to reject this equipment.'));
         }
 
         if ($equipmentDistribution->status !== 'pending') {
-            return redirect()->back()->with('error', 'This distribution is not in pending state.');
+            return redirect()->back()->with('error', __('This distribution is not in pending state.'));
         }
 
         $request->validate(['notes' => 'required|string']);
@@ -135,7 +135,7 @@ class EquipmentDistributionController extends Controller
             'notes' => $request->notes,
         ]);
 
-        return redirect()->back()->with('success', 'Equipment rejected successfully.');
+        return redirect()->back()->with('success', __('Equipment rejected successfully.'));
     }
 
     public function return(Request $request, EquipmentDistribution $equipmentDistribution): RedirectResponse
@@ -146,11 +146,11 @@ class EquipmentDistributionController extends Controller
         $isRoomResponsible = $equipmentDistribution->room?->responsible_employee_id === $employeeId;
 
         if (! $isRecipient && ! $isRoomResponsible) {
-            return redirect()->back()->with('error', 'You are not authorized to return this equipment.');
+            return redirect()->back()->with('error', __('You are not authorized to return this equipment.'));
         }
 
         if ($equipmentDistribution->status !== 'accepted') {
-            return redirect()->back()->with('error', 'Only accepted equipment can be returned.');
+            return redirect()->back()->with('error', __('Only accepted equipment can be returned.'));
         }
 
         $equipmentDistribution->update([
@@ -160,6 +160,6 @@ class EquipmentDistributionController extends Controller
 
         $equipmentDistribution->equipment->update(['status' => 'available']);
 
-        return redirect()->back()->with('success', 'Equipment returned successfully.');
+        return redirect()->back()->with('success', __('Equipment returned successfully.'));
     }
 }

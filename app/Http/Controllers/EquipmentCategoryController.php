@@ -30,7 +30,7 @@ class EquipmentCategoryController extends Controller
     {
         EquipmentCategory::create($request->validated());
 
-        return redirect()->route('equipment-categories.index')->with('success', 'Equipment category created successfully.');
+        return redirect()->route('equipment-categories.index')->with('success', __('Equipment category created successfully.'));
     }
 
     public function show(Request $request, EquipmentCategory $equipmentCategory): Response
@@ -51,13 +51,13 @@ class EquipmentCategoryController extends Controller
     {
         $equipmentCategory->update($request->validated());
 
-        return redirect()->route('equipment-categories.index')->with('success', 'Equipment category updated successfully.');
+        return redirect()->route('equipment-categories.index')->with('success', __('Equipment category updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentCategory $equipmentCategory): RedirectResponse
     {
         $equipmentCategory->delete();
 
-        return redirect()->route('equipment-categories.index')->with('success', 'Equipment category deleted successfully.');
+        return redirect()->route('equipment-categories.index')->with('success', __('Equipment category deleted successfully.'));
     }
 }

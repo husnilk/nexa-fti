@@ -33,7 +33,7 @@ class EquipmentController extends Controller
     {
         Equipment::create($request->validated());
 
-        return redirect()->route('equipment.index')->with('success', 'Equipment created successfully.');
+        return redirect()->route('equipment.index')->with('success', __('Equipment created successfully.'));
     }
 
     public function show(Request $request, Equipment $equipment): Response
@@ -55,13 +55,13 @@ class EquipmentController extends Controller
     {
         $equipment->update($request->validated());
 
-        return redirect()->route('equipment.index')->with('success', 'Equipment updated successfully.');
+        return redirect()->route('equipment.index')->with('success', __('Equipment updated successfully.'));
     }
 
     public function destroy(Request $request, Equipment $equipment): RedirectResponse
     {
         $equipment->delete();
 
-        return redirect()->route('equipment.index')->with('success', 'Equipment deleted successfully.');
+        return redirect()->route('equipment.index')->with('success', __('Equipment deleted successfully.'));
     }
 }

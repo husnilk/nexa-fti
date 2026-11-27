@@ -49,7 +49,7 @@ class EmployeeRankController extends Controller
         EmployeeRank::create($validated);
 
         return redirect()->route('employee-ranks.index')
-            ->with('success', 'Employee rank created successfully.');
+            ->with('success', __('Employee rank created successfully.'));
     }
 
     public function update(Request $request, EmployeeRank $employeeRank): RedirectResponse
@@ -64,18 +64,18 @@ class EmployeeRankController extends Controller
         $employeeRank->update($validated);
 
         return redirect()->route('employee-ranks.index')
-            ->with('success', 'Employee rank updated successfully.');
+            ->with('success', __('Employee rank updated successfully.'));
     }
 
     public function destroy(EmployeeRank $employeeRank): RedirectResponse
     {
         if ($employeeRank->histories()->exists()) {
-            return redirect()->back()->with('error', 'Cannot delete employee rank because it has rank histories associated.');
+            return redirect()->back()->with('error', __('Cannot delete employee rank because it has rank histories associated.'));
         }
 
         $employeeRank->delete();
 
         return redirect()->route('employee-ranks.index')
-            ->with('success', 'Employee rank deleted successfully.');
+            ->with('success', __('Employee rank deleted successfully.'));
     }
 }

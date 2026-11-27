@@ -38,8 +38,8 @@ return new class extends Migration
 
         Schema::create('lecturers', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('academic_rank');
-            $table->uuid('functional_position_id');
+            $table->string('academic_rank')->nullable();
+            $table->uuid('functional_position_id')->nullable();
             $table->string('nuptk')->nullable();
             $table->text('expertise')->nullable();
             $table->timestamps();
@@ -50,7 +50,7 @@ return new class extends Migration
 
         Schema::create('staff', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('position_id');
+            $table->uuid('position_id')->nullable();
             $table->text('skills')->nullable();
             $table->timestamps();
 

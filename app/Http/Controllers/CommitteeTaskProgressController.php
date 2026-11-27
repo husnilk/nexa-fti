@@ -33,10 +33,10 @@ class CommitteeTaskProgressController extends Controller
         $request->session()->flash('committeeTaskProgress.id', $committeeTaskProgress->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee task progress created successfully.');
+            return redirect()->back()->with('success', __('Committee task progress created successfully.'));
         }
 
-        return redirect()->route('committee-task-progresses.index')->with('success', 'Committee task progress created successfully.');
+        return redirect()->route('committee-task-progresses.index')->with('success', __('Committee task progress created successfully.'));
     }
 
     public function show(Request $request, CommitteeTaskProgress $committeeTaskProgress): Response
@@ -62,10 +62,10 @@ class CommitteeTaskProgressController extends Controller
         $request->session()->flash('committeeTaskProgress.id', $committeeTaskProgress->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee task progress updated successfully.');
+            return redirect()->back()->with('success', __('Committee task progress updated successfully.'));
         }
 
-        return redirect()->route('committee-task-progresses.index')->with('success', 'Committee task progress updated successfully.');
+        return redirect()->route('committee-task-progresses.index')->with('success', __('Committee task progress updated successfully.'));
     }
 
     public function destroy(Request $request, CommitteeTaskProgress $committeeTaskProgress): RedirectResponse
@@ -73,9 +73,9 @@ class CommitteeTaskProgressController extends Controller
         $committeeTaskProgress->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee task progress deleted successfully.');
+            return redirect()->back()->with('success', __('Committee task progress deleted successfully.'));
         }
 
-        return redirect()->route('committee-task-progresses.index')->with('success', 'Committee task progress deleted successfully.');
+        return redirect()->route('committee-task-progresses.index')->with('success', __('Committee task progress deleted successfully.'));
     }
 }

@@ -57,7 +57,7 @@ class RoleController extends Controller
 
         return redirect()->route('roles.index')->with('toast', [
             'type' => 'success',
-            'message' => 'Role created.',
+            'message' => __('Role created.'),
         ]);
     }
 
@@ -97,7 +97,7 @@ class RoleController extends Controller
 
         return redirect()->route('roles.index')->with('toast', [
             'type' => 'success',
-            'message' => 'Role updated.',
+            'message' => __('Role updated.'),
         ]);
     }
 

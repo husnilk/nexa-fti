@@ -41,6 +41,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { __, intlLocale } from '@/lib/i18n';
 import {
     index as organizationsIndex,
     show as organizationShow,
@@ -116,7 +117,7 @@ function toOrganizationPositionFormData(
     };
 }
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'long',
     timeStyle: 'short',
 });
@@ -146,7 +147,9 @@ export default function OrganizationShow({
 
     const organizationPositions = organization.organization_positions || [];
     const assignedPositionIds = new Set(
-        organizationPositions.map((organizationPosition) => organizationPosition.position_id),
+        organizationPositions.map(
+            (organizationPosition) => organizationPosition.position_id,
+        ),
     );
     const creatablePositions = availablePositions.filter(
         (position) => !assignedPositionIds.has(position.id),
@@ -186,7 +189,9 @@ export default function OrganizationShow({
             onSuccess: () => {
                 setIsCreatingPosition(false);
                 createForm.reset();
-                createForm.setData(toOrganizationPositionFormData(organization.id));
+                createForm.setData(
+                    toOrganizationPositionFormData(organization.id),
+                );
             },
         });
     }
@@ -196,7 +201,10 @@ export default function OrganizationShow({
     ): void {
         setEditingOrganizationPosition(organizationPosition);
         editForm.setData(
-            toOrganizationPositionFormData(organization.id, organizationPosition),
+            toOrganizationPositionFormData(
+                organization.id,
+                organizationPosition,
+            ),
         );
         editForm.clearErrors();
     }
@@ -239,7 +247,9 @@ export default function OrganizationShow({
 
     return (
         <>
-            <Head title={`Organization: ${organization.name}`} />
+            <Head
+                title={__('Organization: :name', { name: organization.name })}
+            />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex items-center gap-3 border-b pb-5 dark:border-zinc-800">
@@ -265,19 +275,22 @@ export default function OrganizationShow({
                                 }
                                 className="rounded-full px-3 py-1 uppercase"
                             >
-                                {organization.is_active ? 'Active' : 'Inactive'}
+                                {organization.is_active
+                                    ? __('Active')
+                                    : __('Inactive')}
                             </Badge>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Review hierarchy, metadata, linked positions, and
-                            sub-organizations.
+                            {__(
+                                'Review hierarchy, metadata, linked positions, and sub-organizations.',
+                            )}
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         <Button asChild variant="outline">
                             <Link href={organizationsStructure()}>
                                 <Network className="h-4 w-4" />
-                                Structure
+                                {__('Structure')}
                             </Link>
                         </Button>
                         {mayManage && (
@@ -288,7 +301,7 @@ export default function OrganizationShow({
                                     })}
                                 >
                                     <Edit className="h-4 w-4" />
-                                    Edit Organization
+                                    {__('Edit Organization')}
                                 </Link>
                             </Button>
                         )}
@@ -299,7 +312,7 @@ export default function OrganizationShow({
                     <div className="space-y-6 lg:col-span-1">
                         <div className="space-y-4 rounded-2xl border bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                             <h3 className="border-b pb-3 text-lg font-bold text-zinc-900 dark:border-zinc-800 dark:text-zinc-50">
-                                Organization Details
+                                {__('Organization Details')}
                             </h3>
 
                             <div className="space-y-3 text-sm">
@@ -330,8 +343,8 @@ export default function OrganizationShow({
                                 <div className="flex items-start gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <GitBranch className="mt-0.5 h-4 w-4 text-muted-foreground" />
                                     <div className="flex flex-col">
-                                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                                            Parent
+                                        <span className="text-xs tracking-wide text-muted-foreground uppercase">
+                                            {__('Parent')}
                                         </span>
                                         {organization.parent ? (
                                             <Link
@@ -343,7 +356,9 @@ export default function OrganizationShow({
                                                 {organization.parent.name}
                                             </Link>
                                         ) : (
-                                            <span>No parent organization</span>
+                                            <span>
+                                                {__('No parent organization')}
+                                            </span>
                                         )}
                                     </div>
                                 </div>
@@ -356,13 +371,13 @@ export default function OrganizationShow({
                             <div className="flex items-center gap-2 border-b pb-3 dark:border-zinc-800">
                                 <FileText className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                 <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                    Description
+                                    {__('Description')}
                                 </h3>
                             </div>
 
-                            <p className="mt-4 whitespace-pre-wrap leading-relaxed text-zinc-700 dark:text-zinc-300">
+                            <p className="mt-4 leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
                                 {organization.description ||
-                                    'No description provided.'}
+                                    __('No description provided.')}
                             </p>
                         </div>
 
@@ -371,21 +386,27 @@ export default function OrganizationShow({
                                 <div className="flex items-center gap-2">
                                     <Briefcase className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                     <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                        Positions in Organization
+                                        {__('Positions in Organization')}
                                     </h3>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                        {organizationPositions.length} total
+                                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                                        {__(':count total', {
+                                            count: organizationPositions.length,
+                                        })}
                                     </span>
                                     {mayManage && (
                                         <Button
                                             size="sm"
-                                            onClick={() => setIsCreatingPosition(true)}
-                                            disabled={creatablePositions.length === 0}
+                                            onClick={() =>
+                                                setIsCreatingPosition(true)
+                                            }
+                                            disabled={
+                                                creatablePositions.length === 0
+                                            }
                                         >
                                             <Plus className="mr-1 h-4 w-4" />
-                                            Add Position
+                                            {__('Add Position')}
                                         </Button>
                                     )}
                                 </div>
@@ -393,89 +414,110 @@ export default function OrganizationShow({
 
                             {organizationPositions.length > 0 ? (
                                 <div className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
-                                    {organizationPositions.map((organizationPosition) => (
-                                        <div
-                                            key={organizationPosition.id}
-                                            className="flex items-start justify-between gap-4 py-4"
-                                        >
-                                            <div className="space-y-1">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <span className="font-semibold text-zinc-900 dark:text-zinc-50">
-                                                        {organizationPosition.position?.name ||
-                                                            '-'}
-                                                    </span>
-                                                    <Badge
-                                                        variant={
-                                                            organizationPosition.is_active
-                                                                ? 'default'
-                                                                : 'secondary'
-                                                        }
-                                                        className="rounded-full px-2.5 py-1 text-[10px] uppercase"
-                                                    >
-                                                        {organizationPosition.is_active
-                                                            ? 'Active'
-                                                            : 'Inactive'}
-                                                    </Badge>
-                                                </div>
-                                                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                                                    <span>
-                                                        Grade:{' '}
-                                                        {organizationPosition.grade}
-                                                    </span>
-                                                    <span>
-                                                        Job Value:{' '}
-                                                        {organizationPosition.job_value}
-                                                    </span>
-                                                    <span>
-                                                        CG: {organizationPosition.cg}
-                                                    </span>
-                                                    {organizationPosition.position ? (
-                                                        <span>
-                                                            Position SKP:{' '}
-                                                            {organizationPosition.position
-                                                                .skp_point}
+                                    {organizationPositions.map(
+                                        (organizationPosition) => (
+                                            <div
+                                                key={organizationPosition.id}
+                                                className="flex items-start justify-between gap-4 py-4"
+                                            >
+                                                <div className="space-y-1">
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+                                                            {organizationPosition
+                                                                .position
+                                                                ?.name || '-'}
                                                         </span>
-                                                    ) : null}
+                                                        <Badge
+                                                            variant={
+                                                                organizationPosition.is_active
+                                                                    ? 'default'
+                                                                    : 'secondary'
+                                                            }
+                                                            className="rounded-full px-2.5 py-1 text-[10px] uppercase"
+                                                        >
+                                                            {organizationPosition.is_active
+                                                                ? __('Active')
+                                                                : __(
+                                                                      'Inactive',
+                                                                  )}
+                                                        </Badge>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                                        <span>
+                                                            {__(
+                                                                'Grade: :value',
+                                                                {
+                                                                    value: organizationPosition.grade,
+                                                                },
+                                                            )}
+                                                        </span>
+                                                        <span>
+                                                            {__(
+                                                                'Job Value: :value',
+                                                                {
+                                                                    value: organizationPosition.job_value,
+                                                                },
+                                                            )}
+                                                        </span>
+                                                        <span>
+                                                            {__('CG: :value', {
+                                                                value: organizationPosition.cg,
+                                                            })}
+                                                        </span>
+                                                        {organizationPosition.position ? (
+                                                            <span>
+                                                                {__(
+                                                                    'Position SKP: :value',
+                                                                    {
+                                                                        value: organizationPosition
+                                                                            .position
+                                                                            .skp_point,
+                                                                    },
+                                                                )}
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            {mayManage && (
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            openEditOrganizationPosition(
-                                                                organizationPosition,
-                                                            )
-                                                        }
-                                                        className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                                    >
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            setDeletingOrganizationPosition(
-                                                                organizationPosition,
-                                                            )
-                                                        }
-                                                        className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                {mayManage && (
+                                                    <div className="flex items-center gap-2">
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() =>
+                                                                openEditOrganizationPosition(
+                                                                    organizationPosition,
+                                                                )
+                                                            }
+                                                            className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                        >
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() =>
+                                                                setDeletingOrganizationPosition(
+                                                                    organizationPosition,
+                                                                )
+                                                            }
+                                                            className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ),
+                                    )}
                                 </div>
                             ) : (
                                 <p className="mt-4 text-sm text-muted-foreground">
-                                    No positions are currently assigned to this
-                                    organization.
+                                    {__(
+                                        'No positions are currently assigned to this organization.',
+                                    )}
                                 </p>
                             )}
                         </div>
@@ -485,11 +527,14 @@ export default function OrganizationShow({
                                 <div className="flex items-center gap-2">
                                     <GitBranch className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                     <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                        Sub-Organizations
+                                        {__('Sub-Organizations')}
                                     </h3>
                                 </div>
-                                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                    {organization.children?.length || 0} total
+                                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                                    {__(':count total', {
+                                        count:
+                                            organization.children?.length || 0,
+                                    })}
                                 </span>
                             </div>
 
@@ -499,7 +544,9 @@ export default function OrganizationShow({
                                     {organization.children.map((child) => (
                                         <Link
                                             key={child.id}
-                                            href={organizationShow.url(child.id)}
+                                            href={organizationShow.url(
+                                                child.id,
+                                            )}
                                             className="group flex items-center justify-between gap-4 py-4 transition-colors hover:bg-zinc-50/70 dark:hover:bg-zinc-900/50"
                                         >
                                             <div className="flex flex-col gap-1">
@@ -518,7 +565,7 @@ export default function OrganizationShow({
                                 </div>
                             ) : (
                                 <p className="mt-4 text-sm text-muted-foreground">
-                                    No sub-organizations found.
+                                    {__('No sub-organizations found.')}
                                 </p>
                             )}
                         </div>
@@ -526,16 +573,20 @@ export default function OrganizationShow({
                 </div>
             </div>
 
-            <Dialog open={isCreatingPosition} onOpenChange={setIsCreatingPosition}>
+            <Dialog
+                open={isCreatingPosition}
+                onOpenChange={setIsCreatingPosition}
+            >
                 <DialogContent className="rounded-2xl border bg-white p-0 shadow-lg sm:max-w-2xl dark:border-zinc-800 dark:bg-zinc-900">
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Add Position to Organization
+                                {__('Add Position to Organization')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Choose a position and adjust the organization-specific
-                                grade, job value, and CG values.
+                                {__(
+                                    'Choose a position and adjust the organization-specific grade, job value, and CG values.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -545,7 +596,9 @@ export default function OrganizationShow({
                         className="grid gap-5 p-6"
                     >
                         <div className="grid gap-2">
-                            <Label htmlFor="create_position_id">Position</Label>
+                            <Label htmlFor="create_position_id">
+                                {__('Position')}
+                            </Label>
                             <Select
                                 value={createForm.data.position_id}
                                 onValueChange={(value) =>
@@ -557,22 +610,31 @@ export default function OrganizationShow({
                                 }
                             >
                                 <SelectTrigger id="create_position_id">
-                                    <SelectValue placeholder="Select a position" />
+                                    <SelectValue
+                                        placeholder={__('Select a position')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {creatablePositions.map((position) => (
-                                        <SelectItem key={position.id} value={position.id}>
+                                        <SelectItem
+                                            key={position.id}
+                                            value={position.id}
+                                        >
                                             {position.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <InputError message={createForm.errors.position_id} />
+                            <InputError
+                                message={createForm.errors.position_id}
+                            />
                         </div>
 
                         <div className="grid gap-5 md:grid-cols-3">
                             <div className="grid gap-2">
-                                <Label htmlFor="create_grade">Grade</Label>
+                                <Label htmlFor="create_grade">
+                                    {__('Grade')}
+                                </Label>
                                 <Input
                                     id="create_grade"
                                     type="number"
@@ -580,7 +642,9 @@ export default function OrganizationShow({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'grade',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -588,7 +652,9 @@ export default function OrganizationShow({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="create_job_value">Job Value</Label>
+                                <Label htmlFor="create_job_value">
+                                    {__('Job Value')}
+                                </Label>
                                 <Input
                                     id="create_job_value"
                                     type="number"
@@ -596,7 +662,9 @@ export default function OrganizationShow({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'job_value',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -614,7 +682,9 @@ export default function OrganizationShow({
                                     onChange={(event) =>
                                         createForm.setData(
                                             'cg',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -632,11 +702,12 @@ export default function OrganizationShow({
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="create_is_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Keep this enabled while the position is active
-                                    in the organization.
+                                    {__(
+                                        'Keep this enabled while the position is active in the organization.',
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -648,7 +719,7 @@ export default function OrganizationShow({
                                 variant="outline"
                                 onClick={() => setIsCreatingPosition(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
@@ -657,7 +728,7 @@ export default function OrganizationShow({
                                     creatablePositions.length === 0
                                 }
                             >
-                                Save Position Assignment
+                                {__('Save Position Assignment')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -674,11 +745,12 @@ export default function OrganizationShow({
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Edit Organization Position
+                                {__('Edit Organization Position')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Update the position assignment values for this
-                                organization.
+                                {__(
+                                    'Update the position assignment values for this organization.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -688,7 +760,9 @@ export default function OrganizationShow({
                         className="grid gap-5 p-6"
                     >
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_position_id">Position</Label>
+                            <Label htmlFor="edit_position_id">
+                                {__('Position')}
+                            </Label>
                             <Select
                                 value={editForm.data.position_id}
                                 onValueChange={(value) =>
@@ -700,11 +774,16 @@ export default function OrganizationShow({
                                 }
                             >
                                 <SelectTrigger id="edit_position_id">
-                                    <SelectValue placeholder="Select a position" />
+                                    <SelectValue
+                                        placeholder={__('Select a position')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {editablePositions.map((position) => (
-                                        <SelectItem key={position.id} value={position.id}>
+                                        <SelectItem
+                                            key={position.id}
+                                            value={position.id}
+                                        >
                                             {position.name}
                                         </SelectItem>
                                     ))}
@@ -715,7 +794,9 @@ export default function OrganizationShow({
 
                         <div className="grid gap-5 md:grid-cols-3">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_grade">Grade</Label>
+                                <Label htmlFor="edit_grade">
+                                    {__('Grade')}
+                                </Label>
                                 <Input
                                     id="edit_grade"
                                     type="number"
@@ -723,7 +804,9 @@ export default function OrganizationShow({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'grade',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -731,7 +814,9 @@ export default function OrganizationShow({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="edit_job_value">Job Value</Label>
+                                <Label htmlFor="edit_job_value">
+                                    {__('Job Value')}
+                                </Label>
                                 <Input
                                     id="edit_job_value"
                                     type="number"
@@ -739,7 +824,9 @@ export default function OrganizationShow({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'job_value',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -757,7 +844,9 @@ export default function OrganizationShow({
                                     onChange={(event) =>
                                         editForm.setData(
                                             'cg',
-                                            Number.parseInt(event.target.value) || 0,
+                                            Number.parseInt(
+                                                event.target.value,
+                                            ) || 0,
                                         )
                                     }
                                 />
@@ -775,11 +864,12 @@ export default function OrganizationShow({
                             />
                             <div className="space-y-1">
                                 <Label htmlFor="edit_is_active">
-                                    Active status
+                                    {__('Active status')}
                                 </Label>
                                 <p className="text-xs text-muted-foreground">
-                                    Disable this when the position should no longer
-                                    appear as active in the organization.
+                                    {__(
+                                        'Disable this when the position should no longer appear as active in the organization.',
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -789,12 +879,17 @@ export default function OrganizationShow({
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => setEditingOrganizationPosition(null)}
+                                onClick={() =>
+                                    setEditingOrganizationPosition(null)
+                                }
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={editForm.processing}>
-                                Save Changes
+                            <Button
+                                type="submit"
+                                disabled={editForm.processing}
+                            >
+                                {__('Save changes')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -809,27 +904,36 @@ export default function OrganizationShow({
             >
                 <DialogContent className="rounded-2xl border bg-white sm:max-w-md dark:border-zinc-800 dark:bg-zinc-900">
                     <DialogHeader>
-                        <DialogTitle>Remove Position from Organization</DialogTitle>
+                        <DialogTitle>
+                            {__('Remove Position from Organization')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to remove{' '}
-                            {deletingOrganizationPosition?.position?.name || 'this position'}
-                            {' '}from this organization?
+                            {__(
+                                'Are you sure you want to remove :name from this organization?',
+                                {
+                                    name:
+                                        deletingOrganizationPosition?.position
+                                            ?.name || __('this position'),
+                                },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setDeletingOrganizationPosition(null)}
+                            onClick={() =>
+                                setDeletingOrganizationPosition(null)
+                            }
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyOrganizationPosition}
                         >
-                            Remove
+                            {__('Remove')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -841,11 +945,11 @@ export default function OrganizationShow({
 OrganizationShow.layout = {
     breadcrumbs: [
         {
-            title: 'Organizations',
+            title: __('Organizations'),
             href: organizationsIndex(),
         },
         {
-            title: 'Detail',
+            title: __('Detail'),
             href: '',
         },
     ],

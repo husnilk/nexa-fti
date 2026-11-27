@@ -4,6 +4,7 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { __ } from '@/lib/i18n';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
@@ -12,17 +13,17 @@ import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: __('Profile'),
         href: edit(),
         icon: null,
     },
     {
-        title: 'Security',
+        title: __('Security'),
         href: editSecurity(),
         icon: null,
     },
     {
-        title: 'Appearance',
+        title: __('Appearance'),
         href: editAppearance(),
         icon: null,
     },
@@ -34,15 +35,15 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     return (
         <div className="px-4 py-6">
             <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
+                title={__('Settings')}
+                description={__('Manage your profile and account settings')}
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav
                         className="flex flex-col space-y-1 space-x-0"
-                        aria-label="Settings"
+                        aria-label={__('Settings')}
                     >
                         {sidebarNavItems.map((item, index) => (
                             <Button

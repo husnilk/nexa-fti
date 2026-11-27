@@ -53,7 +53,7 @@ class RoomUsageController extends Controller
             'status' => 'requested',
         ]);
 
-        return redirect()->route('room-usages.index')->with('success', 'Room usage proposed successfully.');
+        return redirect()->route('room-usages.index')->with('success', __('Room usage proposed successfully.'));
     }
 
     public function show(RoomUsage $room_usage): Response
@@ -70,12 +70,12 @@ class RoomUsageController extends Controller
         Gate::authorize('delete', $room_usage);
 
         if ($room_usage->status !== 'requested') {
-            return back()->with('error', 'Only pending requests can be deleted.');
+            return back()->with('error', __('Only pending requests can be deleted.'));
         }
 
         $room_usage->delete();
 
-        return redirect()->route('room-usages.index')->with('success', 'Room usage proposal deleted successfully.');
+        return redirect()->route('room-usages.index')->with('success', __('Room usage proposal deleted successfully.'));
     }
 
     public function approve(Request $request, RoomUsage $room_usage): RedirectResponse
@@ -87,7 +87,7 @@ class RoomUsageController extends Controller
             'approved_by_id' => $request->user()->id,
         ]);
 
-        return back()->with('success', 'Room usage approved.');
+        return back()->with('success', __('Room usage approved.'));
     }
 
     public function reject(Request $request, RoomUsage $room_usage): RedirectResponse
@@ -99,7 +99,7 @@ class RoomUsageController extends Controller
             'approved_by_id' => $request->user()->id,
         ]);
 
-        return back()->with('success', 'Room usage rejected.');
+        return back()->with('success', __('Room usage rejected.'));
     }
 
     public function report(Request $request): Response

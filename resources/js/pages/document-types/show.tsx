@@ -3,7 +3,11 @@ import { ArrowLeft, Edit3 } from 'lucide-react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { index as documentTypesIndex, edit as documentTypeEdit } from '@/routes/document-types';
+import { __ } from '@/lib/i18n';
+import {
+    index as documentTypesIndex,
+    edit as documentTypeEdit,
+} from '@/routes/document-types';
 
 type DocumentType = {
     id: number;
@@ -18,7 +22,7 @@ type PageProps = {
 export default function DocumentTypeShow({ documentType }: PageProps) {
     return (
         <>
-            <Head title={`Details - ${documentType.name}`} />
+            <Head title={__('Details - :name', { name: documentType.name })} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -29,32 +33,45 @@ export default function DocumentTypeShow({ documentType }: PageProps) {
                         </Button>
                         <Heading
                             title={documentType.name}
-                            description="Document Type Details"
+                            description={__('Document Type Details')}
                         />
                     </div>
-                    
+
                     <Button asChild>
                         <Link href={documentTypeEdit.url(documentType.id)}>
-                            <Edit3 className="mr-2 size-4" /> Edit
+                            <Edit3 className="mr-2 size-4" /> {__('Edit')}
                         </Link>
                     </Button>
                 </div>
 
                 <Card className="max-w-2xl">
-                    <CardContent className="pt-6 grid gap-4 text-sm">
+                    <CardContent className="grid gap-4 pt-6 text-sm">
                         <div className="grid gap-1">
-                            <span className="text-muted-foreground text-xs">ID</span>
-                            <span className="font-mono text-xs">{documentType.id}</span>
+                            <span className="text-xs text-muted-foreground">
+                                ID
+                            </span>
+                            <span className="font-mono text-xs">
+                                {documentType.id}
+                            </span>
                         </div>
 
                         <div className="grid gap-1">
-                            <span className="text-muted-foreground text-xs">Name</span>
-                            <span className="font-semibold text-base">{documentType.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                                {__('Name')}
+                            </span>
+                            <span className="text-base font-semibold">
+                                {documentType.name}
+                            </span>
                         </div>
 
                         <div className="grid gap-1">
-                            <span className="text-muted-foreground text-xs">Description</span>
-                            <span className="text-muted-foreground">{documentType.description || 'No description provided.'}</span>
+                            <span className="text-xs text-muted-foreground">
+                                {__('Description')}
+                            </span>
+                            <span className="text-muted-foreground">
+                                {documentType.description ||
+                                    __('No description provided.')}
+                            </span>
                         </div>
                     </CardContent>
                 </Card>
@@ -65,8 +82,8 @@ export default function DocumentTypeShow({ documentType }: PageProps) {
 
 DocumentTypeShow.layout = {
     breadcrumbs: [
-        { title: 'Documents', href: '#' },
-        { title: 'Document Types', href: documentTypesIndex() },
-        { title: 'Details', href: '#' },
+        { title: __('Documents'), href: '#' },
+        { title: __('Document Types'), href: documentTypesIndex() },
+        { title: __('Details'), href: '#' },
     ],
 };

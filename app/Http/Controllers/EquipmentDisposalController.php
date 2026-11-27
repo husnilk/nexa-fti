@@ -61,7 +61,7 @@ class EquipmentDisposalController extends Controller
         });
 
         return redirect()->route('equipment-disposals.index')
-            ->with('success', 'Equipment disposal request submitted successfully.');
+            ->with('success', __('Equipment disposal request submitted successfully.'));
     }
 
     public function show(Request $request, EquipmentDisposal $equipmentDisposal): Response
@@ -79,7 +79,7 @@ class EquipmentDisposalController extends Controller
     {
         if (! in_array($equipmentDisposal->status, ['draft', 'pending'])) {
             return redirect()->route('equipment-disposals.index')
-                ->with('error', 'Only draft or pending disposal requests can be edited.');
+                ->with('error', __('Only draft or pending disposal requests can be edited.'));
         }
 
         return Inertia::render('equipment/disposals/edit', [
@@ -93,7 +93,7 @@ class EquipmentDisposalController extends Controller
     {
         if (! in_array($equipmentDisposal->status, ['draft', 'pending'])) {
             return redirect()->route('equipment-disposals.index')
-                ->with('error', 'Only draft or pending disposal requests can be updated.');
+                ->with('error', __('Only draft or pending disposal requests can be updated.'));
         }
 
         DB::transaction(function () use ($request, $equipmentDisposal) {
@@ -133,14 +133,14 @@ class EquipmentDisposalController extends Controller
         });
 
         return redirect()->route('equipment-disposals.index')
-            ->with('success', 'Equipment disposal request updated successfully.');
+            ->with('success', __('Equipment disposal request updated successfully.'));
     }
 
     public function destroy(Request $request, EquipmentDisposal $equipmentDisposal): RedirectResponse
     {
         if (! in_array($equipmentDisposal->status, ['draft', 'pending'])) {
             return redirect()->route('equipment-disposals.index')
-                ->with('error', 'Only draft or pending disposal requests can be cancelled.');
+                ->with('error', __('Only draft or pending disposal requests can be cancelled.'));
         }
 
         DB::transaction(function () use ($equipmentDisposal) {
@@ -149,6 +149,6 @@ class EquipmentDisposalController extends Controller
         });
 
         return redirect()->route('equipment-disposals.index')
-            ->with('success', 'Equipment disposal request cancelled successfully.');
+            ->with('success', __('Equipment disposal request cancelled successfully.'));
     }
 }

@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as organizationTypesIndex } from '@/routes/organization-types';
 import { index as organizationsIndex } from '@/routes/organizations';
 import type { Auth } from '@/types';
@@ -40,7 +41,7 @@ type PageProps = {
     };
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -92,17 +93,19 @@ export default function OrganizationTypesIndex({
     function submitCreate(event: FormEvent<HTMLFormElement>): void {
         event.preventDefault();
 
-        createForm.transform((data) => ({
-            ...data,
-            level: Number(data.level),
-        })).post(OrganizationTypeController.store.url(), {
-            preserveScroll: true,
-            onSuccess: () => {
-                setIsCreating(false);
-                createForm.reset();
-                createForm.setData('level', '1');
-            },
-        });
+        createForm
+            .transform((data) => ({
+                ...data,
+                level: Number(data.level),
+            }))
+            .post(OrganizationTypeController.store.url(), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsCreating(false);
+                    createForm.reset();
+                    createForm.setData('level', '1');
+                },
+            });
     }
 
     function openEditDialog(organizationType: OrganizationType): void {
@@ -121,13 +124,15 @@ export default function OrganizationTypesIndex({
             return;
         }
 
-        editForm.transform((data) => ({
-            ...data,
-            level: Number(data.level),
-        })).patch(OrganizationTypeController.update.url(editingType.id), {
-            preserveScroll: true,
-            onSuccess: () => setEditingType(null),
-        });
+        editForm
+            .transform((data) => ({
+                ...data,
+                level: Number(data.level),
+            }))
+            .patch(OrganizationTypeController.update.url(editingType.id), {
+                preserveScroll: true,
+                onSuccess: () => setEditingType(null),
+            });
     }
 
     function destroyType(): void {
@@ -143,23 +148,25 @@ export default function OrganizationTypesIndex({
 
     return (
         <>
-            <Head title="Organization Types" />
+            <Head title={__('Organization Types')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                            Organization Types
+                            {__('Organization Types')}
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Manage organization type names and hierarchy levels.
+                            {__(
+                                'Manage organization type names and hierarchy levels.',
+                            )}
                         </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
                         <Button asChild variant="outline">
                             <Link href={organizationsIndex()}>
-                                Back to Organizations
+                                {__('Back to Organizations')}
                             </Link>
                         </Button>
                         {canManage && (
@@ -169,7 +176,7 @@ export default function OrganizationTypesIndex({
                                 className="cursor-pointer gap-2"
                             >
                                 <Plus className="h-4 w-4" />
-                                Add Type
+                                {__('Add Type')}
                             </Button>
                         )}
                     </div>
@@ -180,7 +187,7 @@ export default function OrganizationTypesIndex({
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search organization types..."
+                            placeholder={__('Search organization types...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
@@ -196,8 +203,10 @@ export default function OrganizationTypesIndex({
                         )}
                     </div>
 
-                    <span className="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {organizationTypes.length} records
+                    <span className="rounded-full border px-4 py-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                        {__(':count records', {
+                            count: organizationTypes.length,
+                        })}
                     </span>
                 </div>
 
@@ -205,12 +214,14 @@ export default function OrganizationTypesIndex({
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[720px] border-collapse text-left">
                             <thead>
-                                <tr className="border-b bg-zinc-50 text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">Name</th>
-                                    <th className="px-6 py-4">Level</th>
-                                    <th className="px-6 py-4">Created</th>
+                                <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                                    <th className="px-6 py-4">{__('Name')}</th>
+                                    <th className="px-6 py-4">{__('Level')}</th>
+                                    <th className="px-6 py-4">
+                                        {__('Created')}
+                                    </th>
                                     <th className="px-6 py-4 text-right">
-                                        Actions
+                                        {__('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -221,64 +232,68 @@ export default function OrganizationTypesIndex({
                                             colSpan={4}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No organization types found.
+                                            {__('No organization types found.')}
                                         </td>
                                     </tr>
                                 ) : (
-                                    organizationTypes.map((organizationType) => (
-                                        <tr
-                                            key={organizationType.id}
-                                            className="transition-colors hover:bg-zinc-50/70 dark:hover:bg-zinc-900/50"
-                                        >
-                                            <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-50">
-                                                {organizationType.name}
-                                            </td>
-                                            <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
-                                                Level {organizationType.level}
-                                            </td>
-                                            <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
-                                                {dateFormatter.format(
-                                                    new Date(
-                                                        organizationType.created_at,
-                                                    ),
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    {canManage && (
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() =>
-                                                                openEditDialog(
-                                                                    organizationType,
-                                                                )
-                                                            }
-                                                            className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                                        >
-                                                            <Pencil className="h-4 w-4" />
-                                                        </Button>
+                                    organizationTypes.map(
+                                        (organizationType) => (
+                                            <tr
+                                                key={organizationType.id}
+                                                className="transition-colors hover:bg-zinc-50/70 dark:hover:bg-zinc-900/50"
+                                            >
+                                                <td className="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-50">
+                                                    {organizationType.name}
+                                                </td>
+                                                <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
+                                                    {__('Level :level', {
+                                                        level: organizationType.level,
+                                                    })}
+                                                </td>
+                                                <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
+                                                    {dateFormatter.format(
+                                                        new Date(
+                                                            organizationType.created_at,
+                                                        ),
                                                     )}
-                                                    {canManage && (
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() =>
-                                                                setDeletingType(
-                                                                    organizationType,
-                                                                )
-                                                            }
-                                                            className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        {canManage && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() =>
+                                                                    openEditDialog(
+                                                                        organizationType,
+                                                                    )
+                                                                }
+                                                                className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                            >
+                                                                <Pencil className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                        {canManage && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() =>
+                                                                    setDeletingType(
+                                                                        organizationType,
+                                                                    )
+                                                                }
+                                                                className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ),
+                                    )
                                 )}
                             </tbody>
                         </table>
@@ -289,26 +304,32 @@ export default function OrganizationTypesIndex({
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Create Organization Type</DialogTitle>
+                        <DialogTitle>
+                            {__('Create Organization Type')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Add a new organization type and assign its hierarchy
-                            level.
+                            {__(
+                                'Add a new organization type and assign its hierarchy level.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={submitCreate} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="create-name">Name</Label>
+                            <Label htmlFor="create-name">{__('Name')}</Label>
                             <Input
                                 id="create-name"
                                 value={createForm.data.name}
                                 onChange={(event) =>
-                                    createForm.setData('name', event.target.value)
+                                    createForm.setData(
+                                        'name',
+                                        event.target.value,
+                                    )
                                 }
                             />
                             <InputError message={createForm.errors.name} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="create-level">Level</Label>
+                            <Label htmlFor="create-level">{__('Level')}</Label>
                             <Input
                                 id="create-level"
                                 type="number"
@@ -329,13 +350,13 @@ export default function OrganizationTypesIndex({
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -348,15 +369,18 @@ export default function OrganizationTypesIndex({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Organization Type</DialogTitle>
+                        <DialogTitle>
+                            {__('Edit Organization Type')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Update the organization type name and hierarchy
-                            level.
+                            {__(
+                                'Update the organization type name and hierarchy level.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={submitEdit} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="edit-name">Name</Label>
+                            <Label htmlFor="edit-name">{__('Name')}</Label>
                             <Input
                                 id="edit-name"
                                 value={editForm.data.name}
@@ -367,14 +391,17 @@ export default function OrganizationTypesIndex({
                             <InputError message={editForm.errors.name} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="edit-level">Level</Label>
+                            <Label htmlFor="edit-level">{__('Level')}</Label>
                             <Input
                                 id="edit-level"
                                 type="number"
                                 min={1}
                                 value={editForm.data.level}
                                 onChange={(event) =>
-                                    editForm.setData('level', event.target.value)
+                                    editForm.setData(
+                                        'level',
+                                        event.target.value,
+                                    )
                                 }
                             />
                             <InputError message={editForm.errors.level} />
@@ -385,13 +412,13 @@ export default function OrganizationTypesIndex({
                                 variant="outline"
                                 onClick={() => setEditingType(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -404,10 +431,14 @@ export default function OrganizationTypesIndex({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Organization Type</DialogTitle>
+                        <DialogTitle>
+                            {__('Delete Organization Type')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete{' '}
-                            {deletingType?.name}? This action cannot be undone.
+                            {__(
+                                'Are you sure you want to delete :name? This action cannot be undone.',
+                                { name: deletingType?.name ?? '' },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -416,14 +447,14 @@ export default function OrganizationTypesIndex({
                             variant="outline"
                             onClick={() => setDeletingType(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyType}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -435,11 +466,11 @@ export default function OrganizationTypesIndex({
 OrganizationTypesIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Organizations',
+            title: __('Organizations'),
             href: organizationsIndex(),
         },
         {
-            title: 'Organization Types',
+            title: __('Organization Types'),
             href: organizationTypesIndex(),
         },
     ],

@@ -33,10 +33,10 @@ class CommitteeTaskController extends Controller
         $request->session()->flash('committeeTask.id', $committeeTask->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee task created successfully.');
+            return redirect()->back()->with('success', __('Committee task created successfully.'));
         }
 
-        return redirect()->route('committee-tasks.index')->with('success', 'Committee task created successfully.');
+        return redirect()->route('committee-tasks.index')->with('success', __('Committee task created successfully.'));
     }
 
     public function show(Request $request, CommitteeTask $committeeTask): Response
@@ -62,10 +62,10 @@ class CommitteeTaskController extends Controller
         $request->session()->flash('committeeTask.id', $committeeTask->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee task updated successfully.');
+            return redirect()->back()->with('success', __('Committee task updated successfully.'));
         }
 
-        return redirect()->route('committee-tasks.index')->with('success', 'Committee task updated successfully.');
+        return redirect()->route('committee-tasks.index')->with('success', __('Committee task updated successfully.'));
     }
 
     public function destroy(Request $request, CommitteeTask $committeeTask): RedirectResponse
@@ -73,9 +73,9 @@ class CommitteeTaskController extends Controller
         $committeeTask->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee task deleted successfully.');
+            return redirect()->back()->with('success', __('Committee task deleted successfully.'));
         }
 
-        return redirect()->route('committee-tasks.index')->with('success', 'Committee task deleted successfully.');
+        return redirect()->route('committee-tasks.index')->with('success', __('Committee task deleted successfully.'));
     }
 }

@@ -22,6 +22,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { __ } from '@/lib/i18n';
 import {
     index as studentsIndex,
     show as studentShow,
@@ -47,6 +48,14 @@ type PageProps = {
     filters: {
         search?: string;
     };
+};
+
+const statusLabels: Record<string, string> = {
+    active: __('Active'),
+    inactive: __('Inactive'),
+    graduated: __('Graduated'),
+    withdrawn: __('Withdrawn'),
+    on_leave: __('On Leave'),
 };
 
 function can(auth: Auth, ability: string): boolean {
@@ -80,8 +89,8 @@ export default function StudentsIndex({ students, filters }: PageProps) {
 
     function destroyStudent(): void {
         if (!deletingStudent) {
-return;
-}
+            return;
+        }
 
         router.delete(StudentController.destroy.url(deletingStudent.id), {
             preserveScroll: true,
@@ -90,22 +99,26 @@ return;
     }
 
     const totalActive = students.filter((s) => s.status === 'active').length;
-    const totalGraduated = students.filter((s) => s.status === 'graduated').length;
+    const totalGraduated = students.filter(
+        (s) => s.status === 'graduated',
+    ).length;
     const totalOnLeave = students.filter((s) => s.status === 'on_leave').length;
 
     return (
         <>
-            <Head title="Students" />
+            <Head title={__('Students')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 {/* Header */}
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">
-                            Students
+                            {__('Students')}
                         </h1>
                         <p className="mt-1 text-muted-foreground">
-                            Manage student database and academic profiles
+                            {__(
+                                'Manage student database and academic profiles',
+                            )}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -113,7 +126,7 @@ return;
                             <Link href={studentCreate()}>
                                 <Button className="cursor-pointer gap-2">
                                     <Plus className="h-4 w-4" />
-                                    Add Student
+                                    {__('Add Student')}
                                 </Button>
                             </Link>
                         )}
@@ -129,7 +142,7 @@ return;
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total Students
+                                    {__('Total Students')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {students.length}
@@ -145,7 +158,7 @@ return;
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Active
+                                    {__('Active')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {totalActive}
@@ -161,7 +174,7 @@ return;
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Graduated
+                                    {__('Graduated')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {totalGraduated}
@@ -177,7 +190,7 @@ return;
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    On Leave
+                                    {__('On Leave')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {totalOnLeave}
@@ -193,7 +206,7 @@ return;
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search students..."
+                            placeholder={__('Search students...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -213,18 +226,20 @@ return;
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring dark:border-zinc-800 dark:bg-zinc-900"
+                            className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-zinc-800 dark:bg-zinc-900"
                         >
-                            <option value="all">All Statuses</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                            <option value="graduated">Graduated</option>
-                            <option value="withdrawn">Withdrawn</option>
-                            <option value="on_leave">On Leave</option>
+                            <option value="all">{__('All Statuses')}</option>
+                            <option value="active">{__('Active')}</option>
+                            <option value="inactive">{__('Inactive')}</option>
+                            <option value="graduated">{__('Graduated')}</option>
+                            <option value="withdrawn">{__('Withdrawn')}</option>
+                            <option value="on_leave">{__('On Leave')}</option>
                         </select>
 
-                        <span className="inline-flex h-10 items-center rounded-full border border-input bg-white px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground dark:border-zinc-800 dark:bg-zinc-900">
-                            {filteredStudents.length} records
+                        <span className="inline-flex h-10 items-center rounded-full border border-input bg-white px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                            {__(':count records', {
+                                count: filteredStudents.length,
+                            })}
                         </span>
                     </div>
                 </div>
@@ -235,15 +250,19 @@ return;
                         <table className="w-full min-w-[900px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4">Reg #</th>
-                                    <th className="px-6 py-4">Name / Email</th>
-                                    <th className="px-6 py-4">Department</th>
-                                    <th className="px-6 py-4">Year</th>
+                                    <th className="px-6 py-4">{__('Reg #')}</th>
+                                    <th className="px-6 py-4">
+                                        {__('Name / Email')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Department')}
+                                    </th>
+                                    <th className="px-6 py-4">{__('Year')}</th>
                                     <th className="px-6 py-4 text-center">
-                                        Status
+                                        {__('Status')}
                                     </th>
                                     <th className="px-6 py-4 text-right">
-                                        Actions
+                                        {__('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -254,7 +273,7 @@ return;
                                             colSpan={6}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No students found.
+                                            {__('No students found.')}
                                         </td>
                                     </tr>
                                 ) : (
@@ -303,7 +322,8 @@ return;
                                                     {st.status === 'active' && (
                                                         <BadgeCheck className="h-3 w-3" />
                                                     )}
-                                                    {st.status}
+                                                    {statusLabels[st.status] ??
+                                                        st.status}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
@@ -317,7 +337,7 @@ return;
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 cursor-pointer"
-                                                            title="View"
+                                                            title={__('View')}
                                                         >
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
@@ -332,7 +352,9 @@ return;
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                                                title="Edit"
+                                                                title={__(
+                                                                    'Edit',
+                                                                )}
                                                             >
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
@@ -344,7 +366,7 @@ return;
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
-                                                            title="Delete"
+                                                            title={__('Delete')}
                                                             onClick={() =>
                                                                 setDeletingStudent(
                                                                     st,
@@ -371,11 +393,13 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Student</DialogTitle>
+                        <DialogTitle>{__('Delete Student')}</DialogTitle>
                     </DialogHeader>
-                    <div className="text-sm italic text-muted-foreground">
-                        This will permanently remove student record and login
-                        account for {deletingStudent?.name}. Are you sure?
+                    <div className="text-sm text-muted-foreground italic">
+                        {__(
+                            'This will permanently remove the student record and login account for :name. Are you sure?',
+                            { name: deletingStudent?.name ?? '' },
+                        )}
                     </div>
                     <DialogFooter>
                         <Button
@@ -383,14 +407,14 @@ return;
                             variant="outline"
                             onClick={() => setDeletingStudent(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyStudent}
                         >
-                            Delete permanently
+                            {__('Delete permanently')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -400,5 +424,5 @@ return;
 }
 
 StudentsIndex.layout = {
-    breadcrumbs: [{ title: 'Students', href: studentsIndex() }],
+    breadcrumbs: [{ title: __('Students'), href: studentsIndex() }],
 };

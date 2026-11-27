@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import { index as documentTypesIndex } from '@/routes/document-types';
 
 type DocumentType = {
@@ -33,7 +34,7 @@ export default function DocumentTypeEdit({ documentType }: PageProps) {
 
     return (
         <>
-            <Head title={`Edit ${documentType.name}`} />
+            <Head title={__('Edit :name', { name: documentType.name })} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 <div className="flex items-center gap-4">
                     <Button asChild variant="ghost" size="icon">
@@ -42,46 +43,69 @@ export default function DocumentTypeEdit({ documentType }: PageProps) {
                         </Link>
                     </Button>
                     <Heading
-                        title={`Edit ${documentType.name}`}
-                        description="Modify document category metadata"
+                        title={__('Edit :name', { name: documentType.name })}
+                        description={__('Modify document category metadata')}
                     />
                 </div>
 
-                <form onSubmit={submit} className="mx-auto w-full max-w-2xl grid gap-6">
+                <form
+                    onSubmit={submit}
+                    className="mx-auto grid w-full max-w-2xl gap-6"
+                >
                     <Card>
-                        <CardContent className="pt-6 grid gap-6">
+                        <CardContent className="grid gap-6 pt-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">{__('Name')}</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    placeholder="e.g. Standard Operating Procedure"
+                                    onChange={(e) =>
+                                        setData('name', e.target.value)
+                                    }
+                                    placeholder={__(
+                                        'e.g. Standard Operating Procedure',
+                                    )}
                                     required
                                 />
-                                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                                {errors.name && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.name}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">
+                                    {__('Description')}
+                                </Label>
                                 <Textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e) => setData('description', e.target.value)}
-                                    placeholder="Brief description of the document type..."
+                                    onChange={(e) =>
+                                        setData('description', e.target.value)
+                                    }
+                                    placeholder={__(
+                                        'Brief description of the document type...',
+                                    )}
                                     rows={4}
                                 />
-                                {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
+                                {errors.description && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.description}
+                                    </p>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
 
                     <div className="flex justify-end gap-3">
                         <Button asChild variant="outline">
-                            <Link href={documentTypesIndex()}>Cancel</Link>
+                            <Link href={documentTypesIndex()}>
+                                {__('Cancel')}
+                            </Link>
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            <Save className="mr-2 size-4" /> Save
+                            <Save className="mr-2 size-4" /> {__('Save')}
                         </Button>
                     </div>
                 </form>
@@ -92,8 +116,8 @@ export default function DocumentTypeEdit({ documentType }: PageProps) {
 
 DocumentTypeEdit.layout = {
     breadcrumbs: [
-        { title: 'Documents', href: '#' },
-        { title: 'Document Types', href: documentTypesIndex() },
-        { title: 'Edit', href: '#' },
+        { title: __('Documents'), href: '#' },
+        { title: __('Document Types'), href: documentTypesIndex() },
+        { title: __('Edit'), href: '#' },
     ],
 };

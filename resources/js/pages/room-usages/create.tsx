@@ -7,8 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import { index as roomUsagesIndex } from '@/routes/room-usages';
 
 type Room = { id: string; name: string; code: string; capacity: number };
@@ -32,7 +39,7 @@ export default function RoomUsageCreate({ rooms }: PageProps) {
 
     return (
         <>
-            <Head title="Propose Room Usage" />
+            <Head title={__('Propose Room Usage')} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 <div className="flex items-center gap-4">
                     <Button asChild variant="ghost" size="icon">
@@ -41,8 +48,10 @@ export default function RoomUsageCreate({ rooms }: PageProps) {
                         </Link>
                     </Button>
                     <Heading
-                        title="Propose Room Usage"
-                        description="Submit a request to use a publicly available room"
+                        title={__('Propose Room Usage')}
+                        description={__(
+                            'Submit a request to use a publicly available room',
+                        )}
                     />
                 </div>
 
@@ -51,63 +60,123 @@ export default function RoomUsageCreate({ rooms }: PageProps) {
                         <CardContent className="pt-6">
                             <form onSubmit={submit} className="grid gap-6">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="room_id">Select Room</Label>
-                                    <Select value={data.room_id} onValueChange={(value) => setData('room_id', value)}>
+                                    <Label htmlFor="room_id">
+                                        {__('Select Room')}
+                                    </Label>
+                                    <Select
+                                        value={data.room_id}
+                                        onValueChange={(value) =>
+                                            setData('room_id', value)
+                                        }
+                                    >
                                         <SelectTrigger id="room_id">
-                                            <SelectValue placeholder="Choose a room" />
+                                            <SelectValue
+                                                placeholder={__(
+                                                    'Choose a room',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {rooms.map((room) => (
-                                                <SelectItem key={room.id} value={room.id}>
-                                                    {room.name} ({room.code}) - Capacity: {room.capacity}
+                                                <SelectItem
+                                                    key={room.id}
+                                                    value={room.id}
+                                                >
+                                                    {__(
+                                                        ':name (:code) - Capacity: :capacity',
+                                                        {
+                                                            name: room.name,
+                                                            code: room.code,
+                                                            capacity:
+                                                                room.capacity,
+                                                        },
+                                                    )}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    {errors.room_id && <p className="text-sm text-destructive">{errors.room_id}</p>}
+                                    {errors.room_id && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.room_id}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="start_time">Start Time</Label>
+                                        <Label htmlFor="start_time">
+                                            {__('Start Time')}
+                                        </Label>
                                         <Input
                                             id="start_time"
                                             type="datetime-local"
                                             value={data.start_time}
-                                            onChange={(e) => setData('start_time', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'start_time',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
-                                        {errors.start_time && <p className="text-sm text-destructive">{errors.start_time}</p>}
+                                        {errors.start_time && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.start_time}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="end_time">End Time</Label>
+                                        <Label htmlFor="end_time">
+                                            {__('End Time')}
+                                        </Label>
                                         <Input
                                             id="end_time"
                                             type="datetime-local"
                                             value={data.end_time}
-                                            onChange={(e) => setData('end_time', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'end_time',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
-                                        {errors.end_time && <p className="text-sm text-destructive">{errors.end_time}</p>}
+                                        {errors.end_time && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.end_time}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="purpose">Purpose</Label>
+                                    <Label htmlFor="purpose">
+                                        {__('Purpose')}
+                                    </Label>
                                     <Textarea
                                         id="purpose"
                                         value={data.purpose}
-                                        onChange={(e) => setData('purpose', e.target.value)}
-                                        placeholder="Describe the purpose of using this room..."
+                                        onChange={(e) =>
+                                            setData('purpose', e.target.value)
+                                        }
+                                        placeholder={__(
+                                            'Describe the purpose of using this room...',
+                                        )}
                                         rows={4}
                                     />
-                                    {errors.purpose && <p className="text-sm text-destructive">{errors.purpose}</p>}
+                                    {errors.purpose && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.purpose}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="flex justify-end gap-4">
                                     <Button asChild variant="outline">
-                                        <Link href={roomUsagesIndex()}>Cancel</Link>
+                                        <Link href={roomUsagesIndex()}>
+                                            {__('Cancel')}
+                                        </Link>
                                     </Button>
                                     <Button type="submit" disabled={processing}>
-                                        <Send /> Submit Proposal
+                                        <Send /> {__('Submit Proposal')}
                                     </Button>
                                 </div>
                             </form>
@@ -121,8 +190,8 @@ export default function RoomUsageCreate({ rooms }: PageProps) {
 
 RoomUsageCreate.layout = {
     breadcrumbs: [
-        { title: 'Assets & Facilities', href: '#' },
-        { title: 'Room Usages', href: roomUsagesIndex() },
-        { title: 'Propose Usage', href: '#' },
+        { title: __('Assets & Facilities'), href: '#' },
+        { title: __('Room Usages'), href: roomUsagesIndex() },
+        { title: __('Propose Usage'), href: '#' },
     ],
 };

@@ -42,7 +42,7 @@ class LeaveTypeController extends Controller
         LeaveType::create($validated);
 
         return redirect()->route('leave-types.index')
-            ->with('success', 'Leave type created successfully.');
+            ->with('success', __('Leave type created successfully.'));
     }
 
     public function edit(LeaveType $leaveType): Response
@@ -65,7 +65,7 @@ class LeaveTypeController extends Controller
         $leaveType->update($validated);
 
         return redirect()->route('leave-types.index')
-            ->with('success', 'Leave type updated successfully.');
+            ->with('success', __('Leave type updated successfully.'));
     }
 
     public function destroy(LeaveType $leaveType): RedirectResponse
@@ -73,6 +73,6 @@ class LeaveTypeController extends Controller
         $leaveType->delete();
 
         return redirect()->route('leave-types.index')
-            ->with('success', 'Leave type deleted successfully.');
+            ->with('success', __('Leave type deleted successfully.'));
     }
 }

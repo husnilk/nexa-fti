@@ -56,7 +56,7 @@ class BookController extends Controller
         $book = Book::create($validated);
         $book->authors()->attach($validated['authors']);
 
-        return redirect()->route('books.index')->with('success', 'Book created successfully.');
+        return redirect()->route('books.index')->with('success', __('Book created successfully.'));
     }
 
     public function show(Book $book): Response
@@ -86,13 +86,13 @@ class BookController extends Controller
         $book->update($validated);
         $book->authors()->sync($validated['authors']);
 
-        return redirect()->route('books.index')->with('success', 'Book updated successfully.');
+        return redirect()->route('books.index')->with('success', __('Book updated successfully.'));
     }
 
     public function destroy(Book $book): RedirectResponse
     {
         $book->delete();
 
-        return redirect()->route('books.index')->with('success', 'Book deleted successfully.');
+        return redirect()->route('books.index')->with('success', __('Book deleted successfully.'));
     }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
+import { __ } from '@/lib/i18n';
 
 export default function Page() {
-    return <div>Committee documents show</div>;
+    return <div>{__('Committee documents show')}</div>;
 }

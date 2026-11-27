@@ -22,7 +22,7 @@ class DocumentController extends Controller
     protected function authorizeAccess(Request $request, string $permission = 'document.view'): void
     {
         if (! $request->user()->can($permission) && ! $request->user()->hasRole('super-admin')) {
-            abort(403, 'Unauthorized. Only users with '.$permission.' permission can perform this action.');
+            abort(403, __('Unauthorized. Only users with :permission permission can perform this action.', ['permission' => $permission]));
         }
     }
 
@@ -105,7 +105,7 @@ class DocumentController extends Controller
             ]);
         }
 
-        return redirect()->route('documents.index')->with('success', 'Document created successfully.');
+        return redirect()->route('documents.index')->with('success', __('Document created successfully.'));
     }
 
     public function show(Request $request, Document $document): Response
@@ -143,7 +143,7 @@ class DocumentController extends Controller
 
         $document->update($request->validated());
 
-        return redirect()->route('documents.index')->with('success', 'Document updated successfully.');
+        return redirect()->route('documents.index')->with('success', __('Document updated successfully.'));
     }
 
     public function destroy(Request $request, Document $document): RedirectResponse
@@ -159,7 +159,7 @@ class DocumentController extends Controller
 
         $document->delete();
 
-        return redirect()->route('documents.index')->with('success', 'Document deleted successfully.');
+        return redirect()->route('documents.index')->with('success', __('Document deleted successfully.'));
     }
 
     public function publish(Request $request, Document $document): RedirectResponse
@@ -173,7 +173,7 @@ class DocumentController extends Controller
             'published_at' => now(),
         ]);
 
-        return back()->with('success', 'Document published successfully.');
+        return back()->with('success', __('Document published successfully.'));
     }
 
     public function archive(Request $request, Document $document): RedirectResponse
@@ -187,6 +187,6 @@ class DocumentController extends Controller
             'archived_at' => now(),
         ]);
 
-        return back()->with('success', 'Document archived successfully.');
+        return back()->with('success', __('Document archived successfully.'));
     }
 }

@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { __ } from '@/lib/i18n';
 import type { Auth, ItemCategory } from '@/types';
 
 interface PageProps {
@@ -31,9 +32,8 @@ export default function CategoryIndex({ categories }: PageProps) {
     const [editingCategory, setEditingCategory] = useState<ItemCategory | null>(
         null,
     );
-    const [deletingCategory, setDeletingCategory] = useState<ItemCategory | null>(
-        null,
-    );
+    const [deletingCategory, setDeletingCategory] =
+        useState<ItemCategory | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const createForm = useForm({
@@ -60,8 +60,8 @@ export default function CategoryIndex({ categories }: PageProps) {
         e.preventDefault();
 
         if (!editingCategory) {
-return;
-}
+            return;
+        }
 
         editForm.patch(update.url(editingCategory.id), {
             onSuccess: () => {
@@ -73,8 +73,8 @@ return;
 
     const handleDelete = () => {
         if (!deletingCategory) {
-return;
-}
+            return;
+        }
 
         router.delete(destroy.url(deletingCategory.id), {
             onSuccess: () => setDeletingCategory(null),
@@ -95,17 +95,19 @@ return;
 
     return (
         <>
-            <Head title="Item Categories" />
+            <Head title={__('Item Categories')} />
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title="Item Categories"
-                        description="Manage categories for inventory items."
+                        title={__('Item Categories')}
+                        description={__(
+                            'Manage categories for inventory items.',
+                        )}
                     />
                     <Button onClick={() => setIsCreating(true)}>
                         <Plus className="mr-2 h-4 w-4" />
-                        Add Category
+                        {__('Add Category')}
                     </Button>
                 </div>
 
@@ -113,7 +115,7 @@ return;
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search categories..."
+                            placeholder={__('Search categories...')}
                             className="pl-8"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -126,13 +128,13 @@ return;
                         <thead>
                             <tr className="border-b bg-muted/50 transition-colors">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Name
+                                    {__('Name')}
                                 </th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                    Description
+                                    {__('Description')}
                                 </th>
                                 <th className="h-12 px-4 text-left text-right align-middle font-medium text-muted-foreground">
-                                    Actions
+                                    {__('Actions')}
                                 </th>
                             </tr>
                         </thead>
@@ -176,7 +178,7 @@ return;
                                         colSpan={3}
                                         className="p-8 text-center text-muted-foreground"
                                     >
-                                        No categories found.
+                                        {__('No categories found.')}
                                     </td>
                                 </tr>
                             )}
@@ -189,26 +191,33 @@ return;
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Add New Category</DialogTitle>
+                        <DialogTitle>{__('Add New Category')}</DialogTitle>
                         <DialogDescription>
-                            Enter details for the new inventory category.
+                            {__(
+                                'Enter details for the new inventory category.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">{__('Name')}</Label>
                                 <Input
                                     id="name"
                                     value={createForm.data.name}
                                     onChange={(e) =>
-                                        createForm.setData('name', e.target.value)
+                                        createForm.setData(
+                                            'name',
+                                            e.target.value,
+                                        )
                                     }
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">
+                                    {__('Description')}
+                                </Label>
                                 <Input
                                     id="description"
                                     value={createForm.data.description}
@@ -227,13 +236,13 @@ return;
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -247,15 +256,15 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Category</DialogTitle>
+                        <DialogTitle>{__('Edit Category')}</DialogTitle>
                         <DialogDescription>
-                            Update the category details.
+                            {__('Update the category details.')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate}>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-name">Name</Label>
+                                <Label htmlFor="edit-name">{__('Name')}</Label>
                                 <Input
                                     id="edit-name"
                                     value={editForm.data.name}
@@ -267,7 +276,7 @@ return;
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="edit-description">
-                                    Description
+                                    {__('Description')}
                                 </Label>
                                 <Input
                                     id="edit-description"
@@ -287,10 +296,13 @@ return;
                                 variant="outline"
                                 onClick={() => setEditingCategory(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
-                            <Button type="submit" disabled={editForm.processing}>
-                                Update
+                            <Button
+                                type="submit"
+                                disabled={editForm.processing}
+                            >
+                                {__('Update')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -304,11 +316,12 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Category</DialogTitle>
+                        <DialogTitle>{__('Delete Category')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete "
-                            {deletingCategory?.name}"? This action cannot be
-                            undone.
+                            {__(
+                                'Are you sure you want to delete ":name"? This action cannot be undone.',
+                                { name: deletingCategory?.name },
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -316,10 +329,10 @@ return;
                             variant="outline"
                             onClick={() => setDeletingCategory(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button variant="destructive" onClick={handleDelete}>
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -331,11 +344,11 @@ return;
 CategoryIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Inventory',
+            title: __('Inventory'),
             href: '#',
         },
         {
-            title: 'Categories',
+            title: __('Categories'),
             href: categoryIndex(),
         },
     ],

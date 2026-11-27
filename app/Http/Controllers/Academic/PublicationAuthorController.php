@@ -20,20 +20,20 @@ class PublicationAuthorController extends Controller
     {
         PublicationAuthor::create($request->validated());
 
-        return back()->with('success', 'Author added successfully.');
+        return back()->with('success', __('Author added successfully.'));
     }
 
     public function update(PublicationAuthorUpdateRequest $request, PublicationAuthor $publicationAuthor): RedirectResponse
     {
         $publicationAuthor->update($request->validated());
 
-        return back()->with('success', 'Author updated successfully.');
+        return back()->with('success', __('Author updated successfully.'));
     }
 
     public function destroy(Request $request, PublicationAuthor $publicationAuthor): RedirectResponse
     {
         $publicationAuthor->delete();
 
-        return back()->with('success', 'Author removed successfully.');
+        return back()->with('success', __('Author removed successfully.'));
     }
 }

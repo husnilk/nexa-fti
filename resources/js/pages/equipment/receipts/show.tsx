@@ -1,8 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { CheckCircle2, Pencil, Trash2, XCircle } from 'lucide-react';
-import {
-    show as procurementShow,
-} from '@/actions/App/Http/Controllers/EquipmentProcurementController';
+import { show as procurementShow } from '@/actions/App/Http/Controllers/EquipmentProcurementController';
 import {
     index as receiptIndex,
     edit,
@@ -18,6 +16,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { __, intlLocale } from '@/lib/i18n';
 import type { Auth, EquipmentReceipt } from '@/types';
 
 interface PageProps {
@@ -25,82 +24,150 @@ interface PageProps {
     equipmentReceipt: EquipmentReceipt;
 }
 
-export default function EquipmentReceiptShow({ equipmentReceipt: r }: PageProps) {
+export default function EquipmentReceiptShow({
+    equipmentReceipt: r,
+}: PageProps) {
     const handleDelete = () => {
-        if (!confirm('Are you sure you want to delete this receipt?')) {
-return;
-}
+        if (!confirm(__('Are you sure you want to delete this receipt?'))) {
+            return;
+        }
 
         router.delete(destroy.url(r.id));
     };
 
     return (
         <>
-            <Head title={`Receipt Details - ${r.receipt_number}`} />
+            <Head
+                title={__('Receipt Details - :number', {
+                    number: r.receipt_number,
+                })}
+            />
 
-            <div className="flex flex-col gap-6 p-4 max-w-5xl mx-auto">
+            <div className="mx-auto flex max-w-5xl flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
                     <Heading
-                        title={`Equipment Receipt: ${r.receipt_number}`}
-                        description="View details and items received in this batch."
+                        title={__('Equipment Receipt: :number', {
+                            number: r.receipt_number,
+                        })}
+                        description={__(
+                            'View details and items received in this batch.',
+                        )}
                     />
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => router.get(edit.url(r.id))}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.get(edit.url(r.id))}
+                        >
                             <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            {__('Edit')}
                         </Button>
-                        <Button variant="destructive" size="sm" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={handleDelete}
+                        >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                     <Card className="md:col-span-2">
                         <CardHeader>
-                            <CardTitle>Received Items</CardTitle>
-                            <CardDescription>Items arriving from procurement {r.equipment_procurement?.procurement_number}</CardDescription>
+                            <CardTitle>{__('Received Items')}</CardTitle>
+                            <CardDescription>
+                                {__('Items arriving from procurement :number', {
+                                    number:
+                                        r.equipment_procurement
+                                            ?.procurement_number ?? '',
+                                })}
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="border rounded-md overflow-hidden">
+                            <div className="overflow-hidden rounded-md border">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="bg-muted/50 border-b">
-                                            <th className="p-3 text-left">Item / Model</th>
-                                            <th className="p-3 text-center">Qty</th>
-                                            <th className="p-3 text-center">Status</th>
-                                            <th className="p-3 text-right">Unit Price</th>
+                                        <tr className="border-b bg-muted/50">
+                                            <th className="p-3 text-left">
+                                                {__('Item / Model')}
+                                            </th>
+                                            <th className="p-3 text-center">
+                                                {__('Qty')}
+                                            </th>
+                                            <th className="p-3 text-center">
+                                                {__('Status')}
+                                            </th>
+                                            <th className="p-3 text-right">
+                                                {__('Unit Price')}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {r.equipment_receipt_items?.map((item) => (
-                                            <tr key={item.id} className="border-b last:border-0">
-                                                <td className="p-3">
-                                                    <div className="font-medium">
-                                                        {item.equipment_procurement_item?.equipment_model?.model_name || item.equipment_procurement_item?.name}
-                                                    </div>
-                                                    {item.status === 'rejected' && item.rejection_reason && (
-                                                        <div className="text-xs mt-1 text-destructive font-medium italic">
-                                                            Reason: {item.rejection_reason}
+                                        {r.equipment_receipt_items?.map(
+                                            (item) => (
+                                                <tr
+                                                    key={item.id}
+                                                    className="border-b last:border-0"
+                                                >
+                                                    <td className="p-3">
+                                                        <div className="font-medium">
+                                                            {item
+                                                                .equipment_procurement_item
+                                                                ?.equipment_model
+                                                                ?.model_name ||
+                                                                item
+                                                                    .equipment_procurement_item
+                                                                    ?.name}
                                                         </div>
-                                                    )}
-                                                </td>
-                                                <td className="p-3 text-center font-bold">{item.quantity}</td>
-                                                <td className="p-3 text-center">
-                                                    <div className="flex justify-center">
-                                                        {item.status === 'accepted' ? (
-                                                            <Badge className="bg-green-600 border-none capitalize"><CheckCircle2 className="mr-1 h-3 w-3" /> Accepted</Badge>
-                                                        ) : (
-                                                            <Badge variant="destructive" className="capitalize"><XCircle className="mr-1 h-3 w-3" /> Rejected</Badge>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="p-3 text-right">
-                                                    {item.unit_price ? `$${parseFloat(item.unit_price).toLocaleString()}` : '-'}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                        {item.status ===
+                                                            'rejected' &&
+                                                            item.rejection_reason && (
+                                                                <div className="mt-1 text-xs font-medium text-destructive italic">
+                                                                    {__(
+                                                                        'Reason: :reason',
+                                                                        {
+                                                                            reason: item.rejection_reason,
+                                                                        },
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                    </td>
+                                                    <td className="p-3 text-center font-bold">
+                                                        {item.quantity}
+                                                    </td>
+                                                    <td className="p-3 text-center">
+                                                        <div className="flex justify-center">
+                                                            {item.status ===
+                                                            'accepted' ? (
+                                                                <Badge className="border-none bg-green-600 capitalize">
+                                                                    <CheckCircle2 className="mr-1 h-3 w-3" />{' '}
+                                                                    {__(
+                                                                        'Accepted',
+                                                                    )}
+                                                                </Badge>
+                                                            ) : (
+                                                                <Badge
+                                                                    variant="destructive"
+                                                                    className="capitalize"
+                                                                >
+                                                                    <XCircle className="mr-1 h-3 w-3" />{' '}
+                                                                    {__(
+                                                                        'Rejected',
+                                                                    )}
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-3 text-right">
+                                                        {item.unit_price
+                                                            ? `$${parseFloat(item.unit_price).toLocaleString(intlLocale())}`
+                                                            : '-'}
+                                                    </td>
+                                                </tr>
+                                            ),
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -110,37 +177,77 @@ return;
                     <div className="space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Receipt Info</CardTitle>
+                                <CardTitle className="text-lg">
+                                    {__('Receipt Info')}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-sm">
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Arrival Date</span>
-                                    <span className="font-medium">{new Date(r.receipt_date).toLocaleDateString()}</span>
+                                    <span className="text-muted-foreground">
+                                        {__('Arrival Date')}
+                                    </span>
+                                    <span className="font-medium">
+                                        {new Date(
+                                            r.receipt_date,
+                                        ).toLocaleDateString(intlLocale())}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Supplier</span>
-                                    <span className="font-medium">{r.supplier_name || '-'}</span>
+                                    <span className="text-muted-foreground">
+                                        {__('Supplier')}
+                                    </span>
+                                    <span className="font-medium">
+                                        {r.supplier_name || '-'}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Invoice / Delivery #</span>
-                                    <span className="font-medium">{r.invoice_number || '-'}</span>
+                                    <span className="text-muted-foreground">
+                                        {__('Invoice / Delivery #')}
+                                    </span>
+                                    <span className="font-medium">
+                                        {r.invoice_number || '-'}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Received By</span>
-                                    <span className="font-medium">{r.received_by_employee?.name || 'Unknown'}</span>
+                                    <span className="text-muted-foreground">
+                                        {__('Received By')}
+                                    </span>
+                                    <span className="font-medium">
+                                        {r.received_by_employee?.name ||
+                                            __('Unknown')}
+                                    </span>
                                 </div>
                             </CardContent>
                         </Card>
 
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Linked Procurement</CardTitle>
+                                <CardTitle className="text-lg">
+                                    {__('Linked Procurement')}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2 text-sm">
-                                <div className="font-bold">{r.equipment_procurement?.procurement_number}</div>
-                                <div className="text-muted-foreground">{r.equipment_procurement?.title}</div>
-                                <Button variant="link" className="p-0 h-auto" onClick={() => router.get(procurementShow.url(r.equipment_procurement_id))}>
-                                    View Full Procurement
+                                <div className="font-bold">
+                                    {
+                                        r.equipment_procurement
+                                            ?.procurement_number
+                                    }
+                                </div>
+                                <div className="text-muted-foreground">
+                                    {r.equipment_procurement?.title}
+                                </div>
+                                <Button
+                                    variant="link"
+                                    className="h-auto p-0"
+                                    onClick={() =>
+                                        router.get(
+                                            procurementShow.url(
+                                                r.equipment_procurement_id,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    {__('View Full Procurement')}
                                 </Button>
                             </CardContent>
                         </Card>
@@ -153,8 +260,8 @@ return;
 
 EquipmentReceiptShow.layout = {
     breadcrumbs: [
-        { title: 'Equipment', href: '#' },
-        { title: 'Receipts', href: receiptIndex.url() },
-        { title: 'Details', href: '#' },
+        { title: __('Equipment'), href: '#' },
+        { title: __('Receipts'), href: receiptIndex.url() },
+        { title: __('Details'), href: '#' },
     ],
 };

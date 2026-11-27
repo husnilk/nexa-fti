@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { __ } from '@/lib/i18n';
 import { login } from '@/routes';
 
 type Props = {
@@ -29,11 +30,11 @@ export default function Register({ passwordRules }: Props) {
 
     return (
         <>
-            <Head title="Register" />
+            <Head title={__('Register')} />
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">{__('Name')}</Label>
                         <Input
                             id="name"
                             type="text"
@@ -43,13 +44,13 @@ export default function Register({ passwordRules }: Props) {
                             autoFocus
                             tabIndex={1}
                             autoComplete="name"
-                            placeholder="Full name"
+                            placeholder={__('Full name')}
                         />
                         <InputError message={errors.name} />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label htmlFor="email">{__('Email address')}</Label>
                         <Input
                             id="email"
                             type="email"
@@ -64,29 +65,35 @@ export default function Register({ passwordRules }: Props) {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">{__('Password')}</Label>
                         <PasswordInput
                             id="password"
                             value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
+                            onChange={(e) =>
+                                setData('password', e.target.value)
+                            }
                             required
                             tabIndex={3}
                             autoComplete="new-password"
-                            placeholder="Password"
+                            placeholder={__('Password')}
                         />
                         <InputError message={errors.password} />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password_confirmation">Confirm password</Label>
+                        <Label htmlFor="password_confirmation">
+                            {__('Confirm password')}
+                        </Label>
                         <PasswordInput
                             id="password_confirmation"
                             value={data.password_confirmation}
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                            onChange={(e) =>
+                                setData('password_confirmation', e.target.value)
+                            }
                             required
                             tabIndex={4}
                             autoComplete="new-password"
-                            placeholder="Confirm password"
+                            placeholder={__('Confirm password')}
                         />
                         <InputError message={errors.password_confirmation} />
                     </div>
@@ -98,14 +105,14 @@ export default function Register({ passwordRules }: Props) {
                         disabled={processing}
                     >
                         {processing && <Spinner />}
-                        Create account
+                        {__('Create account')}
                     </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
+                    {__('Already have an account?')}{' '}
                     <TextLink href={login()} tabIndex={6}>
-                        Log in
+                        {__('Log in')}
                     </TextLink>
                 </div>
             </form>
@@ -114,6 +121,6 @@ export default function Register({ passwordRules }: Props) {
 }
 
 Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
+    title: __('Create an account'),
+    description: __('Enter your details below to create your account'),
 };

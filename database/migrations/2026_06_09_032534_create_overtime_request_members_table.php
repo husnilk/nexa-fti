@@ -23,6 +23,8 @@ return new class extends Migration
             $table->dateTime('actual_start_time')->nullable();
             $table->dateTime('actual_end_time')->nullable();
             $table->decimal('actual_hours', 5, 2)->nullable();
+            $table->text('activity')->nullable();
+            $table->text('outcome')->nullable();
             $table->timestamps();
         });
 

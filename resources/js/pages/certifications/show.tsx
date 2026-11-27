@@ -1,10 +1,24 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Award, Building2, Calendar, ClipboardCheck, Download, Pencil, ShieldAlert, ShieldCheck, User } from 'lucide-react';
+import {
+    ArrowLeft,
+    Award,
+    Calendar,
+    ClipboardCheck,
+    Download,
+    Pencil,
+    ShieldAlert,
+    ShieldCheck,
+    User,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { index as certificationsIndex, edit as certificationEdit } from '@/routes/certifications';
+import { __, intlLocale } from '@/lib/i18n';
+import {
+    index as certificationsIndex,
+    edit as certificationEdit,
+} from '@/routes/certifications';
 
 type EmployeeCertification = {
     id: string;
@@ -26,7 +40,7 @@ type PageProps = {
 };
 
 const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString(intlLocale(), {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -34,75 +48,108 @@ const formatDate = (dateString: string) => {
 };
 
 export default function CertificationShow({ certification }: PageProps) {
-    const isExpired = certification.expiry_date ? new Date(certification.expiry_date) < new Date() : false;
+    const isExpired = certification.expiry_date
+        ? new Date(certification.expiry_date) < new Date()
+        : false;
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title={`Certification: ${certification.name}`} />
-            
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head
+                title={__('Certification: :name', { name: certification.name })}
+            />
+
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div className="flex items-center gap-4">
                     <Link href={certificationsIndex()}>
-                        <Button variant="outline" size="icon" className="cursor-pointer">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="cursor-pointer"
+                        >
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                        <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                             {certification.name}
                         </h1>
-                        <p className="text-muted-foreground mt-1">
-                            Issued by: {certification.institution}
+                        <p className="mt-1 text-muted-foreground">
+                            {__('Issued by: :institution', {
+                                institution: certification.institution,
+                            })}
                         </p>
                     </div>
                 </div>
                 <Link href={certificationEdit.url(certification.id)}>
-                    <Button className="cursor-pointer gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-md">
-                        <Pencil className="h-4 w-4" /> Edit Certification
+                    <Button className="cursor-pointer gap-2 bg-primary font-medium text-primary-foreground shadow-md hover:bg-primary/90">
+                        <Pencil className="h-4 w-4" />{' '}
+                        {__('Edit Certification')}
                     </Button>
                 </Link>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Certification Information */}
-                <Card className="border dark:border-zinc-800 shadow-sm">
+                <Card className="border shadow-sm dark:border-zinc-800">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-xl font-semibold">
                             <Award className="size-5 text-primary" />
-                            Certification Details
+                            {__('Certification Details')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Certification Name</span>
-                            <span className="font-semibold text-zinc-900 dark:text-zinc-100">{certification.name}</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Certification Name')}
+                            </span>
+                            <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                                {certification.name}
+                            </span>
                         </div>
                         <Separator className="dark:bg-zinc-800" />
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Issuing Institution</span>
-                            <span className="font-medium text-zinc-800 dark:text-zinc-200">{certification.institution}</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Issuing Institution')}
+                            </span>
+                            <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                                {certification.institution}
+                            </span>
                         </div>
                         <Separator className="dark:bg-zinc-800" />
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Credential Number / ID</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Credential Number / ID')}
+                            </span>
                             {certification.certification_number ? (
-                                <code className="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-800 dark:text-zinc-300">
+                                <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
                                     {certification.certification_number}
                                 </code>
                             ) : (
-                                <span className="text-zinc-400 font-medium">—</span>
+                                <span className="font-medium text-zinc-400">
+                                    —
+                                </span>
                             )}
                         </div>
                         <Separator className="dark:bg-zinc-800" />
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Status</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Status')}
+                            </span>
                             {isExpired ? (
-                                <Badge variant="destructive" className="gap-1.5 py-0.5 px-2.5">
-                                    <ShieldAlert className="h-3.5 w-3.5" /> Expired
+                                <Badge
+                                    variant="destructive"
+                                    className="gap-1.5 px-2.5 py-0.5"
+                                >
+                                    <ShieldAlert className="h-3.5 w-3.5" />{' '}
+                                    {__('Expired')}
                                 </Badge>
                             ) : (
-                                <Badge variant="default" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/35 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 py-0.5 px-2.5">
-                                    <ShieldCheck className="h-3.5 w-3.5 mr-1 inline" /> Active
+                                <Badge
+                                    variant="default"
+                                    className="border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/35 dark:text-emerald-400"
+                                >
+                                    <ShieldCheck className="mr-1 inline h-3.5 w-3.5" />{' '}
+                                    {__('Active')}
                                 </Badge>
                             )}
                         </div>
@@ -110,24 +157,29 @@ export default function CertificationShow({ certification }: PageProps) {
                 </Card>
 
                 {/* Validity and Document Information */}
-                <Card className="border dark:border-zinc-800 shadow-sm">
+                <Card className="border shadow-sm dark:border-zinc-800">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-xl font-semibold">
                             <ClipboardCheck className="size-5 text-primary" />
-                            Validity & Document
+                            {__('Validity & Document')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Employee Name</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Employee Name')}
+                            </span>
                             <div className="flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
                                 <User className="size-4 text-zinc-500" />
-                                {certification.employee?.name || 'Unknown Employee'}
+                                {certification.employee?.name ||
+                                    __('Unknown Employee')}
                             </div>
                         </div>
                         <Separator className="dark:bg-zinc-800" />
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Issue Date</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Issue Date')}
+                            </span>
                             <div className="flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-300">
                                 <Calendar className="size-4 text-zinc-500" />
                                 {formatDate(certification.issue_date)}
@@ -135,30 +187,39 @@ export default function CertificationShow({ certification }: PageProps) {
                         </div>
                         <Separator className="dark:bg-zinc-800" />
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Expiry Date</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Expiry Date')}
+                            </span>
                             <div className="flex items-center gap-2 font-medium text-zinc-700 dark:text-zinc-300">
                                 <Calendar className="size-4 text-zinc-500" />
                                 {certification.expiry_date ? (
                                     formatDate(certification.expiry_date)
                                 ) : (
-                                    <span className="text-emerald-600 font-semibold">Lifetime / No Expiry</span>
+                                    <span className="font-semibold text-emerald-600">
+                                        {__('Lifetime / No Expiry')}
+                                    </span>
                                 )}
                             </div>
                         </div>
                         <Separator className="dark:bg-zinc-800" />
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-muted-foreground">Certificate Document</span>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {__('Certificate Document')}
+                            </span>
                             {certification.certificate_file ? (
                                 <a
                                     href={`/storage/${certification.certificate_file}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline hover:text-primary/80 transition-colors"
+                                    className="inline-flex items-center gap-1.5 text-sm font-bold text-primary transition-colors hover:text-primary/80 hover:underline"
                                 >
-                                    <Download className="h-4.5 w-4.5" /> View / Download Document
+                                    <Download className="h-4.5 w-4.5" />{' '}
+                                    {__('View / Download Document')}
                                 </a>
                             ) : (
-                                <span className="text-zinc-400 font-medium">— No Document Uploaded</span>
+                                <span className="font-medium text-zinc-400">
+                                    — {__('No Document Uploaded')}
+                                </span>
                             )}
                         </div>
                     </CardContent>
@@ -170,8 +231,8 @@ export default function CertificationShow({ certification }: PageProps) {
 
 CertificationShow.layout = {
     breadcrumbs: [
-        { title: 'Trainings', href: '#' },
-        { title: 'Certifications', href: certificationsIndex() },
-        { title: 'Certification Detail', href: '#' },
+        { title: __('Trainings'), href: '#' },
+        { title: __('Certifications'), href: certificationsIndex() },
+        { title: __('Certification Detail'), href: '#' },
     ],
 };

@@ -1,5 +1,6 @@
 import React from 'react';
+import { __ } from '@/lib/i18n';
 
 export default function Page() {
-    return <div>Committee budgets create</div>;
+    return <div>{__('Committee budgets create')}</div>;
 }

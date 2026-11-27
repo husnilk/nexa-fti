@@ -106,6 +106,6 @@ class InventoryIssueController extends Controller
         });
 
         return redirect()->route('inventory-requests.show', $validated['inventory_request_id'])
-            ->with('success', 'Items issued and stock updated.');
+            ->with('success', __('Items issued and stock updated.'));
     }
 }

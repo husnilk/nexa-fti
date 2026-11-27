@@ -31,6 +31,16 @@ class RolePermissionsSeeder extends Seeder
         Permission::findOrCreate('room.request', 'web');
         Permission::findOrCreate('room.approval', 'web');
         Permission::findOrCreate('certification.manage', 'web');
+        Permission::findOrCreate('period.manage', 'web');
+        Permission::findOrCreate('rubric.view', 'web');
+        Permission::findOrCreate('rubric.manage', 'web');
+        Permission::findOrCreate('attendance.view', 'web');
+        Permission::findOrCreate('attendance.manage', 'web');
+        Permission::findOrCreate('ept.view', 'web');
+        Permission::findOrCreate('ept.manage', 'web');
+        Permission::findOrCreate('activity.view', 'web');
+        Permission::findOrCreate('activity.manage', 'web');
+        Permission::findOrCreate('validator.manage', 'web');
 
         foreach ($modules as $module) {
             foreach ($abilities as $ability) {

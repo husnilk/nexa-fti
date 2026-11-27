@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'name',
     'code',
     'is_active',
+    'has_pagu',
     'description',
 ])]
 class Organization extends Model
@@ -46,6 +47,7 @@ class Organization extends Model
     {
         return [
             'is_active' => 'boolean',
+            'has_pagu' => 'boolean',
         ];
     }
 
@@ -73,5 +75,13 @@ class Organization extends Model
     public function organizationPositions(): HasMany
     {
         return $this->hasMany(OrganizationPosition::class)->orderBy('grade');
+    }
+
+    /**
+     * Get the period allocations of this organization.
+     */
+    public function periodOrganizations(): HasMany
+    {
+        return $this->hasMany(PeriodOrganization::class);
     }
 }

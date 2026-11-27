@@ -101,6 +101,6 @@ class InventoryReceiptController extends Controller
         });
 
         return redirect()->route('inventory-procurements.show', $validated['inventory_procurement_id'])
-            ->with('success', 'Items received and stock updated.');
+            ->with('success', __('Items received and stock updated.'));
     }
 }

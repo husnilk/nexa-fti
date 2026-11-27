@@ -13,6 +13,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { __ } from '@/lib/i18n';
 import type { Auth, Employee, LeaveType } from '@/types';
 
 interface PageProps {
@@ -44,40 +45,57 @@ export default function LeaveRequestCreate({
     };
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title="New Leave Request" />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('New Leave Request')} />
 
             <div className="flex items-center gap-4 border-b pb-5 dark:border-zinc-800">
                 <Link href={LeaveRequestController.index.url()}>
-                    <Button variant="outline" size="icon" className="cursor-pointer">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="cursor-pointer"
+                    >
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                 </Link>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        New Leave Request
+                        {__('New Leave Request')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Submit a new leave request for approval workflow.
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Submit a new leave request for approval workflow.',
+                        )}
                     </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="mx-auto w-full max-w-4xl grid gap-6 md:grid-cols-2">
+            <form
+                onSubmit={handleSubmit}
+                className="mx-auto grid w-full max-w-4xl gap-6 md:grid-cols-2"
+            >
                 <Card className="md:col-span-2">
-                    <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
+                    <CardContent className="grid gap-6 pt-6 md:grid-cols-2">
                         <div className="md:col-span-2">
-                            <h3 className="text-lg font-semibold border-b pb-2 mb-2">Request Information</h3>
+                            <h3 className="mb-2 border-b pb-2 text-lg font-semibold">
+                                {__('Request Information')}
+                            </h3>
                         </div>
-                        
+
                         <div className="grid gap-2">
-                            <Label htmlFor="employee_id">Employee</Label>
+                            <Label htmlFor="employee_id">
+                                {__('Employee')}
+                            </Label>
                             <Select
                                 value={data.employee_id}
-                                onValueChange={(val) => setData('employee_id', val)}
+                                onValueChange={(val) =>
+                                    setData('employee_id', val)
+                                }
                             >
                                 <SelectTrigger id="employee_id">
-                                    <SelectValue placeholder="Select employee" />
+                                    <SelectValue
+                                        placeholder={__('Select employee')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employees.map((emp) => (
@@ -95,7 +113,9 @@ export default function LeaveRequestCreate({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="leave_type_id">Leave Type</Label>
+                            <Label htmlFor="leave_type_id">
+                                {__('Leave Type')}
+                            </Label>
                             <Select
                                 value={data.leave_type_id}
                                 onValueChange={(val) =>
@@ -103,7 +123,9 @@ export default function LeaveRequestCreate({
                                 }
                             >
                                 <SelectTrigger id="leave_type_id">
-                                    <SelectValue placeholder="Select leave type" />
+                                    <SelectValue
+                                        placeholder={__('Select leave type')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {leaveTypes.map((type) => (
@@ -125,7 +147,9 @@ export default function LeaveRequestCreate({
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="start_date">Start Date</Label>
+                                <Label htmlFor="start_date">
+                                    {__('Start Date')}
+                                </Label>
                                 <Input
                                     id="start_date"
                                     type="date"
@@ -142,7 +166,9 @@ export default function LeaveRequestCreate({
                                 )}
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="end_date">End Date</Label>
+                                <Label htmlFor="end_date">
+                                    {__('End Date')}
+                                </Label>
                                 <Input
                                     id="end_date"
                                     type="date"
@@ -161,14 +187,19 @@ export default function LeaveRequestCreate({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="total_days">Total Days</Label>
+                            <Label htmlFor="total_days">
+                                {__('Total Days')}
+                            </Label>
                             <Input
                                 id="total_days"
                                 type="number"
                                 min="1"
                                 value={data.total_days}
                                 onChange={(e) =>
-                                    setData('total_days', parseInt(e.target.value) || 0)
+                                    setData(
+                                        'total_days',
+                                        parseInt(e.target.value) || 0,
+                                    )
                                 }
                                 required
                             />
@@ -180,12 +211,16 @@ export default function LeaveRequestCreate({
                         </div>
 
                         <div className="grid gap-2 md:col-span-2">
-                            <Label htmlFor="reason">Reason</Label>
+                            <Label htmlFor="reason">{__('Reason')}</Label>
                             <Textarea
                                 id="reason"
                                 value={data.reason}
-                                onChange={(e) => setData('reason', e.target.value)}
-                                placeholder="State the reason for your leave request..."
+                                onChange={(e) =>
+                                    setData('reason', e.target.value)
+                                }
+                                placeholder={__(
+                                    'State the reason for your leave request...',
+                                )}
                                 required
                                 className="min-h-[100px]"
                             />
@@ -199,13 +234,15 @@ export default function LeaveRequestCreate({
                 </Card>
 
                 <Card>
-                    <CardContent className="pt-6 grid gap-6">
-                        <h3 className="text-lg font-semibold border-b pb-2 mb-2">Approvers</h3>
-                        
+                    <CardContent className="grid gap-6 pt-6">
+                        <h3 className="mb-2 border-b pb-2 text-lg font-semibold">
+                            {__('Approvers')}
+                        </h3>
+
                         <div className="grid gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="approver_level_1_id">
-                                    Level 1 Approver
+                                    {__('Level 1 Approver')}
                                 </Label>
                                 <Select
                                     value={data.approver_level_1_id}
@@ -214,11 +251,18 @@ export default function LeaveRequestCreate({
                                     }
                                 >
                                     <SelectTrigger id="approver_level_1_id">
-                                        <SelectValue placeholder="Select level 1 approver" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select level 1 approver',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {employees.map((emp) => (
-                                            <SelectItem key={emp.id} value={emp.id}>
+                                            <SelectItem
+                                                key={emp.id}
+                                                value={emp.id}
+                                            >
                                                 {emp.name}
                                             </SelectItem>
                                         ))}
@@ -232,7 +276,7 @@ export default function LeaveRequestCreate({
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="approver_level_2_id">
-                                    Level 2 Approver
+                                    {__('Level 2 Approver')}
                                 </Label>
                                 <Select
                                     value={data.approver_level_2_id}
@@ -241,11 +285,18 @@ export default function LeaveRequestCreate({
                                     }
                                 >
                                     <SelectTrigger id="approver_level_2_id">
-                                        <SelectValue placeholder="Select level 2 approver" />
+                                        <SelectValue
+                                            placeholder={__(
+                                                'Select level 2 approver',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {employees.map((emp) => (
-                                            <SelectItem key={emp.id} value={emp.id}>
+                                            <SelectItem
+                                                key={emp.id}
+                                                value={emp.id}
+                                            >
                                                 {emp.name}
                                             </SelectItem>
                                         ))}
@@ -262,17 +313,25 @@ export default function LeaveRequestCreate({
                 </Card>
 
                 <Card>
-                    <CardContent className="pt-6 grid gap-6">
-                        <h3 className="text-lg font-semibold border-b pb-2 mb-2">Contact Info (During Leave)</h3>
-                        
+                    <CardContent className="grid gap-6 pt-6">
+                        <h3 className="mb-2 border-b pb-2 text-lg font-semibold">
+                            {__('Contact Info (During Leave)')}
+                        </h3>
+
                         <div className="grid gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="address_leave">Address</Label>
+                                <Label htmlFor="address_leave">
+                                    {__('Address')}
+                                </Label>
                                 <Input
                                     id="address_leave"
                                     value={data.address_leave}
-                                    onChange={(e) => setData('address_leave', e.target.value)}
-                                    placeholder="Temporary address during leave"
+                                    onChange={(e) =>
+                                        setData('address_leave', e.target.value)
+                                    }
+                                    placeholder={__(
+                                        'Temporary address during leave',
+                                    )}
                                 />
                                 {errors.address_leave && (
                                     <p className="text-sm text-destructive">
@@ -281,12 +340,16 @@ export default function LeaveRequestCreate({
                                 )}
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="contact_leave">Contact Number</Label>
+                                <Label htmlFor="contact_leave">
+                                    {__('Contact Number')}
+                                </Label>
                                 <Input
                                     id="contact_leave"
                                     value={data.contact_leave}
-                                    onChange={(e) => setData('contact_leave', e.target.value)}
-                                    placeholder="Phone number"
+                                    onChange={(e) =>
+                                        setData('contact_leave', e.target.value)
+                                    }
+                                    placeholder={__('Phone number')}
                                 />
                                 {errors.contact_leave && (
                                     <p className="text-sm text-destructive">
@@ -298,14 +361,22 @@ export default function LeaveRequestCreate({
                     </CardContent>
                 </Card>
 
-                <div className="md:col-span-2 flex justify-end gap-3 pt-4">
+                <div className="flex justify-end gap-3 pt-4 md:col-span-2">
                     <Link href={LeaveRequestController.index.url()}>
-                        <Button type="button" variant="outline" className="cursor-pointer">
-                            Cancel
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                        >
+                            {__('Cancel')}
                         </Button>
                     </Link>
-                    <Button type="submit" disabled={processing} className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-md gap-2">
-                        <Save className="h-4 w-4" /> Submit Request
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        className="cursor-pointer gap-2 bg-primary font-medium text-primary-foreground shadow-md hover:bg-primary/90"
+                    >
+                        <Save className="h-4 w-4" /> {__('Submit Request')}
                     </Button>
                 </div>
             </form>
@@ -315,8 +386,11 @@ export default function LeaveRequestCreate({
 
 LeaveRequestCreate.layout = {
     breadcrumbs: [
-        { title: 'HR', href: '#' },
-        { title: 'Leave Requests', href: LeaveRequestController.index.url() },
-        { title: 'New Request', href: '#' },
+        { title: __('HR'), href: '#' },
+        {
+            title: __('Leave Requests'),
+            href: LeaveRequestController.index.url(),
+        },
+        { title: __('New Request'), href: '#' },
     ],
 };

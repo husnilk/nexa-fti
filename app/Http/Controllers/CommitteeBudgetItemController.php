@@ -33,10 +33,10 @@ class CommitteeBudgetItemController extends Controller
         $request->session()->flash('committeeBudgetItem.id', $committeeBudgetItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee budget item created successfully.');
+            return redirect()->back()->with('success', __('Committee budget item created successfully.'));
         }
 
-        return redirect()->route('committee-budget-items.index')->with('success', 'Committee budget item created successfully.');
+        return redirect()->route('committee-budget-items.index')->with('success', __('Committee budget item created successfully.'));
     }
 
     public function show(Request $request, CommitteeBudgetItem $committeeBudgetItem): Response
@@ -62,10 +62,10 @@ class CommitteeBudgetItemController extends Controller
         $request->session()->flash('committeeBudgetItem.id', $committeeBudgetItem->id);
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee budget item updated successfully.');
+            return redirect()->back()->with('success', __('Committee budget item updated successfully.'));
         }
 
-        return redirect()->route('committee-budget-items.index')->with('success', 'Committee budget item updated successfully.');
+        return redirect()->route('committee-budget-items.index')->with('success', __('Committee budget item updated successfully.'));
     }
 
     public function destroy(Request $request, CommitteeBudgetItem $committeeBudgetItem): RedirectResponse
@@ -73,9 +73,9 @@ class CommitteeBudgetItemController extends Controller
         $committeeBudgetItem->delete();
 
         if ($request->header('X-Inertia')) {
-            return redirect()->back()->with('success', 'Committee budget item deleted successfully.');
+            return redirect()->back()->with('success', __('Committee budget item deleted successfully.'));
         }
 
-        return redirect()->route('committee-budget-items.index')->with('success', 'Committee budget item deleted successfully.');
+        return redirect()->route('committee-budget-items.index')->with('success', __('Committee budget item deleted successfully.'));
     }
 }

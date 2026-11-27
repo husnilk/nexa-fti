@@ -1,5 +1,16 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, Plus, Trash2, Calendar, FileText, CheckCircle, Archive, Edit3, Download, User } from 'lucide-react';
+import {
+    ArrowLeft,
+    Plus,
+    Trash2,
+    Calendar,
+    FileText,
+    CheckCircle,
+    Archive,
+    Edit3,
+    Download,
+    User,
+} from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import DocumentController from '@/actions/App/Http/Controllers/DocumentController';
@@ -17,7 +28,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { index as documentsIndex, edit as documentEdit } from '@/routes/documents';
+import { __, intlLocale } from '@/lib/i18n';
+import {
+    index as documentsIndex,
+    edit as documentEdit,
+} from '@/routes/documents';
 
 type Employee = {
     id: string;
@@ -57,9 +72,10 @@ type PageProps = {
 };
 
 export default function DocumentShow({ document }: PageProps) {
-    const [deletingRevision, setDeletingRevision] = useState<DocumentRevision | null>(null);
+    const [deletingRevision, setDeletingRevision] =
+        useState<DocumentRevision | null>(null);
     const [uploadingRevision, setUploadingRevision] = useState(false);
-    
+
     const today = new Date().toISOString().split('T')[0];
     const { data, setData, post, processing, errors, reset } = useForm({
         document_id: document.id,
@@ -71,15 +87,23 @@ export default function DocumentShow({ document }: PageProps) {
     });
 
     function handlePublish(): void {
-        router.post(DocumentController.publish.url(document.id), {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            DocumentController.publish.url(document.id),
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     }
 
     function handleArchive(): void {
-        router.post(DocumentController.archive.url(document.id), {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            DocumentController.archive.url(document.id),
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     }
 
     function submitRevision(e: FormEvent): void {
@@ -95,33 +119,51 @@ export default function DocumentShow({ document }: PageProps) {
 
     function destroyRevision(): void {
         if (!deletingRevision) {
-return;
-}
+            return;
+        }
 
-        router.delete(DocumentRevisionController.destroy.url(deletingRevision.id), {
-            preserveScroll: true,
-            onSuccess: () => setDeletingRevision(null),
-        });
+        router.delete(
+            DocumentRevisionController.destroy.url(deletingRevision.id),
+            {
+                preserveScroll: true,
+                onSuccess: () => setDeletingRevision(null),
+            },
+        );
     }
+
+    const statusLabels: Record<string, string> = {
+        draft: __('Draft'),
+        published: __('Published'),
+        archived: __('Archived'),
+    };
 
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'published':
                 return (
-                    <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/10 border-green-500/30 gap-1 capitalize">
-                        <CheckCircle className="size-3" /> {status}
+                    <Badge className="gap-1 border-green-500/30 bg-green-500/10 text-green-500 capitalize hover:bg-green-500/10">
+                        <CheckCircle className="size-3" />{' '}
+                        {statusLabels[status] ?? status}
                     </Badge>
                 );
             case 'archived':
                 return (
-                    <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/10 border-amber-500/30 gap-1 capitalize">
-                        <Archive className="size-3" /> {status}
+                    <Badge
+                        variant="secondary"
+                        className="gap-1 border-amber-500/30 bg-amber-500/10 text-amber-500 capitalize hover:bg-amber-500/10"
+                    >
+                        <Archive className="size-3" />{' '}
+                        {statusLabels[status] ?? status}
                     </Badge>
                 );
             default:
                 return (
-                    <Badge variant="outline" className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/10 border-blue-500/30 gap-1 capitalize">
-                        <Edit3 className="size-3" /> {status}
+                    <Badge
+                        variant="outline"
+                        className="gap-1 border-blue-500/30 bg-blue-500/10 text-blue-500 capitalize hover:bg-blue-500/10"
+                    >
+                        <Edit3 className="size-3" />{' '}
+                        {statusLabels[status] ?? status}
                     </Badge>
                 );
         }
@@ -140,28 +182,42 @@ return;
                         </Button>
                         <Heading
                             title={document.title}
-                            description={document.document_no || 'No Document Number'}
+                            description={
+                                document.document_no || __('No Document Number')
+                            }
                         />
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                         {document.publish_status !== 'published' && (
-                            <Button onClick={handlePublish} variant="outline" className="text-green-500 border-green-500/30 hover:bg-green-500/10">
-                                <CheckCircle className="mr-2 size-4" /> Publish
+                            <Button
+                                onClick={handlePublish}
+                                variant="outline"
+                                className="border-green-500/30 text-green-500 hover:bg-green-500/10"
+                            >
+                                <CheckCircle className="mr-2 size-4" />{' '}
+                                {__('Publish')}
                             </Button>
                         )}
                         {document.publish_status === 'published' && (
-                            <Button onClick={handleArchive} variant="outline" className="text-amber-500 border-amber-500/30 hover:bg-amber-500/10">
-                                <Archive className="mr-2 size-4" /> Archive
+                            <Button
+                                onClick={handleArchive}
+                                variant="outline"
+                                className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+                            >
+                                <Archive className="mr-2 size-4" />{' '}
+                                {__('Archive')}
                             </Button>
                         )}
                         <Button asChild variant="outline">
                             <Link href={documentEdit.url(document.id)}>
-                                <Edit3 className="mr-2 size-4" /> Edit Metadata
+                                <Edit3 className="mr-2 size-4" />{' '}
+                                {__('Edit Metadata')}
                             </Link>
                         </Button>
                         <Button onClick={() => setUploadingRevision(true)}>
-                            <Plus className="mr-2 size-4" /> Upload Revision
+                            <Plus className="mr-2 size-4" />{' '}
+                            {__('Upload Revision')}
                         </Button>
                     </div>
                 </div>
@@ -170,65 +226,105 @@ return;
                     <div className="grid gap-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Revision History</CardTitle>
+                                <CardTitle className="text-lg">
+                                    {__('Revision History')}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="overflow-hidden rounded-lg border border-sidebar-border/70 dark:border-sidebar-border bg-card">
+                                <div className="overflow-hidden rounded-lg border border-sidebar-border/70 bg-card dark:border-sidebar-border">
                                     <div className="grid grid-cols-[80px_120px_120px_1fr_100px_90px] gap-4 border-b bg-muted/40 px-4 py-3 text-sm font-medium text-muted-foreground">
-                                        <span>Rev.</span>
-                                        <span>Rev. Date</span>
-                                        <span>Doc. Date</span>
-                                        <span>Uploaded By</span>
-                                        <span>Active</span>
-                                        <span className="text-right">Actions</span>
+                                        <span>{__('Rev.')}</span>
+                                        <span>{__('Rev. Date')}</span>
+                                        <span>{__('Doc. Date')}</span>
+                                        <span>{__('Uploaded By')}</span>
+                                        <span>{__('Active')}</span>
+                                        <span className="text-right">
+                                            {__('Actions')}
+                                        </span>
                                     </div>
 
-                                    {document.document_revisions.length === 0 ? (
+                                    {document.document_revisions.length ===
+                                    0 ? (
                                         <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                                            No revisions uploaded yet.
+                                            {__('No revisions uploaded yet.')}
                                         </div>
                                     ) : (
                                         <div className="divide-y">
-                                            {document.document_revisions.map((rev) => (
-                                                <div
-                                                    key={rev.id}
-                                                    className="grid grid-cols-[80px_120px_120px_1fr_100px_90px] items-center gap-4 px-4 py-3"
-                                                >
-                                                    <span className="font-semibold">v{rev.revision_no}</span>
-                                                    <span className="text-sm">{rev.revision_date}</span>
-                                                    <span className="text-sm font-mono">
-                                                        {rev.doc_date && rev.doc_month && rev.doc_year ? (
-                                                            `${rev.doc_date}/${rev.doc_month}/${rev.doc_year}`
-                                                        ) : (
-                                                            '-'
-                                                        )}
-                                                    </span>
-                                                    <span className="text-sm line-clamp-1">{rev.uploaded_by?.name || 'Unknown'}</span>
-                                                    <div>
-                                                        {rev.active ? (
-                                                            <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/10">Active</Badge>
-                                                        ) : (
-                                                            <Badge variant="secondary">Inactive</Badge>
-                                                        )}
+                                            {document.document_revisions.map(
+                                                (rev) => (
+                                                    <div
+                                                        key={rev.id}
+                                                        className="grid grid-cols-[80px_120px_120px_1fr_100px_90px] items-center gap-4 px-4 py-3"
+                                                    >
+                                                        <span className="font-semibold">
+                                                            v{rev.revision_no}
+                                                        </span>
+                                                        <span className="text-sm">
+                                                            {rev.revision_date}
+                                                        </span>
+                                                        <span className="font-mono text-sm">
+                                                            {rev.doc_date &&
+                                                            rev.doc_month &&
+                                                            rev.doc_year
+                                                                ? `${rev.doc_date}/${rev.doc_month}/${rev.doc_year}`
+                                                                : '-'}
+                                                        </span>
+                                                        <span className="line-clamp-1 text-sm">
+                                                            {rev.uploaded_by
+                                                                ?.name ||
+                                                                __('Unknown')}
+                                                        </span>
+                                                        <div>
+                                                            {rev.active ? (
+                                                                <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/10">
+                                                                    {__(
+                                                                        'Active',
+                                                                    )}
+                                                                </Badge>
+                                                            ) : (
+                                                                <Badge variant="secondary">
+                                                                    {__(
+                                                                        'Inactive',
+                                                                    )}
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex justify-end gap-1">
+                                                            <Button
+                                                                asChild
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                title={__(
+                                                                    'Download',
+                                                                )}
+                                                            >
+                                                                <a
+                                                                    href={`/storage/${rev.file_path}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                >
+                                                                    <Download className="size-4" />
+                                                                </a>
+                                                            </Button>
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                title={__(
+                                                                    'Delete Revision',
+                                                                )}
+                                                                onClick={() =>
+                                                                    setDeletingRevision(
+                                                                        rev,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Trash2 className="size-4 text-destructive" />
+                                                            </Button>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex justify-end gap-1">
-                                                        <Button asChild variant="ghost" size="icon" title="Download">
-                                                            <a href={`/storage/${rev.file_path}`} target="_blank" rel="noopener noreferrer">
-                                                                <Download className="size-4" />
-                                                            </a>
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            title="Delete Revision"
-                                                            onClick={() => setDeletingRevision(rev)}
-                                                        >
-                                                            <Trash2 className="size-4 text-destructive" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                ),
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -236,51 +332,82 @@ return;
                         </Card>
                     </div>
 
-                    <div className="grid gap-6 h-fit">
+                    <div className="grid h-fit gap-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Metadata</CardTitle>
+                                <CardTitle className="text-lg">
+                                    {__('Metadata')}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-4 text-sm">
                                 <div className="grid gap-1">
-                                    <span className="text-muted-foreground text-xs">Status</span>
-                                    <div>{getStatusBadge(document.publish_status)}</div>
+                                    <span className="text-xs text-muted-foreground">
+                                        {__('Status')}
+                                    </span>
+                                    <div>
+                                        {getStatusBadge(
+                                            document.publish_status,
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="grid gap-1">
-                                    <span className="text-muted-foreground text-xs">Document Type</span>
-                                    <span className="font-medium">{document.document_type.name}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {__('Document Type')}
+                                    </span>
+                                    <span className="font-medium">
+                                        {document.document_type.name}
+                                    </span>
                                 </div>
 
                                 <div className="grid gap-1">
-                                    <span className="text-muted-foreground text-xs">Organization Unit</span>
-                                    <span className="font-medium">{document.organization.name} ({document.organization.code})</span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {__('Organization Unit')}
+                                    </span>
+                                    <span className="font-medium">
+                                        {document.organization.name} (
+                                        {document.organization.code})
+                                    </span>
                                 </div>
 
-                                <div className="border-t pt-3 grid gap-2">
+                                <div className="grid gap-2 border-t pt-3">
                                     {document.published_by && (
                                         <div className="grid gap-1">
-                                            <span className="text-muted-foreground text-xs">Published By</span>
-                                            <span className="font-medium inline-flex items-center gap-1.5">
-                                                <User className="size-3.5 text-muted-foreground" /> {document.published_by.name}
+                                            <span className="text-xs text-muted-foreground">
+                                                {__('Published By')}
+                                            </span>
+                                            <span className="inline-flex items-center gap-1.5 font-medium">
+                                                <User className="size-3.5 text-muted-foreground" />{' '}
+                                                {document.published_by.name}
                                             </span>
                                             {document.published_at && (
-                                                <span className="text-muted-foreground text-xs font-mono">
-                                                    {new Date(document.published_at).toLocaleString()}
+                                                <span className="font-mono text-xs text-muted-foreground">
+                                                    {new Date(
+                                                        document.published_at,
+                                                    ).toLocaleString(
+                                                        intlLocale(),
+                                                    )}
                                                 </span>
                                             )}
                                         </div>
                                     )}
 
                                     {document.archived_by && (
-                                        <div className="grid gap-1 mt-2">
-                                            <span className="text-muted-foreground text-xs">Archived By</span>
-                                            <span className="font-medium inline-flex items-center gap-1.5">
-                                                <User className="size-3.5 text-muted-foreground" /> {document.archived_by.name}
+                                        <div className="mt-2 grid gap-1">
+                                            <span className="text-xs text-muted-foreground">
+                                                {__('Archived By')}
+                                            </span>
+                                            <span className="inline-flex items-center gap-1.5 font-medium">
+                                                <User className="size-3.5 text-muted-foreground" />{' '}
+                                                {document.archived_by.name}
                                             </span>
                                             {document.archived_at && (
-                                                <span className="text-muted-foreground text-xs font-mono">
-                                                    {new Date(document.archived_at).toLocaleString()}
+                                                <span className="font-mono text-xs text-muted-foreground">
+                                                    {new Date(
+                                                        document.archived_at,
+                                                    ).toLocaleString(
+                                                        intlLocale(),
+                                                    )}
                                                 </span>
                                             )}
                                         </div>
@@ -292,102 +419,165 @@ return;
                 </div>
             </div>
 
-            <Dialog open={uploadingRevision} onOpenChange={setUploadingRevision}>
+            <Dialog
+                open={uploadingRevision}
+                onOpenChange={setUploadingRevision}
+            >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Upload New Revision</DialogTitle>
+                        <DialogTitle>{__('Upload New Revision')}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submitRevision} className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="rev_file">File</Label>
-                            <Input 
-                                id="rev_file" 
-                                type="file" 
-                                onChange={(e) => setData('file', e.target.files?.[0] || null)}
-                                required 
+                            <Label htmlFor="rev_file">{__('File')}</Label>
+                            <Input
+                                id="rev_file"
+                                type="file"
+                                onChange={(e) =>
+                                    setData('file', e.target.files?.[0] || null)
+                                }
+                                required
                             />
-                            {errors.file && <p className="text-sm text-destructive">{errors.file}</p>}
+                            {errors.file && (
+                                <p className="text-sm text-destructive">
+                                    {errors.file}
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="rev_date">Revision Date</Label>
-                            <Input 
-                                id="rev_date" 
-                                type="date" 
+                            <Label htmlFor="rev_date">
+                                {__('Revision Date')}
+                            </Label>
+                            <Input
+                                id="rev_date"
+                                type="date"
                                 value={data.revision_date}
-                                onChange={(e) => setData('revision_date', e.target.value)}
-                                required 
+                                onChange={(e) =>
+                                    setData('revision_date', e.target.value)
+                                }
+                                required
                             />
-                            {errors.revision_date && <p className="text-sm text-destructive">{errors.revision_date}</p>}
+                            {errors.revision_date && (
+                                <p className="text-sm text-destructive">
+                                    {errors.revision_date}
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-3 gap-3">
                             <div className="grid gap-2">
-                                <Label htmlFor="rev_doc_date">Day</Label>
-                                <Input 
-                                    id="rev_doc_date" 
-                                    type="number" 
-                                    min="1" 
-                                    max="31" 
+                                <Label htmlFor="rev_doc_date">
+                                    {__('Day')}
+                                </Label>
+                                <Input
+                                    id="rev_doc_date"
+                                    type="number"
+                                    min="1"
+                                    max="31"
                                     value={data.doc_date}
-                                    onChange={(e) => setData('doc_date', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('doc_date', e.target.value)
+                                    }
                                 />
-                                {errors.doc_date && <p className="text-sm text-destructive">{errors.doc_date}</p>}
-                            </div>
-                            
-                            <div className="grid gap-2">
-                                <Label htmlFor="rev_doc_month">Month</Label>
-                                <Input 
-                                    id="rev_doc_month" 
-                                    type="number" 
-                                    min="1" 
-                                    max="12" 
-                                    value={data.doc_month}
-                                    onChange={(e) => setData('doc_month', e.target.value)}
-                                />
-                                {errors.doc_month && <p className="text-sm text-destructive">{errors.doc_month}</p>}
+                                {errors.doc_date && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.doc_date}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="rev_doc_year">Year</Label>
-                                <Input 
-                                    id="rev_doc_year" 
-                                    type="number" 
-                                    min="1900" 
-                                    max="2100" 
-                                    value={data.doc_year}
-                                    onChange={(e) => setData('doc_year', e.target.value)}
+                                <Label htmlFor="rev_doc_month">
+                                    {__('Month')}
+                                </Label>
+                                <Input
+                                    id="rev_doc_month"
+                                    type="number"
+                                    min="1"
+                                    max="12"
+                                    value={data.doc_month}
+                                    onChange={(e) =>
+                                        setData('doc_month', e.target.value)
+                                    }
                                 />
-                                {errors.doc_year && <p className="text-sm text-destructive">{errors.doc_year}</p>}
+                                {errors.doc_month && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.doc_month}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="rev_doc_year">
+                                    {__('Year')}
+                                </Label>
+                                <Input
+                                    id="rev_doc_year"
+                                    type="number"
+                                    min="1900"
+                                    max="2100"
+                                    value={data.doc_year}
+                                    onChange={(e) =>
+                                        setData('doc_year', e.target.value)
+                                    }
+                                />
+                                {errors.doc_year && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.doc_year}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
                         <DialogFooter className="pt-4">
-                            <Button type="button" variant="outline" onClick={() => setUploadingRevision(false)}>
-                                Cancel
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setUploadingRevision(false)}
+                            >
+                                {__('Cancel')}
                             </Button>
                             <Button type="submit" disabled={processing}>
-                                Upload
+                                {__('Upload')}
                             </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
 
-            <Dialog open={deletingRevision !== null} onOpenChange={(open) => !open && setDeletingRevision(null)}>
+            <Dialog
+                open={deletingRevision !== null}
+                onOpenChange={(open) => !open && setDeletingRevision(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Revision</DialogTitle>
+                        <DialogTitle>{__('Delete Revision')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm">
-                        Are you sure you want to delete revision <strong className="text-foreground">v{deletingRevision?.revision_no}</strong>? This will permanently delete the file from storage.
+                        {__('Are you sure you want to delete revision')}{' '}
+                        <strong className="text-foreground">
+                            v{deletingRevision?.revision_no}
+                        </strong>
+                        ?{' '}
+                        {__(
+                            'This will permanently delete the file from storage.',
+                        )}
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setDeletingRevision(null)}>
-                            Cancel
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setDeletingRevision(null)}
+                        >
+                            {__('Cancel')}
                         </Button>
-                        <Button type="button" variant="destructive" onClick={destroyRevision}>
-                            Delete
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={destroyRevision}
+                        >
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -398,7 +588,7 @@ return;
 
 DocumentShow.layout = {
     breadcrumbs: [
-        { title: 'Documents', href: documentsIndex() },
-        { title: 'Details', href: '#' },
+        { title: __('Documents'), href: documentsIndex() },
+        { title: __('Details'), href: '#' },
     ],
 };

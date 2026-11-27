@@ -15,6 +15,8 @@ declare module '@inertiajs/core' {
             app_debug: boolean;
             debug_users: { id: string; name: string; email: string }[];
             sidebarOpen: boolean;
+            locale: 'id' | 'en';
+            locales: Record<string, string>;
             [key: string]: unknown;
         };
     }

@@ -25,6 +25,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDebounce } from '@/hooks/use-debounce';
+import { __, intlLocale } from '@/lib/i18n';
 import {
     index as holidaysIndex,
     show as holidaysShow,
@@ -116,8 +117,8 @@ export default function HolidaysIndex({ holidays, filters }: PageProps) {
         event.preventDefault();
 
         if (!editingHoliday) {
-return;
-}
+            return;
+        }
 
         editForm.patch(HolidayController.update.url(editingHoliday.id), {
             preserveScroll: true,
@@ -127,8 +128,8 @@ return;
 
     function destroyHoliday(): void {
         if (!deletingHoliday) {
-return;
-}
+            return;
+        }
 
         router.delete(HolidayController.destroy.url(deletingHoliday.id), {
             preserveScroll: true,
@@ -138,12 +139,14 @@ return;
 
     return (
         <>
-            <Head title="Holidays" />
+            <Head title={__('Holidays')} />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <Heading
-                        title="Holidays"
-                        description="Manage company holidays and non-working days"
+                        title={__('Holidays')}
+                        description={__(
+                            'Manage company holidays and non-working days',
+                        )}
                     />
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
@@ -168,7 +171,7 @@ return;
                             <Search className="absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
                             <Input
                                 type="search"
-                                placeholder="Search holidays..."
+                                placeholder={__('Search holidays...')}
                                 className="h-9 pr-8 pl-8"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -189,7 +192,8 @@ return;
                                 onClick={() => setIsCreating(true)}
                                 className="h-9"
                             >
-                                <Plus className="mr-1 size-4" /> Add Holiday
+                                <Plus className="mr-1 size-4" />{' '}
+                                {__('Add Holiday')}
                             </Button>
                         )}
                     </div>
@@ -197,14 +201,14 @@ return;
 
                 <div className="overflow-hidden rounded-lg border border-sidebar-border/70 dark:border-sidebar-border">
                     <div className="grid min-w-[600px] grid-cols-[150px_minmax(200px,1fr)_120px] gap-4 border-b bg-muted/40 px-4 py-3 text-sm font-medium text-muted-foreground">
-                        <span>Date</span>
-                        <span>Holiday Name</span>
-                        <span className="text-right">Actions</span>
+                        <span>{__('Date')}</span>
+                        <span>{__('Holiday Name')}</span>
+                        <span className="text-right">{__('Actions')}</span>
                     </div>
 
                     {holidays.length === 0 ? (
                         <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                            No holidays found for this year.
+                            {__('No holidays found for this year.')}
                         </div>
                     ) : (
                         <div className="min-w-[600px] divide-y">
@@ -216,7 +220,7 @@ return;
                                     <span className="text-sm font-medium">
                                         {new Date(
                                             holiday.date,
-                                        ).toLocaleDateString('en-GB', {
+                                        ).toLocaleDateString(intlLocale(), {
                                             day: 'numeric',
                                             month: 'short',
                                             year: 'numeric',
@@ -230,7 +234,7 @@ return;
                                             asChild
                                             variant="ghost"
                                             size="icon"
-                                            title="View Detail"
+                                            title={__('View Detail')}
                                         >
                                             <Link
                                                 href={holidaysShow.url(
@@ -245,7 +249,7 @@ return;
                                                 type="button"
                                                 variant="ghost"
                                                 size="icon"
-                                                title="Edit"
+                                                title={__('Edit')}
                                                 onClick={() =>
                                                     openEditDialog(holiday)
                                                 }
@@ -258,7 +262,7 @@ return;
                                                 type="button"
                                                 variant="ghost"
                                                 size="icon"
-                                                title="Delete"
+                                                title={__('Delete')}
                                                 onClick={() =>
                                                     setDeletingHoliday(holiday)
                                                 }
@@ -278,14 +282,16 @@ return;
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Add Holiday</DialogTitle>
+                        <DialogTitle>{__('Add Holiday')}</DialogTitle>
                         <DialogDescription>
-                            Register a new public holiday or non-working day.
+                            {__(
+                                'Register a new public holiday or non-working day.',
+                            )}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={submitCreate} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="create_date">Date</Label>
+                            <Label htmlFor="create_date">{__('Date')}</Label>
                             <Input
                                 id="create_date"
                                 type="date"
@@ -297,14 +303,16 @@ return;
                             <InputError message={createForm.errors.date} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="create_name">Holiday Name</Label>
+                            <Label htmlFor="create_name">
+                                {__('Holiday Name')}
+                            </Label>
                             <Input
                                 id="create_name"
                                 value={createForm.data.name}
                                 onChange={(e) =>
                                     createForm.setData('name', e.target.value)
                                 }
-                                placeholder="e.g. Independence Day"
+                                placeholder={__('e.g. Independence Day')}
                             />
                             <InputError message={createForm.errors.name} />
                         </div>
@@ -314,13 +322,13 @@ return;
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -334,14 +342,14 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Holiday</DialogTitle>
+                        <DialogTitle>{__('Edit Holiday')}</DialogTitle>
                         <DialogDescription>
-                            Update holiday information.
+                            {__('Update holiday information.')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={submitEdit} className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_date">Date</Label>
+                            <Label htmlFor="edit_date">{__('Date')}</Label>
                             <Input
                                 id="edit_date"
                                 type="date"
@@ -353,7 +361,9 @@ return;
                             <InputError message={editForm.errors.date} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_name">Holiday Name</Label>
+                            <Label htmlFor="edit_name">
+                                {__('Holiday Name')}
+                            </Label>
                             <Input
                                 id="edit_name"
                                 value={editForm.data.name}
@@ -369,13 +379,13 @@ return;
                                 variant="outline"
                                 onClick={() => setEditingHoliday(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Update
+                                {__('Update')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -389,22 +399,22 @@ return;
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Holiday</DialogTitle>
+                        <DialogTitle>{__('Delete Holiday')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm text-muted-foreground">
-                        Are you sure you want to delete the holiday{' '}
+                        {__('Are you sure you want to delete the holiday')}{' '}
                         <span className="font-medium text-foreground">
                             {deletingHoliday?.name}
                         </span>{' '}
-                        on{' '}
-                        {deletingHoliday
-                            ? new Date(
-                                  deletingHoliday.date,
-                              ).toLocaleDateString()
-                            : ''}
-                        ?
+                        {__('on :date?', {
+                            date: deletingHoliday
+                                ? new Date(
+                                      deletingHoliday.date,
+                                  ).toLocaleDateString(intlLocale())
+                                : '',
+                        })}
                         <br />
-                        This action cannot be undone.
+                        {__('This action cannot be undone.')}
                     </div>
                     <DialogFooter>
                         <Button
@@ -412,14 +422,14 @@ return;
                             variant="outline"
                             onClick={() => setDeletingHoliday(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyHoliday}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -430,7 +440,7 @@ return;
 
 HolidaysIndex.layout = {
     breadcrumbs: [
-        { title: 'HR', href: '#' },
-        { title: 'Holidays', href: holidaysIndex() },
+        { title: __('HR'), href: '#' },
+        { title: __('Holidays'), href: holidaysIndex() },
     ],
 };

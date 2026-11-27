@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as functionalPositionsIndex } from '@/routes/functional-positions';
 
 type FunctionalPosition = {
@@ -27,7 +28,7 @@ type PageProps = {
     functionalPosition: FunctionalPosition;
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'long',
     timeStyle: 'short',
 });
@@ -37,7 +38,11 @@ export default function FunctionalPositionShow({
 }: PageProps) {
     return (
         <>
-            <Head title={`Functional Position: ${functionalPosition.name}`} />
+            <Head
+                title={__('Functional Position: :name', {
+                    name: functionalPosition.name,
+                })}
+            />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex items-center gap-3 border-b pb-5 dark:border-zinc-800">
@@ -56,7 +61,9 @@ export default function FunctionalPositionShow({
                                 {functionalPosition.name}
                             </h1>
                             <Badge className="rounded-full px-3 py-1 uppercase">
-                                Level {functionalPosition.level}
+                                {__('Level :level', {
+                                    level: functionalPosition.level,
+                                })}
                             </Badge>
                             <Badge
                                 variant={
@@ -67,13 +74,14 @@ export default function FunctionalPositionShow({
                                 className="rounded-full px-3 py-1 uppercase"
                             >
                                 {functionalPosition.is_active
-                                    ? 'Active'
-                                    : 'Inactive'}
+                                    ? __('Active')
+                                    : __('Inactive')}
                             </Badge>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Review code, level metadata, grade, job value, and the role
-                            description for this functional position.
+                            {__(
+                                'Review code, level metadata, grade, job value, and the role description for this functional position.',
+                            )}
                         </p>
                     </div>
                 </div>
@@ -82,7 +90,7 @@ export default function FunctionalPositionShow({
                     <div className="space-y-6 lg:col-span-1">
                         <div className="space-y-4 rounded-2xl border bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                             <h3 className="border-b pb-3 text-lg font-bold text-zinc-900 dark:border-zinc-800 dark:text-zinc-50">
-                                Position Details
+                                {__('Position Details')}
                             </h3>
 
                             <div className="space-y-3 text-sm">
@@ -95,12 +103,20 @@ export default function FunctionalPositionShow({
 
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <Award className="h-4 w-4 text-muted-foreground" />
-                                    <span>Level {functionalPosition.level}</span>
+                                    <span>
+                                        {__('Level :level', {
+                                            level: functionalPosition.level,
+                                        })}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
                                     <Award className="h-4 w-4 text-muted-foreground" />
-                                    <span>Grade {functionalPosition.grade}</span>
+                                    <span>
+                                        {__('Grade :grade', {
+                                            grade: functionalPosition.grade,
+                                        })}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
@@ -112,7 +128,9 @@ export default function FunctionalPositionShow({
                                     <CalendarDays className="h-4 w-4 text-muted-foreground" />
                                     <span>
                                         {dateFormatter.format(
-                                            new Date(functionalPosition.created_at),
+                                            new Date(
+                                                functionalPosition.created_at,
+                                            ),
                                         )}
                                     </span>
                                 </div>
@@ -125,13 +143,13 @@ export default function FunctionalPositionShow({
                             <div className="flex items-center gap-2 border-b pb-3 dark:border-zinc-800">
                                 <FileText className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                                 <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                    Description
+                                    {__('Description')}
                                 </h3>
                             </div>
 
                             <p className="mt-4 leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
                                 {functionalPosition.description ||
-                                    'No description provided.'}
+                                    __('No description provided.')}
                             </p>
                         </div>
                     </div>
@@ -144,11 +162,11 @@ export default function FunctionalPositionShow({
 FunctionalPositionShow.layout = {
     breadcrumbs: [
         {
-            title: 'Functional Positions',
+            title: __('Functional Positions'),
             href: functionalPositionsIndex(),
         },
         {
-            title: 'Detail',
+            title: __('Detail'),
             href: '',
         },
     ],

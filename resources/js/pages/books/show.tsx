@@ -1,8 +1,17 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Pencil, BookOpen, Building2, Calendar, Hash, Users } from 'lucide-react';
+import {
+    ArrowLeft,
+    Pencil,
+    BookOpen,
+    Building2,
+    Calendar,
+    Hash,
+    Users,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { __ } from '@/lib/i18n';
 import { index as booksIndex, edit as bookEdit } from '@/routes/books';
 import type { Auth } from '@/types';
 
@@ -37,13 +46,17 @@ export default function BookShow({ auth, book }: PageProps) {
     const mayUpdate = can(auth, 'book.manage');
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title={`Book: ${book.title}`} />
-            
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('Book: :title', { title: book.title })} />
+
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div className="flex items-center gap-4">
                     <Link href={booksIndex()}>
-                        <Button variant="outline" size="icon" className="cursor-pointer">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="cursor-pointer"
+                        >
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
                     </Link>
@@ -52,19 +65,24 @@ export default function BookShow({ auth, book }: PageProps) {
                             <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                                 {book.title}
                             </h1>
-                            <Badge variant="secondary" className="uppercase tracking-wider text-[10px] mt-1">
+                            <Badge
+                                variant="secondary"
+                                className="mt-1 text-[10px] tracking-wider uppercase"
+                            >
                                 {book.type}
                             </Badge>
                         </div>
-                        <p className="text-muted-foreground mt-1">
-                            Detailed information about this authored book.
+                        <p className="mt-1 text-muted-foreground">
+                            {__(
+                                'Detailed information about this authored book.',
+                            )}
                         </p>
                     </div>
                 </div>
                 {mayUpdate && (
                     <Link href={bookEdit.url(book.id)}>
-                        <Button className="cursor-pointer gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md">
-                            <Pencil className="h-4 w-4" /> Edit Book
+                        <Button className="cursor-pointer gap-2 bg-indigo-600 font-medium text-white shadow-md hover:bg-indigo-700">
+                            <Pencil className="h-4 w-4" /> {__('Edit Book')}
                         </Button>
                     </Link>
                 )}
@@ -75,26 +93,35 @@ export default function BookShow({ auth, book }: PageProps) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <BookOpen className="h-5 w-5 text-primary" />
-                            Book Details
+                            {__('Book Details')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div>
-                            <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">Description</h4>
-                            <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed">
-                                {book.description || 'No description provided for this book.'}
+                            <h4 className="mb-2 text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+                                {__('Description')}
+                            </h4>
+                            <p className="leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
+                                {book.description ||
+                                    __(
+                                        'No description provided for this book.',
+                                    )}
                             </p>
                         </div>
 
-                        <div className="grid sm:grid-cols-2 gap-6">
+                        <div className="grid gap-6 sm:grid-cols-2">
                             <div className="space-y-4">
                                 <div className="flex items-start gap-3">
                                     <div className="mt-1 rounded-full bg-primary/10 p-2 text-primary">
                                         <Building2 className="h-4 w-4" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold">Publisher</p>
-                                        <p className="text-sm text-muted-foreground">{book.publisher || '-'}</p>
+                                        <p className="text-sm font-semibold">
+                                            {__('Publisher')}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {book.publisher || '-'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -105,7 +132,9 @@ export default function BookShow({ auth, book }: PageProps) {
                                         <Calendar className="h-4 w-4" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold">Publication Year</p>
+                                        <p className="text-sm font-semibold">
+                                            {__('Publication Year')}
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
                                             {book.publication_year || '-'}
                                         </p>
@@ -117,8 +146,10 @@ export default function BookShow({ auth, book }: PageProps) {
                                         <Hash className="h-4 w-4" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold">ISBN</p>
-                                        <p className="text-sm text-muted-foreground font-mono">
+                                        <p className="text-sm font-semibold">
+                                            ISBN
+                                        </p>
+                                        <p className="font-mono text-sm text-muted-foreground">
                                             {book.isbn || '-'}
                                         </p>
                                     </div>
@@ -132,24 +163,31 @@ export default function BookShow({ auth, book }: PageProps) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Users className="h-5 w-5 text-primary" />
-                            Authors ({book.authors?.length || 0})
+                            {__('Authors (:count)', {
+                                count: book.authors?.length || 0,
+                            })}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         {book.authors && book.authors.length > 0 ? (
                             <ul className="space-y-3">
                                 {book.authors.map((author) => (
-                                    <li key={author.id} className="flex items-center gap-3 p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border dark:border-zinc-800">
-                                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                                    <li
+                                        key={author.id}
+                                        className="flex items-center gap-3 rounded-lg border bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-900/50"
+                                    >
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                                             {author.name.charAt(0)}
                                         </div>
-                                        <span className="text-sm font-medium">{author.name}</span>
+                                        <span className="text-sm font-medium">
+                                            {author.name}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
                         ) : (
                             <div className="py-8 text-center text-sm text-muted-foreground italic">
-                                No authors associated with this book.
+                                {__('No authors associated with this book.')}
                             </div>
                         )}
                     </CardContent>
@@ -161,8 +199,8 @@ export default function BookShow({ auth, book }: PageProps) {
 
 BookShow.layout = {
     breadcrumbs: [
-        { title: 'Academic', href: '#' },
-        { title: 'Authored Books', href: booksIndex() },
-        { title: 'Book Detail', href: '#' },
+        { title: __('Academic'), href: '#' },
+        { title: __('Authored Books'), href: booksIndex() },
+        { title: __('Book Detail'), href: '#' },
     ],
 };

@@ -74,7 +74,7 @@ class OvertimeRequestController extends Controller
         });
 
         return redirect()->route('overtime-requests.index')
-            ->with('success', 'Overtime request submitted successfully.');
+            ->with('success', __('Overtime request submitted successfully.'));
     }
 
     public function show(OvertimeRequest $overtimeRequest): Response
@@ -108,7 +108,7 @@ class OvertimeRequestController extends Controller
             ]);
         });
 
-        return back()->with('success', 'Overtime request approved.');
+        return back()->with('success', __('Overtime request approved.'));
     }
 
     public function reject(Request $request, OvertimeRequest $overtimeRequest): RedirectResponse
@@ -131,7 +131,7 @@ class OvertimeRequestController extends Controller
             ]);
         });
 
-        return back()->with('success', 'Overtime request rejected.');
+        return back()->with('success', __('Overtime request rejected.'));
     }
 
     public function destroy(OvertimeRequest $overtimeRequest): RedirectResponse
@@ -139,6 +139,6 @@ class OvertimeRequestController extends Controller
         $overtimeRequest->delete();
 
         return redirect()->route('overtime-requests.index')
-            ->with('success', 'Overtime request deleted.');
+            ->with('success', __('Overtime request deleted.'));
     }
 }

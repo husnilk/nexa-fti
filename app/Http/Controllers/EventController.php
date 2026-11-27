@@ -62,7 +62,7 @@ class EventController extends Controller
 
         $event = Event::create($data);
 
-        return redirect()->route('events.index')->with('success', 'Event created successfully.');
+        return redirect()->route('events.index')->with('success', __('Event created successfully.'));
     }
 
     public function show(Request $request, Event $event): Response
@@ -94,14 +94,14 @@ class EventController extends Controller
 
         $event->update($data);
 
-        return redirect()->route('events.index')->with('success', 'Event updated successfully.');
+        return redirect()->route('events.index')->with('success', __('Event updated successfully.'));
     }
 
     public function destroy(Request $request, Event $event): RedirectResponse
     {
         $event->delete();
 
-        return redirect()->route('events.index')->with('success', 'Event deleted successfully.');
+        return redirect()->route('events.index')->with('success', __('Event deleted successfully.'));
     }
 
     public function publish(Request $request, Event $event): RedirectResponse
@@ -117,9 +117,9 @@ class EventController extends Controller
         ]);
 
         if ($request->hasHeader('X-Inertia')) {
-            return back()->with('success', 'Event published successfully.');
+            return back()->with('success', __('Event published successfully.'));
         }
 
-        return redirect()->route('events.index')->with('success', 'Event published successfully.');
+        return redirect()->route('events.index')->with('success', __('Event published successfully.'));
     }
 }

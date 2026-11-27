@@ -1,5 +1,15 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { ArrowLeft, Key, Pencil, Plus, Search, Shield, ShieldCheck, Trash2, X } from 'lucide-react';
+import {
+    ArrowLeft,
+    Key,
+    Pencil,
+    Plus,
+    Search,
+    Shield,
+    ShieldCheck,
+    Trash2,
+    X,
+} from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useMemo, useState } from 'react';
 import PermissionController from '@/actions/App/Http/Controllers/Acl/PermissionController';
@@ -16,6 +26,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { __, intlLocale } from '@/lib/i18n';
 import { index as permissionsIndex } from '@/routes/permissions';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
@@ -33,7 +44,7 @@ type PageProps = {
     permissions: Permission[];
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dateFormatter = new Intl.DateTimeFormat(intlLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
 });
@@ -47,8 +58,9 @@ function can(auth: Auth, ability: string): boolean {
 export default function PermissionsIndex({ permissions }: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const [isCreating, setIsCreating] = useState<boolean>(false);
-    const [editingPermission, setEditingPermission] =
-        useState<any | null>(null);
+    const [editingPermission, setEditingPermission] = useState<any | null>(
+        null,
+    );
     const [deletingPermission, setDeletingPermission] =
         useState<Permission | null>(null);
     const [search, setSearch] = useState<string>('');
@@ -144,7 +156,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
 
     return (
         <>
-            <Head title="Permissions" />
+            <Head title={__('Permissions')} />
 
             <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
@@ -160,10 +172,12 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         </Link>
                         <div className="min-w-0 flex-1">
                             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                                Permissions
+                                {__('Permissions')}
                             </h1>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Manage application abilities and resource access controls.
+                                {__(
+                                    'Manage application abilities and resource access controls.',
+                                )}
                             </p>
                         </div>
                     </div>
@@ -173,7 +187,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                             <Button variant="outline" asChild>
                                 <Link href={rolesIndex()} className="gap-2">
                                     <ShieldCheck className="h-4 w-4" />
-                                    Roles
+                                    {__('Roles')}
                                 </Link>
                             </Button>
                         )}
@@ -184,7 +198,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                 className="cursor-pointer gap-2"
                             >
                                 <Plus className="h-4 w-4" />
-                                Add Permission
+                                {__('Add Permission')}
                             </Button>
                         )}
                     </div>
@@ -198,7 +212,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Total permissions
+                                    {__('Total permissions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
                                     {permissions.length}
@@ -214,10 +228,14 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Web guard permissions
+                                    {__('Web guard permissions')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-                                    {permissions.filter((p) => p.guard_name === 'web').length}
+                                    {
+                                        permissions.filter(
+                                            (p) => p.guard_name === 'web',
+                                        ).length
+                                    }
                                 </p>
                             </div>
                         </div>
@@ -230,10 +248,16 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Distinct guards
+                                    {__('Distinct guards')}
                                 </p>
                                 <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-                                    {new Set(permissions.map((p) => p.guard_name)).size}
+                                    {
+                                        new Set(
+                                            permissions.map(
+                                                (p) => p.guard_name,
+                                            ),
+                                        ).size
+                                    }
                                 </p>
                             </div>
                         </div>
@@ -245,7 +269,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search permissions..."
+                            placeholder={__('Search permissions...')}
                             className="bg-white pl-9 dark:bg-zinc-900"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
@@ -265,7 +289,9 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         variant="outline"
                         className="h-10 rounded-full px-4 text-xs tracking-wide uppercase"
                     >
-                        {filteredPermissions.length} records
+                        {__(':count records', {
+                            count: filteredPermissions.length,
+                        })}
                     </Badge>
                 </div>
 
@@ -274,11 +300,21 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         <table className="w-full min-w-[800px] border-collapse text-left">
                             <thead>
                                 <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
-                                    <th className="px-6 py-4 text-nowrap">Permission</th>
-                                    <th className="px-6 py-4">Category</th>
-                                    <th className="px-6 py-4 text-center">Guard</th>
-                                    <th className="px-6 py-4">Created</th>
-                                    <th className="px-6 py-4 text-right text-nowrap">Actions</th>
+                                    <th className="px-6 py-4 text-nowrap">
+                                        {__('Permission')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Category')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Guard')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Created')}
+                                    </th>
+                                    <th className="px-6 py-4 text-right text-nowrap">
+                                        {__('Actions')}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
@@ -288,7 +324,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                             colSpan={5}
                                             className="px-6 py-10 text-center text-muted-foreground"
                                         >
-                                            No permissions found.
+                                            {__('No permissions found.')}
                                         </td>
                                     </tr>
                                 ) : (
@@ -302,33 +338,38 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                                     {permission.name}
                                                 </div>
                                                 {permission.description && (
-                                                    <div className="mt-0.5 text-xs text-muted-foreground line-clamp-1 max-w-xs">
+                                                    <div className="mt-0.5 line-clamp-1 max-w-xs text-xs text-muted-foreground">
                                                         {permission.description}
                                                     </div>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
                                                 {permission.category ? (
-                                                    <Badge variant="outline" className="font-normal capitalize">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="font-normal capitalize"
+                                                    >
                                                         {permission.category}
                                                     </Badge>
                                                 ) : (
                                                     <span className="text-xs text-muted-foreground italic">
-                                                        Uncategorized
+                                                        {__('Uncategorized')}
                                                     </span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 text-center text-nowrap">
                                                 <Badge
                                                     variant="secondary"
-                                                    className="bg-zinc-100 hover:bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-800 dark:text-zinc-200"
+                                                    className="bg-zinc-100 text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-800"
                                                 >
                                                     {permission.guard_name}
                                                 </Badge>
                                             </td>
                                             <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
                                                 {dateFormatter.format(
-                                                    new Date(permission.created_at),
+                                                    new Date(
+                                                        permission.created_at,
+                                                    ),
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
@@ -339,9 +380,16 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                                             variant="ghost"
                                                             size="icon"
                                                             onClick={() =>
-                                                                openEditDialog(permission)
+                                                                openEditDialog(
+                                                                    permission,
+                                                                )
                                                             }
-                                                            aria-label={`Edit ${permission.name}`}
+                                                            aria-label={__(
+                                                                'Edit :name',
+                                                                {
+                                                                    name: permission.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                         >
                                                             <Pencil className="h-4 w-4" />
@@ -357,7 +405,12 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                                                     permission,
                                                                 )
                                                             }
-                                                            aria-label={`Delete ${permission.name}`}
+                                                            aria-label={__(
+                                                                'Delete :name',
+                                                                {
+                                                                    name: permission.name,
+                                                                },
+                                                            )}
                                                             className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -386,17 +439,21 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Create Permission
+                                {__('Create Permission')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Add a new permission ability for the application.
+                                {__(
+                                    'Add a new permission ability for the application.',
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
 
                     <form onSubmit={submitCreate} className="grid gap-5 p-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Permission name</Label>
+                            <Label htmlFor="name">
+                                {__('Permission name')}
+                            </Label>
                             <Input
                                 id="name"
                                 name="name"
@@ -414,7 +471,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="category">Category</Label>
+                            <Label htmlFor="category">{__('Category')}</Label>
                             <Input
                                 id="category"
                                 name="category"
@@ -425,14 +482,16 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                         event.target.value,
                                     )
                                 }
-                                placeholder="Posts"
+                                placeholder={__('Posts')}
                                 autoComplete="off"
                             />
                             <InputError message={createForm.errors.category} />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="description">Description</Label>
+                            <Label htmlFor="description">
+                                {__('Description')}
+                            </Label>
                             <Input
                                 id="description"
                                 name="description"
@@ -443,14 +502,16 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                         event.target.value,
                                     )
                                 }
-                                placeholder="Allow user to create posts"
+                                placeholder={__('Allow user to create posts')}
                                 autoComplete="off"
                             />
-                            <InputError message={createForm.errors.description} />
+                            <InputError
+                                message={createForm.errors.description}
+                            />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="guard_name">Guard</Label>
+                            <Label htmlFor="guard_name">{__('Guard')}</Label>
                             <Input
                                 id="guard_name"
                                 name="guard_name"
@@ -474,13 +535,13 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                 variant="outline"
                                 onClick={() => setIsCreating(false)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={createForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -499,17 +560,19 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Edit Permission
+                                {__('Edit Permission')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                Update the permission name or guard.
+                                {__('Update the permission name or guard.')}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
 
                     <form onSubmit={submitEdit} className="grid gap-5 p-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_name">Permission name</Label>
+                            <Label htmlFor="edit_name">
+                                {__('Permission name')}
+                            </Label>
                             <Input
                                 id="edit_name"
                                 value={editForm.data.name}
@@ -522,12 +585,17 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_category">Category</Label>
+                            <Label htmlFor="edit_category">
+                                {__('Category')}
+                            </Label>
                             <Input
                                 id="edit_category"
                                 value={editForm.data.category}
                                 onChange={(event) =>
-                                    editForm.setData('category', event.target.value)
+                                    editForm.setData(
+                                        'category',
+                                        event.target.value,
+                                    )
                                 }
                                 autoComplete="off"
                             />
@@ -535,12 +603,17 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_description">Description</Label>
+                            <Label htmlFor="edit_description">
+                                {__('Description')}
+                            </Label>
                             <Input
                                 id="edit_description"
                                 value={editForm.data.description}
                                 onChange={(event) =>
-                                    editForm.setData('description', event.target.value)
+                                    editForm.setData(
+                                        'description',
+                                        event.target.value,
+                                    )
                                 }
                                 autoComplete="off"
                             />
@@ -548,7 +621,9 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit_guard_name">Guard</Label>
+                            <Label htmlFor="edit_guard_name">
+                                {__('Guard')}
+                            </Label>
                             <Input
                                 id="edit_guard_name"
                                 value={editForm.data.guard_name}
@@ -569,13 +644,13 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                                 variant="outline"
                                 onClick={() => setEditingPermission(null)}
                             >
-                                Cancel
+                                {__('Cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={editForm.processing}
                             >
-                                Save
+                                {__('Save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -594,11 +669,13 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                     <DialogHeader>
                         <div className="rounded-t-2xl border-b px-6 py-5 dark:border-zinc-800">
                             <DialogTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                                Delete Permission
+                                {__('Delete Permission')}
                             </DialogTitle>
                             <DialogDescription className="mt-1">
-                                This removes {deletingPermission?.name} from every
-                                assigned role and user.
+                                {__(
+                                    'This removes :name from every assigned role and user.',
+                                    { name: deletingPermission?.name ?? '' },
+                                )}
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -608,14 +685,14 @@ export default function PermissionsIndex({ permissions }: PageProps) {
                             variant="outline"
                             onClick={() => setDeletingPermission(null)}
                         >
-                            Cancel
+                            {__('Cancel')}
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
                             onClick={destroyPermission}
                         >
-                            Delete
+                            {__('Delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -627,7 +704,7 @@ export default function PermissionsIndex({ permissions }: PageProps) {
 PermissionsIndex.layout = {
     breadcrumbs: [
         {
-            title: 'Permissions',
+            title: __('Permissions'),
             href: permissionsIndex(),
         },
     ],

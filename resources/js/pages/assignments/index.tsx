@@ -1,8 +1,20 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Pencil, Plus, Search, Trash2, Eye, ClipboardList, CheckCircle2, Clock, XCircle, ArrowUpDown } from 'lucide-react';
+import {
+    Pencil,
+    Plus,
+    Search,
+    Trash2,
+    Eye,
+    ClipboardList,
+    CheckCircle2,
+    Clock,
+    XCircle,
+    ArrowUpDown,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { __, intlLocale } from '@/lib/i18n';
 import { index, create, show, edit, destroy } from '@/routes/assignments';
 import type { Auth } from '@/types';
 
@@ -20,7 +32,12 @@ type Assignment = {
     parent_id?: number;
     start_date?: string;
     due_date?: string;
-    status: 'assigned' | 'in_progress' | 'completed' | 'delegated' | 'cancelled';
+    status:
+        | 'assigned'
+        | 'in_progress'
+        | 'completed'
+        | 'delegated'
+        | 'cancelled';
     priority: 'low' | 'medium' | 'high';
     assignedByEmployee?: Employee;
     assignedToEmployee?: Employee;
@@ -35,12 +52,45 @@ type PageProps = {
     };
 };
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> = {
-    assigned: { label: 'Assigned', color: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800', icon: ClipboardList },
-    in_progress: { label: 'In Progress', color: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800', icon: Clock },
-    completed: { label: 'Completed', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800', icon: CheckCircle2 },
-    delegated: { label: 'Delegated', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-800', icon: ArrowUpDown },
-    cancelled: { label: 'Cancelled', color: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800', icon: XCircle },
+const statusConfig: Record<
+    string,
+    {
+        label: string;
+        color: string;
+        icon: React.ComponentType<{ className?: string }>;
+    }
+> = {
+    assigned: {
+        label: __('Assigned'),
+        color: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800',
+        icon: ClipboardList,
+    },
+    in_progress: {
+        label: __('In Progress'),
+        color: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800',
+        icon: Clock,
+    },
+    completed: {
+        label: __('Completed'),
+        color: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800',
+        icon: CheckCircle2,
+    },
+    delegated: {
+        label: __('Delegated'),
+        color: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-800',
+        icon: ArrowUpDown,
+    },
+    cancelled: {
+        label: __('Cancelled'),
+        color: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800',
+        icon: XCircle,
+    },
+};
+
+const priorityLabels: Record<string, string> = {
+    low: __('Low'),
+    medium: __('Medium'),
+    high: __('High'),
 };
 
 const priorityConfig: Record<string, string> = {
@@ -49,7 +99,10 @@ const priorityConfig: Record<string, string> = {
     high: 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400',
 };
 
-export default function AssignmentsIndex({ assignments = [], filters }: PageProps) {
+export default function AssignmentsIndex({
+    assignments = [],
+    filters,
+}: PageProps) {
     const { auth } = usePage<PageProps>().props;
     const [search, setSearch] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
@@ -57,168 +110,267 @@ export default function AssignmentsIndex({ assignments = [], filters }: PageProp
     const hasRole = (name: string) => auth.roles.includes(name);
     const hasPermission = (module: string) =>
         hasRole('super-admin') ||
-        auth.permissions.some((p) => p === module || p.startsWith(`${module}.`));
+        auth.permissions.some(
+            (p) => p === module || p.startsWith(`${module}.`),
+        );
 
     const canManage = hasPermission('assignment.manage');
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearch(value);
-        router.get(index.url(), { search: value, status: statusFilter !== 'all' ? statusFilter : '' }, {
-            preserveState: true,
-            replace: true,
-        });
+        router.get(
+            index.url(),
+            {
+                search: value,
+                status: statusFilter !== 'all' ? statusFilter : '',
+            },
+            {
+                preserveState: true,
+                replace: true,
+            },
+        );
     };
 
     const handleStatusFilter = (status: string) => {
         setStatusFilter(status);
-        router.get(index.url(), { search, status: status !== 'all' ? status : '' }, {
-            preserveState: true,
-            replace: true,
-        });
+        router.get(
+            index.url(),
+            { search, status: status !== 'all' ? status : '' },
+            {
+                preserveState: true,
+                replace: true,
+            },
+        );
     };
 
     const handleDelete = (id: number) => {
-        if (confirm('Are you sure you want to delete this assignment?')) {
+        if (confirm(__('Are you sure you want to delete this assignment?'))) {
             router.delete(destroy.url(id));
         }
     };
 
     return (
-        <div className="container mx-auto py-8 px-4 space-y-6">
-            <Head title="Assignments" />
+        <div className="container mx-auto space-y-6 px-4 py-8">
+            <Head title={__('Assignments')} />
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-5 dark:border-zinc-800 gap-4">
+            <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-violet-400">
-                        Assignments
+                    <h1 className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-3xl font-bold tracking-tight text-transparent dark:from-indigo-400 dark:to-violet-400">
+                        {__('Assignments')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">Manage and track task assignments across the organization.</p>
+                    <p className="mt-1 text-muted-foreground">
+                        {__(
+                            'Manage and track task assignments across the organization.',
+                        )}
+                    </p>
                 </div>
                 {canManage && (
                     <Link href={create.url()}>
-                        <Button className="cursor-pointer gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium shadow-md">
-                            <Plus className="h-4 w-4" /> New Assignment
+                        <Button className="cursor-pointer gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 font-medium text-white shadow-md hover:from-indigo-700 hover:to-violet-700">
+                            <Plus className="h-4 w-4" /> {__('New Assignment')}
                         </Button>
                     </Link>
                 )}
             </div>
 
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border dark:border-zinc-800">
+            <div className="flex flex-col items-center justify-between gap-4 rounded-xl border bg-zinc-50 p-4 md:flex-row dark:border-zinc-800 dark:bg-zinc-900/50">
                 <div className="relative w-full md:max-w-xs">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                     <Input
                         value={search}
                         onChange={handleSearchChange}
-                        placeholder="Search assignments..."
-                        className="pl-9 bg-white dark:bg-zinc-900"
+                        placeholder={__('Search assignments...')}
+                        className="bg-white pl-9 dark:bg-zinc-900"
                     />
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-zinc-500 font-medium">Status:</span>
-                    <div className="flex rounded-lg border dark:border-zinc-800 overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-                        {['all', 'assigned', 'in_progress', 'completed', 'delegated', 'cancelled'].map((status) => (
+                    <span className="text-sm font-medium text-zinc-500">
+                        {__('Status:')}
+                    </span>
+                    <div className="flex overflow-hidden rounded-lg border bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+                        {[
+                            'all',
+                            'assigned',
+                            'in_progress',
+                            'completed',
+                            'delegated',
+                            'cancelled',
+                        ].map((status) => (
                             <button
                                 key={status}
                                 onClick={() => handleStatusFilter(status)}
-                                className={`px-3 py-2 text-xs font-semibold capitalize transition-all duration-200 cursor-pointer ${
+                                className={`cursor-pointer px-3 py-2 text-xs font-semibold capitalize transition-all duration-200 ${
                                     statusFilter === status
                                         ? 'bg-indigo-600 text-white shadow-xs'
-                                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                                        : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900'
                                 }`}
                             >
-                                {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
+                                {status === 'all'
+                                    ? __('All')
+                                    : statusConfig[status].label}
                             </button>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+            <div className="overflow-hidden rounded-2xl border bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                 {assignments.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16">
-                        <ClipboardList className="w-16 h-16 text-zinc-300 dark:text-zinc-700 mb-4 animate-pulse" />
-                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">No Assignments Found</h3>
-                        <p className="text-zinc-500 text-sm mt-1 max-w-md text-center">
-                            No assignments match your current filters. Try adjusting your search or create a new assignment.
+                        <ClipboardList className="mb-4 h-16 w-16 animate-pulse text-zinc-300 dark:text-zinc-700" />
+                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
+                            {__('No Assignments Found')}
+                        </h3>
+                        <p className="mt-1 max-w-md text-center text-sm text-zinc-500">
+                            {__(
+                                'No assignments match your current filters. Try adjusting your search or create a new assignment.',
+                            )}
                         </p>
                         {canManage && (
                             <Link href={create.url()} className="mt-4">
-                                <Button variant="outline" className="gap-2 cursor-pointer">
-                                    <Plus className="h-4 w-4" /> Create Assignment
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer gap-2"
+                                >
+                                    <Plus className="h-4 w-4" />{' '}
+                                    {__('Create Assignment')}
                                 </Button>
                             </Link>
                         )}
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full border-collapse text-left">
                             <thead>
-                                <tr className="bg-zinc-50 dark:bg-zinc-900 border-b dark:border-zinc-800 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                    <th className="py-4 px-6">Assignment</th>
-                                    <th className="py-4 px-6">Assigned By</th>
-                                    <th className="py-4 px-6">Assigned To</th>
-                                    <th className="py-4 px-6">Due Date</th>
-                                    <th className="py-4 px-6 text-center">Priority</th>
-                                    <th className="py-4 px-6 text-center">Status</th>
-                                    <th className="py-4 px-6 text-right">Actions</th>
+                                <tr className="border-b bg-zinc-50 text-xs font-semibold tracking-wider text-muted-foreground uppercase dark:border-zinc-800 dark:bg-zinc-900">
+                                    <th className="px-6 py-4">
+                                        {__('Assignment')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Assigned By')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Assigned To')}
+                                    </th>
+                                    <th className="px-6 py-4">
+                                        {__('Due Date')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Priority')}
+                                    </th>
+                                    <th className="px-6 py-4 text-center">
+                                        {__('Status')}
+                                    </th>
+                                    <th className="px-6 py-4 text-right">
+                                        {__('Actions')}
+                                    </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
+                            <tbody className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
                                 {assignments.map((assignment) => {
-                                    const status = statusConfig[assignment.status];
+                                    const status =
+                                        statusConfig[assignment.status];
                                     const StatusIcon = status?.icon;
 
                                     return (
-                                        <tr key={assignment.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">
-                                            <td className="py-4 px-6 max-w-xs">
-                                                <div className="font-semibold text-zinc-900 dark:text-zinc-50 truncate">{assignment.title}</div>
+                                        <tr
+                                            key={assignment.id}
+                                            className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50"
+                                        >
+                                            <td className="max-w-xs px-6 py-4">
+                                                <div className="truncate font-semibold text-zinc-900 dark:text-zinc-50">
+                                                    {assignment.title}
+                                                </div>
                                                 {assignment.description && (
-                                                    <div className="text-xs text-muted-foreground truncate mt-0.5">{assignment.description}</div>
+                                                    <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                                                        {assignment.description}
+                                                    </div>
                                                 )}
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-700 dark:text-zinc-300">
-                                                {assignment.assignedByEmployee?.name ?? assignment.assigned_by}
+                                            <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
+                                                {assignment.assignedByEmployee
+                                                    ?.name ??
+                                                    assignment.assigned_by}
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-700 dark:text-zinc-300">
-                                                {assignment.assignedToEmployee?.name ?? assignment.assigned_to}
+                                            <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
+                                                {assignment.assignedToEmployee
+                                                    ?.name ??
+                                                    assignment.assigned_to}
                                             </td>
-                                            <td className="py-4 px-6 text-zinc-600 dark:text-zinc-400 text-xs">
-                                                {assignment.due_date
-                                                    ? new Date(assignment.due_date).toLocaleDateString(undefined, { dateStyle: 'medium' })
-                                                    : <span className="text-zinc-400">—</span>}
+                                            <td className="px-6 py-4 text-xs text-zinc-600 dark:text-zinc-400">
+                                                {assignment.due_date ? (
+                                                    new Date(
+                                                        assignment.due_date,
+                                                    ).toLocaleDateString(
+                                                        intlLocale(),
+                                                        { dateStyle: 'medium' },
+                                                    )
+                                                ) : (
+                                                    <span className="text-zinc-400">
+                                                        —
+                                                    </span>
+                                                )}
                                             </td>
-                                            <td className="py-4 px-6 text-center">
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold capitalize ${priorityConfig[assignment.priority]}`}>
-                                                    {assignment.priority}
+                                            <td className="px-6 py-4 text-center">
+                                                <span
+                                                    className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold capitalize ${priorityConfig[assignment.priority]}`}
+                                                >
+                                                    {priorityLabels[
+                                                        assignment.priority
+                                                    ] ?? assignment.priority}
                                                 </span>
                                             </td>
-                                            <td className="py-4 px-6 text-center">
-                                                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${status?.color}`}>
-                                                    {StatusIcon && <StatusIcon className="h-3 w-3" />}
+                                            <td className="px-6 py-4 text-center">
+                                                <span
+                                                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold ${status?.color}`}
+                                                >
+                                                    {StatusIcon && (
+                                                        <StatusIcon className="h-3 w-3" />
+                                                    )}
                                                     {status?.label}
                                                 </span>
                                             </td>
-                                            <td className="py-4 px-6 text-right">
+                                            <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-1">
-                                                    <Link href={show.url(assignment.id)}>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 cursor-pointer">
+                                                    <Link
+                                                        href={show.url(
+                                                            assignment.id,
+                                                        )}
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 cursor-pointer text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                                                        >
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
                                                     {canManage && (
                                                         <>
-                                                            <Link href={edit.url(assignment.id)}>
-                                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 cursor-pointer">
+                                                            <Link
+                                                                href={edit.url(
+                                                                    assignment.id,
+                                                                )}
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="h-8 w-8 cursor-pointer text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                                >
                                                                     <Pencil className="h-4 w-4" />
                                                                 </Button>
                                                             </Link>
                                                             <Button
-                                                                onClick={() => handleDelete(assignment.id)}
+                                                                onClick={() =>
+                                                                    handleDelete(
+                                                                        assignment.id,
+                                                                    )
+                                                                }
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-8 w-8 text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300 cursor-pointer"
+                                                                className="h-8 w-8 cursor-pointer text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>

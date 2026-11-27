@@ -70,7 +70,7 @@ class InventoryRequestController extends Controller
         });
 
         return redirect()->route('inventory-requests.index')
-            ->with('success', 'Inventory request submitted.');
+            ->with('success', __('Inventory request submitted.'));
     }
 
     public function show(InventoryRequest $inventoryRequest): Response
@@ -99,7 +99,7 @@ class InventoryRequestController extends Controller
             'action_date' => now(),
         ]);
 
-        return back()->with('success', 'Request approved.');
+        return back()->with('success', __('Request approved.'));
     }
 
     public function reject(Request $request, InventoryRequest $inventoryRequest): RedirectResponse
@@ -116,6 +116,6 @@ class InventoryRequestController extends Controller
             'action_date' => now(),
         ]);
 
-        return back()->with('success', 'Request rejected.');
+        return back()->with('success', __('Request rejected.'));
     }
 }
